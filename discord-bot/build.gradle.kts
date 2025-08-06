@@ -9,6 +9,7 @@ repositories {
 
 dependencies {
     implementation(libs.guava)
+    implementation(libs.kord.core)
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.assertions.core)
 }
@@ -20,7 +21,7 @@ java {
 }
 
 application {
-    mainClass = "org.example.AppKt"
+    mainClass = "org.contourgara.MainKt"
 }
 
 tasks.named<Test>("test") {
