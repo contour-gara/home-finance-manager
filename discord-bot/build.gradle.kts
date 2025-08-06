@@ -27,7 +27,7 @@ application {
     mainClass = "org.contourgara.MainKt"
 }
 
-tasks.named<Test>("test") {
+tasks.withType<Test> {
     useJUnitPlatform()
 
     testLogging {
@@ -43,5 +43,14 @@ tasks.named<Test>("test") {
         showExceptions = true
         showCauses = true
         showStackTraces = true
+    }
+}
+
+tasks.withType<Jar> {
+    manifest { attributes["Main-Class"] = "org.contourgara.MainKt" }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    configurations.compileClasspath.get().forEach {
+        from(if (it.isDirectory) it else zipTree(it))
     }
 }

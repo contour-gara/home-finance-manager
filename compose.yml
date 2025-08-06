@@ -1,0 +1,7 @@
+services:
+  discord-bot:
+    build:
+      context: ./discord-bot
+      dockerfile: Dockerfile
+    environment:
+      HOME_FINANCE_MANAGER_BOT_TOKEN: ${HOME_FINANCE_MANAGER_BOT_TOKEN}
