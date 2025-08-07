@@ -1,7 +1,7 @@
 package org.contourgara
 
-import org.contourgara.eventlistener.listenDiscordEvent
+import org.contourgara.eventlistener.DiscordEventListener
 
 suspend fun main() {
-    listenDiscordEvent()
+    DiscordEventListener().start()
 }
