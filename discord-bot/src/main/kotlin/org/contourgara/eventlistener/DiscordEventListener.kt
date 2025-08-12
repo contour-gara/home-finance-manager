@@ -1,13 +1,21 @@
 package org.contourgara.eventlistener
 
 import dev.kord.common.entity.Snowflake
+import dev.kord.common.entity.TextInputStyle
 import dev.kord.core.Kord
+import dev.kord.core.behavior.interaction.modal
+import dev.kord.core.behavior.interaction.response.edit
+import dev.kord.core.behavior.interaction.response.respond
 import dev.kord.core.event.interaction.GuildChatInputCommandInteractionCreateEvent
 import dev.kord.core.event.interaction.ModalSubmitInteractionCreateEvent
+import dev.kord.core.event.interaction.SelectMenuInteractionCreateEvent
 import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.core.on
 import dev.kord.gateway.Intent
 import dev.kord.gateway.PrivilegedIntent
+import dev.kord.rest.builder.interaction.integer
+import dev.kord.rest.builder.message.actionRow
+import dev.kord.rest.builder.message.embed
 
 class DiscordEventListener() {
     private lateinit var kord: Kord
@@ -18,6 +26,7 @@ class DiscordEventListener() {
         createCommand()
         createExecuteCommandEvent()
         createSubmitModalEvent()
+        createSubmitSelect()
         login()
     }
 
@@ -35,12 +44,54 @@ class DiscordEventListener() {
             "modal",
             "modal test"
         )
+
+        kord.createGuildChatInputCommand(
+            Snowflake(889318150615744523),
+            "register-bill",
+            "請求を登録するっピ"
+        ) {
+            integer("billing-amount", "請求金額") {
+                required = true
+                minValue = 1
+            }
+        }
     }
 
     private fun createExecuteCommandEvent() {
         kord.on<GuildChatInputCommandInteractionCreateEvent> {
             when (interaction.invokedCommandName) {
                 "modal" -> openTestModal()
+                "register-bill" -> {
+                    interaction.deferPublicResponse().respond {
+                        embed {
+                            title = "入力情報だっピ"
+                            field(name = "請求金額だっピ", value = { "${interaction.command.integers["billing-amount"].toString()} 円" })
+                        }
+
+                        actionRow {
+                            userSelect("claimant") {
+                                placeholder = "請求者を選択してっピ"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun createSubmitSelect() {
+        kord.on<SelectMenuInteractionCreateEvent> {
+            when (interaction.componentId) {
+                "claimant" -> {
+                    interaction.modal("メモ", "bill-memo") {
+                        actionRow {
+                            textInput(TextInputStyle.Paragraph, interaction.values.first(), "メモ") {
+                                placeholder = "メモを入力してっピ"
+                                allowedLength = 1..999
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -49,6 +100,22 @@ class DiscordEventListener() {
         kord.on<ModalSubmitInteractionCreateEvent> {
             when (interaction.modalId) {
                 "modal" -> submitTestModal()
+                "bill-memo" -> interaction.deferPublicMessageUpdate().edit {
+                    val userId = interaction.textInputs.keys.first()
+                    val user = kord.getUser(Snowflake(userId))
+                    content = "${user?.mention} 請求を受け付けたっピ"
+                    embed {
+                        title = interaction.message?.embeds?.first()?.title
+                        field(name = interaction.message?.embeds?.first()?.fields?.first()?.name!!, value = { interaction.message?.embeds?.first()?.fields?.first()?.value!! })
+                        field(name = "請求者だっピ", value = { user?.username!! })
+                        field(name = "メモだっピ", value = { interaction.textInputs[userId]?.value!! })
+                    }
+                    actionRow {
+                        userSelect("claimant") {
+                            disabled = true
+                        }
+                    }
+                }
             }
         }
     }
