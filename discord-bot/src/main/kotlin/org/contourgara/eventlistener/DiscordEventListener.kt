@@ -1,5 +1,6 @@
 package org.contourgara.eventlistener
 
+import dev.kord.common.Color
 import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.TextInputStyle
 import dev.kord.core.Kord
@@ -65,6 +66,7 @@ class DiscordEventListener() {
                     interaction.deferPublicResponse().respond {
                         embed {
                             title = "入力情報だっピ"
+                            color = Color(255, 255, 50)
                             field(name = "請求金額だっピ", inline = true, value = { "${interaction.command.integers["billing-amount"].toString()} 円" })
                         }
 
@@ -106,6 +108,7 @@ class DiscordEventListener() {
                     content = "${user?.mention} 請求を受け付けたっピ"
                     embed {
                         title = interaction.message?.embeds?.first()?.title
+                        color = Color(0, 255, 0)
                         field(name = interaction.message?.embeds?.first()?.fields?.first()?.name!!, inline = true, value = { interaction.message?.embeds?.first()?.fields?.first()?.value!! })
                         field(name = "請求者だっピ", inline = true, value = { user?.username!! })
                         field(name = "メモだっピ", inline = true, value = { interaction.textInputs[userId]?.value!! })
