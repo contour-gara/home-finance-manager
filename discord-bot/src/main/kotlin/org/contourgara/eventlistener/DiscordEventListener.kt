@@ -65,7 +65,7 @@ class DiscordEventListener() {
                     interaction.deferPublicResponse().respond {
                         embed {
                             title = "入力情報だっピ"
-                            field(name = "請求金額だっピ", value = { "${interaction.command.integers["billing-amount"].toString()} 円" })
+                            field(name = "請求金額だっピ", inline = true, value = { "${interaction.command.integers["billing-amount"].toString()} 円" })
                         }
 
                         actionRow {
@@ -106,9 +106,9 @@ class DiscordEventListener() {
                     content = "${user?.mention} 請求を受け付けたっピ"
                     embed {
                         title = interaction.message?.embeds?.first()?.title
-                        field(name = interaction.message?.embeds?.first()?.fields?.first()?.name!!, value = { interaction.message?.embeds?.first()?.fields?.first()?.value!! })
-                        field(name = "請求者だっピ", value = { user?.username!! })
-                        field(name = "メモだっピ", value = { interaction.textInputs[userId]?.value!! })
+                        field(name = interaction.message?.embeds?.first()?.fields?.first()?.name!!, inline = true, value = { interaction.message?.embeds?.first()?.fields?.first()?.value!! })
+                        field(name = "請求者だっピ", inline = true, value = { user?.username!! })
+                        field(name = "メモだっピ", inline = true, value = { interaction.textInputs[userId]?.value!! })
                     }
                     actionRow {
                         userSelect("claimant") {
