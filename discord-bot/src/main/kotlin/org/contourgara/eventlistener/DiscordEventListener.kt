@@ -54,6 +54,7 @@ class DiscordEventListener() {
             integer("billing-amount", "請求金額") {
                 required = true
                 minValue = 1
+                maxValue = 2147483647
             }
         }
     }
