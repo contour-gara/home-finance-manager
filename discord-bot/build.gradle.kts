@@ -11,7 +11,6 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.guava)
     implementation(libs.kord.core)
     implementation(libs.konform)
     testImplementation(libs.kotest.runner.junit5)
