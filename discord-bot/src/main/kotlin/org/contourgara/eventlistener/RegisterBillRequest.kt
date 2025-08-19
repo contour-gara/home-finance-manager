@@ -11,6 +11,7 @@ import io.konform.validation.constraints.maximum
 import io.konform.validation.constraints.minLength
 import io.konform.validation.constraints.minimum
 import io.konform.validation.constraints.notBlank
+import org.contourgara.application.RegisterBillParam
 
 @ConsistentCopyVisibility
 data class RegisterBillRequest private constructor(
@@ -67,4 +68,6 @@ data class RegisterBillRequest private constructor(
         if (claimant != User.UNDEFINED) field(name = "申請者だっピ", inline = true, value = { claimant.name.lowercase() })
         if (!memo.isEmpty()) field(name = "メモだっピ", inline = true, value = { memo })
     }
+
+    fun toParam(): RegisterBillParam = RegisterBillParam(amount, claimant.name.lowercase(), memo)
 }

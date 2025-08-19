@@ -13,6 +13,7 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldBeEmpty
+import org.contourgara.application.RegisterBillParam
 
 class RegisterBillRequestTest : StringSpec({
     "請求金額からインスタンスを生成できる" {
@@ -42,6 +43,8 @@ class RegisterBillRequestTest : StringSpec({
         }
     }
 
+    val GARA_ID = 703805458116509818
+
     "EmbedData と userId とメモからインスタンスを生成できる" {
         // setup
         val embedData = EmbedData(
@@ -53,7 +56,7 @@ class RegisterBillRequestTest : StringSpec({
         )
 
         // execute
-        val actual = RegisterBillRequest.of(embedData, 703805458116509818, "test")
+        val actual = RegisterBillRequest.of(embedData, GARA_ID, "test")
 
         // assert
         assertSoftly {
@@ -65,8 +68,6 @@ class RegisterBillRequestTest : StringSpec({
             }
         }
     }
-
-    val GARA_ID = 703805458116509818
 
     "EmbedData と userId とメモからインスタンスを生成で、請求金額が 0 の場合インスタンスを生成できない" {
         // setup
@@ -166,6 +167,26 @@ class RegisterBillRequestTest : StringSpec({
             color = Color(255, 255, 50)
             field(name = "請求金額だっピ", inline = true, value = { "1 円" })
         }.toRequest()
+        actual shouldBe expected
+    }
+
+    "Param を生成できる" {
+        // setup
+        val embedData = EmbedData(
+            title = Optional.Value("入力情報だっピ"),
+            color = OptionalInt.Value(Color(255, 255, 50).rgb),
+            fields = Optional.Value(listOf(
+                EmbedFieldData(name = "請求金額だっピ", inline = OptionalBoolean.Value(true), value = "1 円")
+            ))
+        )
+
+        val sut = RegisterBillRequest.of(embedData, GARA_ID, "test").let { if (it is Valid) it.value else null }!!
+
+        // execute
+        val actual = sut.toParam()
+
+        // assert
+        val expected = RegisterBillParam(1, "gara", "test")
         actual shouldBe expected
     }
 })
