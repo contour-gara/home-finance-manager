@@ -15,9 +15,11 @@ import dev.kord.core.on
 import dev.kord.gateway.Intent
 import dev.kord.gateway.PrivilegedIntent
 import dev.kord.rest.builder.interaction.integer
+import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.actionRow
 import dev.kord.rest.builder.message.embed
 import io.konform.validation.Valid
+import io.konform.validation.ValidationError
 
 class DiscordEventListener() {
     private lateinit var kord: Kord
@@ -74,15 +76,7 @@ class DiscordEventListener() {
                                 }
                             }
                         }
-                        else -> {
-                            embed {
-                                title = "失敗"
-                                color = Color(255, 0, 0)
-                                validationResult.errors.forEach {
-                                    field(name = it.dataPath, inline = true, value = {it.message})
-                                }
-                            }
-                        }
+                        else -> embed(validationResult.errors.toEmbedBuilder())
                     }
                 }
             }
@@ -132,15 +126,7 @@ class DiscordEventListener() {
 //                            }
                             embed(validationResult.value.toEmbedBuilder())
                         }
-                        else -> {
-                            embed {
-                                title = "失敗"
-                                color = Color(255, 0, 0)
-                                validationResult.errors.forEach {
-                                    field(name = it.dataPath, inline = true, value = {it.message})
-                                }
-                            }
-                        }
+                        else -> embed(validationResult.errors.toEmbedBuilder())
                     }
                 }
             }
@@ -151,6 +137,14 @@ class DiscordEventListener() {
         kord.login {
             @OptIn(PrivilegedIntent::class)
             intents += Intent.MessageContent
+        }
+    }
+
+    private fun List<ValidationError>.toEmbedBuilder(): EmbedBuilder.() -> Unit = {
+        title = "Bad Request"
+        color = Color(255, 0, 0)
+        this@toEmbedBuilder.forEach {
+            field(name = it.dataPath, inline = true, value = {it.message})
         }
     }
 }
