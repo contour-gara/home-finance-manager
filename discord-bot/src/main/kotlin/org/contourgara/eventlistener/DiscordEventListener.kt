@@ -65,25 +65,25 @@ class DiscordEventListener() {
             when (interaction.invokedCommandName) {
                 "modal" -> openTestModal()
                 "register-bill" -> interaction.deferPublicResponse().respond {
-                    RegisterBillRequest.of(interaction.command.integers["billing-amount"]?.toInt()!!)
-                        .let {
-                            if (it is Valid) {
-                                embed(it.value.toEmbedBuilder())
-                                actionRow {
-                                    userSelect("claimant") {
-                                        placeholder = "請求者を選択してっピ"
-                                    }
-                                }
-                            } else {
-                                embed {
-                                    title = "失敗"
-                                    color = Color(255, 0, 0)
-                                    it.errors.forEach {
-                                        field(name = it.dataPath, inline = true, value = {it.message})
-                                    }
+                    when (val validationResult = RegisterBillRequest.of(interaction.command.integers["billing-amount"]?.toInt()!!)) {
+                        is Valid -> {
+                            embed(validationResult.value.toEmbedBuilder())
+                            actionRow {
+                                userSelect("claimant") {
+                                    placeholder = "請求者を選択してっピ"
                                 }
                             }
                         }
+                        else -> {
+                            embed {
+                                title = "失敗"
+                                color = Color(255, 0, 0)
+                                validationResult.errors.forEach {
+                                    field(name = it.dataPath, inline = true, value = {it.message})
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -111,38 +111,37 @@ class DiscordEventListener() {
             when (interaction.modalId) {
                 "modal" -> submitTestModal()
                 "bill-memo" -> interaction.deferPublicMessageUpdate().edit {
-                    interaction.textInputs.keys.first()
-                        .let {
-                            RegisterBillRequest.of(interaction.message!!.embeds.first().data, it.toLong(), interaction.textInputs[it]!!.value!!)
+                    actionRow {
+                        userSelect("claimant") {
+                            disabled = true
                         }
-                        .let {
-                            if (it is Valid) {
-                                val user = kord.getUser(Snowflake(it.value.claimant.id))
-                                content = "${user?.mention} 請求を受け付けたっピ"
-//                                embed {
-//                                    title = interaction.message?.embeds?.first()?.title
-//                                    color = Color(0, 255, 0)
-//                                    field(name = interaction.message?.embeds?.first()?.fields?.first()?.name!!, inline = true, value = { interaction.message?.embeds?.first()?.fields?.first()?.value!! })
-//                                    field(name = "請求者だっピ", inline = true, value = { user?.username!! })
-//                                    field(name = "メモだっピ", inline = true, value = { interaction.textInputs[userId]?.value!! })
-//                                }
-                                embed(it.value.toEmbedBuilder())
-                            } else {
-                                embed {
-                                    title = "失敗"
-                                    color = Color(255, 0, 0)
-                                    it.errors.forEach {
-                                        field(name = it.dataPath, inline = true, value = {it.message})
-                                    }
-                                }
-                            }
+                    }
 
-                            actionRow {
-                                userSelect("claimant") {
-                                    disabled = true
+                    when (val validationResult = interaction.textInputs.keys.first().let {
+                        RegisterBillRequest.of(interaction.message!!.embeds.first().data, it.toLong(), interaction.textInputs[it]!!.value!!)
+                    }) {
+                        is Valid -> {
+                            val user = kord.getUser(Snowflake(validationResult.value.claimant.id))
+                            content = "${user?.mention} 請求を受け付けたっピ"
+//                            embed {
+//                                title = interaction.message?.embeds?.first()?.title
+//                                color = Color(0, 255, 0)
+//                                field(name = interaction.message?.embeds?.first()?.fields?.first()?.name!!, inline = true, value = { interaction.message?.embeds?.first()?.fields?.first()?.value!! })
+//                                field(name = "請求者だっピ", inline = true, value = { user?.username!! })
+//                                field(name = "メモだっピ", inline = true, value = { interaction.textInputs[userId]?.value!! })
+//                            }
+                            embed(validationResult.value.toEmbedBuilder())
+                        }
+                        else -> {
+                            embed {
+                                title = "失敗"
+                                color = Color(255, 0, 0)
+                                validationResult.errors.forEach {
+                                    field(name = it.dataPath, inline = true, value = {it.message})
                                 }
                             }
                         }
+                    }
                 }
             }
         }
