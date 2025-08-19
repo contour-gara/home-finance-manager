@@ -6,6 +6,8 @@ import dev.kord.common.entity.optional.OptionalBoolean
 import dev.kord.common.entity.optional.OptionalInt
 import dev.kord.core.cache.data.EmbedData
 import dev.kord.core.cache.data.EmbedFieldData
+import dev.kord.rest.builder.message.EmbedBuilder
+import io.konform.validation.Valid
 import io.kotest.assertions.assertSoftly
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldHaveSize
@@ -149,5 +151,21 @@ class RegisterBillRequestTest : StringSpec({
             actual.errors.first().message shouldBe "メモは空白のみではならない"
             actual.errors[1].message shouldBe "メモは 1 文字未満ではならない"
         }
+    }
+
+    "Embed を生成できる" {
+        // setup
+        val sut = RegisterBillRequest.of(1).let { if (it is Valid) it.value else null }!!
+
+        // execute
+        val actual = EmbedBuilder().apply(sut.toEmbedBuilder()).toRequest()
+
+        // assert
+        val expected = EmbedBuilder().apply {
+            title = "入力情報だっピ"
+            color = Color(255, 255, 50)
+            field(name = "請求金額だっピ", inline = true, value = { "1 円" })
+        }.toRequest()
+        actual shouldBe expected
     }
 })

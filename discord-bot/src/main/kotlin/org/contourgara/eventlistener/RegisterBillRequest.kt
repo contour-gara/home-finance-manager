@@ -1,7 +1,9 @@
 package org.contourgara.eventlistener
 
+import dev.kord.common.Color
 import dev.kord.common.entity.optional.orEmpty
 import dev.kord.core.cache.data.EmbedData
+import dev.kord.rest.builder.message.EmbedBuilder
 import io.konform.validation.Validation
 import io.konform.validation.ValidationResult
 import io.konform.validation.constraints.enum
@@ -56,5 +58,13 @@ data class RegisterBillRequest private constructor(
                 claimant = User.of(userId),
                 memo = memo
             ))
+    }
+
+    fun toEmbedBuilder(): EmbedBuilder.() -> Unit = {
+        title = "入力情報だっピ"
+        color = Color(255, 255, 50)
+        field(name = "請求金額だっピ", inline = true, value = { "$amount 円" })
+        if (claimant != User.UNDEFINED) field(name = "申請者だっピ", inline = true, value = { claimant.name.lowercase() })
+        if (!memo.isEmpty()) field(name = "メモだっピ", inline = true, value = { memo })
     }
 }
