@@ -93,7 +93,7 @@ class DiscordEventListener() {
         kord.on<SelectMenuInteractionCreateEvent> {
             when (interaction.componentId) {
                 "claimant" -> {
-                    interaction.modal("メモ", "bill-memo") {
+                    interaction.modal("メモ", "register-bill-memo") {
                         actionRow {
                             textInput(TextInputStyle.Paragraph, interaction.values.first(), "メモ") {
                                 placeholder = "メモを入力してっピ"
@@ -110,7 +110,7 @@ class DiscordEventListener() {
         kord.on<ModalSubmitInteractionCreateEvent> {
             when (interaction.modalId) {
                 "modal" -> submitTestModal()
-                "bill-memo" -> interaction.deferPublicMessageUpdate().edit {
+                "register-bill-memo" -> interaction.deferPublicMessageUpdate().edit {
                     actionRow {
                         userSelect("claimant") {
                             disabled = true
@@ -118,7 +118,7 @@ class DiscordEventListener() {
                     }
 
                     when (val validationResult = interaction.textInputs.keys.first().let {
-                        RegisterBillRequest.of(interaction.message!!.embeds.first().data, it.toLong(), interaction.textInputs[it]!!.value!!)
+                        RegisterBillRequest.of(interaction.message?.embeds?.first()?.data!!, it.toLong(), interaction.textInputs[it]?.value!!)
                     }) {
                         is Valid -> {
                             val user = kord.getUser(Snowflake(validationResult.value.claimant.id))
