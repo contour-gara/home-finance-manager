@@ -13,6 +13,8 @@ import dev.kord.gateway.Intent
 import dev.kord.gateway.PrivilegedIntent
 import dev.kord.rest.builder.interaction.string
 import dev.kord.rest.builder.message.embed
+import dev.kord.rest.request.KtorRequestHandler
+import dev.kord.rest.service.RestClient
 import org.contourgara.eventlistener.RegisterBillFeature.REGISTER_BILL_COMMAND_DESCRIPTION
 import org.contourgara.eventlistener.RegisterBillFeature.REGISTER_BILL_COMMAND_NAME
 import org.contourgara.eventlistener.RegisterBillFeature.REGISTER_BILL_MODAL_ID
@@ -79,6 +81,7 @@ class DiscordEventListener() {
                 TEST_MODAL_COMMAND_NAME -> openTestModal()
                 REGISTER_BILL_COMMAND_NAME -> sendSelectUserMessage()
                 "delete-bill" -> {
+                    sendMessage()
                     val messageId = interaction.command.strings["message-id"]!!
                     val message = kord.getChannelOf<MessageChannel>(Snowflake(1402331708459581591))?.getMessage(Snowflake(messageId))!!
                     val registerBillRequest = RegisterBillRequest.fromEmbedData(message.embeds.first().data)
@@ -88,6 +91,13 @@ class DiscordEventListener() {
                     }
                 }
             }
+        }
+    }
+
+    private suspend fun sendMessage() {
+        val rest = RestClient(KtorRequestHandler(System.getenv("HOME_FINANCE_MANAGER_BOT_TOKEN")))
+        rest.channel.createMessage(Snowflake(1402331708459581591)) {
+            content = "send message test"
         }
     }
 
