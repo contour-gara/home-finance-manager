@@ -41,7 +41,7 @@ data class RegisterBillRequest private constructor(
                 }
             }(RegisterBillRequest(amount = amount))
 
-        fun of(embedData: EmbedData, userId: Long, memo: String): ValidationResult<RegisterBillRequest> =
+        fun of(onlyAmountEmbedData: EmbedData, userId: Long, memo: String): ValidationResult<RegisterBillRequest> =
             Validation {
                 RegisterBillRequest::amount {
                     run(AMOUNT_CHECK)
@@ -55,7 +55,7 @@ data class RegisterBillRequest private constructor(
                     run(MEMO_CHECK)
                 }
             }(RegisterBillRequest(
-                amount = embedData.fields.orEmpty().first().value.split(" ").first().toInt(),
+                amount = onlyAmountEmbedData.fields.orEmpty().first().value.split(" ").first().toInt(),
                 claimant = User.of(userId),
                 memo = memo
             ))
