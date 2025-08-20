@@ -1,14 +1,21 @@
 [versions]
-kotlin = "2.2.0"
+kotlin = "2.2.10"
+ksp = "2.2.10-2.0.2"
 kord-core = "0.15.0"
 konform = "0.11.1"
+koin = "4.1.0"
+koin-annotations = "2.1.0"
 kotest = "5.9.1"
 
 [libraries]
 kord-core = { module = "dev.kord:kord-core", version.ref = "kord-core" }
 konform = { module = "io.konform:konform-jvm", version.ref = "konform" }
+koin = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations" }
+koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations" }
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

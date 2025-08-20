@@ -71,7 +71,7 @@ data class RegisterBillRequest private constructor(
         title = "入力情報だっピ"
         color = Color(255, 255, 50)
         field(name = "請求金額だっピ", inline = true, value = { "$amount 円" })
-        if (claimant != User.UNDEFINED) field(name = "申請者だっピ", inline = true, value = { claimant.name.lowercase() })
+        if (claimant != User.UNDEFINED) field(name = "請求者だっピ", inline = true, value = { claimant.name.lowercase() })
         if (!memo.isEmpty()) field(name = "メモだっピ", inline = true, value = { memo })
     }
 

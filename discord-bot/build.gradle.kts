@@ -3,6 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.ksp)
     application
 }
 
@@ -13,6 +14,9 @@ repositories {
 dependencies {
     implementation(libs.kord.core)
     implementation(libs.konform)
+    implementation(libs.koin)
+    implementation(libs.koin.annotations)
+    ksp(libs.koin.ksp.compiler)
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.assertions.core)
 }
@@ -25,6 +29,10 @@ java {
 
 application {
     mainClass = "org.contourgara.MainKt"
+}
+
+sourceSets.main {
+    java.srcDir("build/generated/ksp/main/kotlin")
 }
 
 tasks.withType<Test> {

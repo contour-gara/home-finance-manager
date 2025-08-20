@@ -16,15 +16,19 @@ import dev.kord.rest.builder.message.actionRow
 import dev.kord.rest.builder.message.embed
 import io.konform.validation.Valid
 import io.konform.validation.ValidationError
+import org.contourgara.application.RegisterBillUseCase
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import kotlin.collections.forEach
 
-object RegisterBillFeature {
+object RegisterBillFeature : KoinComponent {
     const val REGISTER_BILL_COMMAND_NAME = "register-bill"
     const val REGISTER_BILL_COMMAND_DESCRIPTION = "請求を登録するっピ"
     const val REGISTER_BILL_SELECT_MENU_ID = "claimant"
     const val REGISTER_BILL_MODAL_ID = "register-bill-memo"
     private const val REGISTER_BILL_COMMAND_ARGUMENT_NAME = "billing-amount"
     private const val REGISTER_BILL_COMMAND_ARGUMENT_DESCRIPTION = "請求金額"
+    private val registerBillUseCase: RegisterBillUseCase by inject()
 
     fun createRegisterBillCommandArgument(): ChatInputCreateBuilder.() -> Unit = {
         integer(REGISTER_BILL_COMMAND_ARGUMENT_NAME, REGISTER_BILL_COMMAND_ARGUMENT_DESCRIPTION) {
@@ -68,16 +72,10 @@ object RegisterBillFeature {
             RegisterBillRequest.of(interaction.message?.embeds?.first()?.data!!, it.toLong(), interaction.textInputs[it]?.value!!)
         }) {
             is Valid -> {
-                val user = kord.getUser(Snowflake(validationResult.value.claimant.id))
+                val registerBillResponse = RegisterBillResponse.fromDto(registerBillUseCase.execute(validationResult.value.toParam()))
+                val user = kord.getUser(Snowflake(registerBillResponse.claimant.id))
                 content = "${user?.mention} 請求を受け付けたっピ"
-//                            embed {
-//                                title = interaction.message?.embeds?.first()?.title
-//                                color = Color(0, 255, 0)
-//                                field(name = interaction.message?.embeds?.first()?.fields?.first()?.name!!, inline = true, value = { interaction.message?.embeds?.first()?.fields?.first()?.value!! })
-//                                field(name = "請求者だっピ", inline = true, value = { user?.username!! })
-//                                field(name = "メモだっピ", inline = true, value = { interaction.textInputs[userId]?.value!! })
-//                            }
-                embed(validationResult.value.toEmbedBuilder())
+                embed(registerBillResponse.toEmbedBuilder())
             }
             else -> embed(validationResult.errors.toEmbedBuilder())
         }
