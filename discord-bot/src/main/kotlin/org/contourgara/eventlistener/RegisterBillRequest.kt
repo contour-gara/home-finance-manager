@@ -59,6 +59,12 @@ data class RegisterBillRequest private constructor(
                 claimant = User.of(userId),
                 memo = memo
             ))
+
+        fun fromEmbedData(embedData: EmbedData): RegisterBillRequest = RegisterBillRequest(
+            amount = embedData.fields.orEmpty().first().value.split(" ").first().toInt(),
+            claimant = User.of(embedData.fields.orEmpty()[1].value),
+            memo = embedData.fields.orEmpty().last().value
+        )
     }
 
     fun toEmbedBuilder(): EmbedBuilder.() -> Unit = {

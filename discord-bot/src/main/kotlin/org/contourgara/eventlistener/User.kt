@@ -6,7 +6,7 @@ enum class User(val id: Long) {
     UNDEFINED(0);
 
     companion object {
-        fun of (id: Long) = entries.find { it.id == id }?: UNDEFINED
+        fun of(id: Long): User = entries.find { it.id == id }?: UNDEFINED
         fun of(name: String): User = entries.find { it.name == name.uppercase() }?: UNDEFINED
     }
 }
