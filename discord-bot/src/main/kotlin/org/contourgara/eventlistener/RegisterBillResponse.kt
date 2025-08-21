@@ -1,8 +1,12 @@
 package org.contourgara.eventlistener
 
 import dev.kord.common.Color
+import dev.kord.common.entity.optional.orEmpty
+import dev.kord.core.cache.data.EmbedData
 import dev.kord.rest.builder.message.EmbedBuilder
 import org.contourgara.application.RegisterBillDto
+import kotlin.collections.first
+import kotlin.collections.last
 
 @ConsistentCopyVisibility
 data class RegisterBillResponse private constructor (
@@ -19,6 +23,13 @@ data class RegisterBillResponse private constructor (
                 User.of(dto.claimant),
                 dto.memo
             )
+
+        fun fromEmbedData(embedData: EmbedData): RegisterBillResponse = RegisterBillResponse(
+            id = embedData.fields.orEmpty().first().value,
+            amount = embedData.fields.orEmpty()[1].value.split(" ").first().toInt(),
+            claimant = User.of(embedData.fields.orEmpty()[2].value),
+            memo = embedData.fields.orEmpty().last().value
+        )
     }
 
     fun toEmbedBuilder(): EmbedBuilder.() -> Unit = {

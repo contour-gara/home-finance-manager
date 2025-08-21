@@ -84,10 +84,10 @@ class DiscordEventListener() {
                     sendMessage()
                     val messageId = interaction.command.strings["message-id"]!!
                     val message = kord.getChannelOf<MessageChannel>(Snowflake(1402331708459581591))?.getMessage(Snowflake(messageId))!!
-                    val registerBillRequest = RegisterBillRequest.fromEmbedData(message.embeds.first().data)
+                    val registerBillResponse = RegisterBillResponse.fromEmbedData(message.embeds.first().data)
                     interaction.deferPublicResponse().respond {
                         content = "削除内容確認"
-                        embed(registerBillRequest.toEmbedBuilder())
+                        embed(registerBillResponse.toEmbedBuilder())
                     }
                 }
             }
