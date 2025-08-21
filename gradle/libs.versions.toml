@@ -5,6 +5,7 @@ kord-core = "0.15.0"
 konform = "0.11.1"
 koin = "4.1.0"
 koin-annotations = "2.1.0"
+kotlin-logging = "3.0.5"
 kotest = "5.9.1"
 
 [libraries]
@@ -13,6 +14,7 @@ konform = { module = "io.konform:konform-jvm", version.ref = "konform" }
 koin = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations" }
 koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations" }
+kotlin-logging = { module = "io.github.microutils:kotlin-logging", version.ref = "kotlin-logging" }
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 
