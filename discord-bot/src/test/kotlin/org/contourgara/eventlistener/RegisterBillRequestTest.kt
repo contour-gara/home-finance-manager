@@ -8,6 +8,9 @@ import dev.kord.core.cache.data.EmbedData
 import dev.kord.core.cache.data.EmbedFieldData
 import dev.kord.rest.builder.message.EmbedBuilder
 import io.konform.validation.Valid
+import io.kotest.assertions.arrow.core.shouldBeLeft
+import io.kotest.assertions.arrow.core.shouldBeRight
+import io.kotest.assertions.arrow.core.shouldHaveSize
 import io.kotest.assertions.assertSoftly
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldHaveSize
@@ -16,18 +19,18 @@ import io.kotest.matchers.string.shouldBeEmpty
 import org.contourgara.application.RegisterBillParam
 
 class RegisterBillRequestTest : StringSpec({
+    val GARA_ID = 703805458116509818
+
     "請求金額からインスタンスを生成できる" {
         // execute
         val actual = RegisterBillRequest.of(1)
 
         // assert
         assertSoftly {
-            actual.isValid shouldBe true
-            actual.map {
-                it.amount shouldBe 1
-                it.claimant shouldBe User.UNDEFINED
-                it.memo.shouldBeEmpty()
-            }
+            actual.shouldBeRight()
+            actual.getOrNull()?.amount shouldBe 1
+            actual.getOrNull()?.claimant shouldBe User.UNDEFINED
+            actual.getOrNull()?.memo.shouldBeEmpty()
         }
     }
 
@@ -37,13 +40,11 @@ class RegisterBillRequestTest : StringSpec({
 
         // assert
         assertSoftly {
-            actual.isValid shouldBe false
-            actual.errors shouldHaveSize 1
-            actual.errors.first().message shouldBe "請求金額は 1 円未満ではならない"
+            actual.shouldBeLeft()
+            actual.value shouldHaveSize 1
+            actual.value.first() shouldBe RegisterBillValidation.RegisterBillValidationError.AmountError.of(0)
         }
     }
-
-    val GARA_ID = 703805458116509818
 
     "EmbedData と userId とメモからインスタンスを生成できる" {
         // setup
@@ -156,7 +157,7 @@ class RegisterBillRequestTest : StringSpec({
 
     "Embed を生成できる" {
         // setup
-        val sut = RegisterBillRequest.of(1).let { if (it is Valid) it.value else null }!!
+        val sut = RegisterBillRequest.of(1).getOrNull()!!
 
         // execute
         val actual = EmbedBuilder().apply(sut.toEmbedBuilder()).toRequest()

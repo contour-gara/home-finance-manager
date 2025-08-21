@@ -1,8 +1,17 @@
 package org.contourgara.eventlistener
 
+import arrow.core.Either
+import arrow.core.NonEmptyList
+import arrow.core.combine
+import arrow.core.raise.accumulate
+import arrow.core.raise.either
+import arrow.core.raise.ensure
+import arrow.core.raise.zipOrAccumulate
+import arrow.core.right
 import dev.kord.common.Color
 import dev.kord.common.entity.optional.orEmpty
 import dev.kord.core.cache.data.EmbedData
+import dev.kord.core.cache.data.EmbedFieldData
 import dev.kord.rest.builder.message.EmbedBuilder
 import io.konform.validation.Validation
 import io.konform.validation.ValidationResult
@@ -12,6 +21,7 @@ import io.konform.validation.constraints.minLength
 import io.konform.validation.constraints.minimum
 import io.konform.validation.constraints.notBlank
 import org.contourgara.application.RegisterBillParam
+import org.contourgara.eventlistener.RegisterBillValidation.validateAmount
 
 @ConsistentCopyVisibility
 data class RegisterBillRequest private constructor(
@@ -34,12 +44,13 @@ data class RegisterBillRequest private constructor(
             minLength(1) hint "メモは 1 文字未満ではならない"
         }
 
-        fun of(amount: Int): ValidationResult<RegisterBillRequest> =
-            Validation {
-                RegisterBillRequest::amount {
-                    run(AMOUNT_CHECK)
+        fun of(amount: Int): Either<NonEmptyList<RegisterBillValidation.RegisterBillValidationError>, RegisterBillRequest> =
+            either {
+                accumulate {
+                    validateAmount(amount).bind()
+                    RegisterBillRequest(amount)
                 }
-            }(RegisterBillRequest(amount = amount))
+            }
 
         fun of(onlyAmountEmbedData: EmbedData, userId: Long, memo: String): ValidationResult<RegisterBillRequest> =
             Validation {

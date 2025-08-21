@@ -1,5 +1,7 @@
 package org.contourgara.eventlistener
 
+import arrow.core.Either
+import arrow.core.NonEmptyList
 import dev.kord.common.Color
 import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.TextInputStyle
@@ -40,7 +42,7 @@ object RegisterBillFeature : KoinComponent {
 
     suspend fun GuildChatInputCommandInteractionCreateEvent.sendSelectUserMessage() = interaction.deferPublicResponse().respond {
         when (val validationResult = RegisterBillRequest.of(interaction.command.integers[REGISTER_BILL_COMMAND_ARGUMENT_NAME]?.toInt()!!)) {
-            is Valid -> {
+            is Either.Right -> {
                 embed(validationResult.value.toEmbedBuilder())
                 actionRow {
                     userSelect(REGISTER_BILL_SELECT_MENU_ID) {
@@ -48,7 +50,7 @@ object RegisterBillFeature : KoinComponent {
                     }
                 }
             }
-            else -> embed(validationResult.errors.toEmbedBuilder())
+            is Either.Left -> embed(validationResult.value.toEmbedBuilder())
         }
     }
 
@@ -81,11 +83,19 @@ object RegisterBillFeature : KoinComponent {
         }
     }
 
+    private fun NonEmptyList<RegisterBillValidation.RegisterBillValidationError>.toEmbedBuilder(): EmbedBuilder.() -> Unit = {
+        title = "Bad Request"
+        color = Color(255, 0, 0)
+        this@toEmbedBuilder.forEach {
+            field(name = it.dataPath, inline = true, value = { it.message })
+        }
+    }
+
     private fun List<ValidationError>.toEmbedBuilder(): EmbedBuilder.() -> Unit = {
         title = "Bad Request"
         color = Color(255, 0, 0)
         this@toEmbedBuilder.forEach {
-            field(name = it.dataPath, inline = true, value = {it.message})
+            field(name = it.dataPath, inline = true, value = { it.message })
         }
     }
 }
