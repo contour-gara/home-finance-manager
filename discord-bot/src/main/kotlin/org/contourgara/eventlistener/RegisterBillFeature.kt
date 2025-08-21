@@ -16,8 +16,6 @@ import dev.kord.rest.builder.interaction.integer
 import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.actionRow
 import dev.kord.rest.builder.message.embed
-import io.konform.validation.Valid
-import io.konform.validation.ValidationError
 import org.contourgara.application.RegisterBillUseCase
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -73,25 +71,17 @@ object RegisterBillFeature : KoinComponent {
         when (val validationResult = interaction.textInputs.keys.first().let {
             RegisterBillRequest.of(interaction.message?.embeds?.first()?.data!!, it.toLong(), interaction.textInputs[it]?.value!!)
         }) {
-            is Valid -> {
+            is Either.Right -> {
                 val registerBillResponse = RegisterBillResponse.fromDto(registerBillUseCase.execute(validationResult.value.toParam()))
                 val user = kord.getUser(Snowflake(registerBillResponse.claimant.id))
                 content = "${user?.mention} 請求を受け付けたっピ"
                 embed(registerBillResponse.toEmbedBuilder())
             }
-            else -> embed(validationResult.errors.toEmbedBuilder())
+            is Either.Left -> embed(validationResult.value.toEmbedBuilder())
         }
     }
 
     private fun NonEmptyList<RegisterBillValidation.RegisterBillValidationError>.toEmbedBuilder(): EmbedBuilder.() -> Unit = {
-        title = "Bad Request"
-        color = Color(255, 0, 0)
-        this@toEmbedBuilder.forEach {
-            field(name = it.dataPath, inline = true, value = { it.message })
-        }
-    }
-
-    private fun List<ValidationError>.toEmbedBuilder(): EmbedBuilder.() -> Unit = {
         title = "Bad Request"
         color = Color(255, 0, 0)
         this@toEmbedBuilder.forEach {

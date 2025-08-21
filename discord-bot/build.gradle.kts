@@ -13,7 +13,6 @@ repositories {
 
 dependencies {
     implementation(libs.kord.core)
-    implementation(libs.konform)
     implementation(libs.koin)
     implementation(libs.koin.annotations)
     ksp(libs.koin.ksp.compiler)

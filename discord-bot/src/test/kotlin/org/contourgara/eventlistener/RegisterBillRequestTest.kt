@@ -1,5 +1,6 @@
 package org.contourgara.eventlistener
 
+import arrow.core.nonEmptyListOf
 import dev.kord.common.Color
 import dev.kord.common.entity.optional.Optional
 import dev.kord.common.entity.optional.OptionalBoolean
@@ -7,16 +8,15 @@ import dev.kord.common.entity.optional.OptionalInt
 import dev.kord.core.cache.data.EmbedData
 import dev.kord.core.cache.data.EmbedFieldData
 import dev.kord.rest.builder.message.EmbedBuilder
-import io.konform.validation.Valid
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.assertions.arrow.core.shouldHaveSize
 import io.kotest.assertions.assertSoftly
 import io.kotest.core.spec.style.StringSpec
-import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldBeEmpty
 import org.contourgara.application.RegisterBillParam
+import org.contourgara.eventlistener.RegisterBillValidation.RegisterBillValidationError
 
 class RegisterBillRequestTest : StringSpec({
     val GARA_ID = 703805458116509818
@@ -42,7 +42,7 @@ class RegisterBillRequestTest : StringSpec({
         assertSoftly {
             actual.shouldBeLeft()
             actual.value shouldHaveSize 1
-            actual.value.first() shouldBe RegisterBillValidation.RegisterBillValidationError.AmountError.of(0)
+            actual.value.first() shouldBe RegisterBillValidationError.AmountError.of(0)
         }
     }
 
@@ -61,12 +61,10 @@ class RegisterBillRequestTest : StringSpec({
 
         // assert
         assertSoftly {
-            actual.isValid shouldBe true
-            actual.map {
-                it.amount shouldBe 1
-                it.claimant shouldBe User.GARA
-                it.memo shouldBe "test"
-            }
+            actual.shouldBeRight()
+            actual.getOrNull()?.amount shouldBe 1
+            actual.getOrNull()?.claimant shouldBe User.GARA
+            actual.getOrNull()?.memo shouldBe "test"
         }
     }
 
@@ -85,13 +83,13 @@ class RegisterBillRequestTest : StringSpec({
 
         // assert
         assertSoftly {
-            actual.isValid shouldBe false
-            actual.errors shouldHaveSize 1
-            actual.errors.first().message shouldBe "請求金額は 1 円未満ではならない"
+            actual.shouldBeLeft()
+            actual.value shouldHaveSize 1
+            actual.value.first() shouldBe RegisterBillValidationError.AmountError.of(0)
         }
     }
 
-    "EmbedData と userId とメモからインスタンスを生成で、無効な userId の場合インスタンスを生成できない" {
+    "EmbedData と userId とメモからインスタンスを生成で、無効な userId またはメモが空白のみの場合インスタンスを生成できない" {
         // setup
         val embedData = EmbedData(
             title = Optional.Value("入力情報だっピ"),
@@ -102,34 +100,16 @@ class RegisterBillRequestTest : StringSpec({
         )
 
         // execute
-        val actual = RegisterBillRequest.of(embedData, 1, "test")
+        val actual = RegisterBillRequest.of(embedData, 1, " 　")
 
         // assert
         assertSoftly {
-            actual.isValid shouldBe false
-            actual.errors shouldHaveSize 1
-            actual.errors.first().message shouldBe "請求者は gara か yuki でないとならない"
-        }
-    }
-
-    "EmbedData と userId とメモからインスタンスを生成で、メモが空白のみの場合インスタンスを生成できない" {
-        // setup
-        val embedData = EmbedData(
-            title = Optional.Value("入力情報だっピ"),
-            color = OptionalInt.Value(Color(255, 255, 50).rgb),
-            fields = Optional.Value(listOf(
-                EmbedFieldData(name = "請求金額だっピ", inline = OptionalBoolean.Value(true), value = "1 円")
-            ))
-        )
-
-        // execute
-        val actual = RegisterBillRequest.of(embedData, GARA_ID, "　 ")
-
-        // assert
-        assertSoftly {
-            actual.isValid shouldBe false
-            actual.errors shouldHaveSize 1
-            actual.errors.first().message shouldBe "メモは空白のみではならない"
+            actual.shouldBeLeft()
+            actual.value shouldHaveSize 2
+            actual.value shouldBe nonEmptyListOf(
+                RegisterBillValidationError.ClaimantError.of(User.UNDEFINED),
+                RegisterBillValidationError.MemoError.of(" 　")
+            )
         }
     }
 
@@ -148,10 +128,80 @@ class RegisterBillRequestTest : StringSpec({
 
         // assert
         assertSoftly {
-            actual.isValid shouldBe false
-            actual.errors shouldHaveSize 2
-            actual.errors.first().message shouldBe "メモは空白のみではならない"
-            actual.errors[1].message shouldBe "メモは 1 文字未満ではならない"
+            actual.shouldBeLeft()
+            actual.value shouldHaveSize 1
+            actual.value shouldBe nonEmptyListOf(
+                RegisterBillValidationError.MemoError.of("")
+            )
+        }
+    }
+
+    "EmbedData と userId とメモからインスタンスを生成で、EmbedData のタイトルとカラーが不正で fields が空の場合インスタンスを生成できない" {
+        // setup
+        val embedData = EmbedData(
+            title = Optional.Value("test"),
+            color = OptionalInt.Value(Color(0, 0, 0).rgb),
+            fields = Optional.Value(emptyList())
+        )
+
+        // execute
+        val actual = RegisterBillRequest.of(embedData, GARA_ID, "test")
+
+        // assert
+        assertSoftly {
+            actual.shouldBeLeft()
+            actual.value shouldHaveSize 3
+            actual.value shouldBe nonEmptyListOf(
+                RegisterBillValidationError.EmbedDataTitleError.of("test"),
+                RegisterBillValidationError.EmbedDataColorError.of(Color(0, 0, 0)),
+                RegisterBillValidationError.EmbedDataFieldNamesError.of(emptyList())
+            )
+        }
+    }
+
+    "EmbedData と userId とメモからインスタンスを生成で、EmbedData の請求金額フォーマットが不正な場合インスタンスを生成できない" {
+        // setup
+        val embedData = EmbedData(
+            title = Optional.Value("入力情報だっピ"),
+            color = OptionalInt.Value(Color(255, 255, 50).rgb),
+            fields = Optional.Value(listOf(
+                EmbedFieldData(name = "請求金額だっピ", inline = OptionalBoolean.Value(true), value = "1円")
+            ))
+        )
+
+        // execute
+        val actual = RegisterBillRequest.of(embedData, GARA_ID, "test")
+
+        // assert
+        assertSoftly {
+            actual.shouldBeLeft()
+            actual.value shouldHaveSize 1
+            actual.value shouldBe nonEmptyListOf(
+                RegisterBillValidationError.AmountFormatError.of("1円")
+            )
+        }
+    }
+
+    "EmbedData と userId とメモからインスタンスを生成で、EmbedData の請求金額が 0 の場合インスタンスを生成できない" {
+        // setup
+        val embedData = EmbedData(
+            title = Optional.Value("入力情報だっピ"),
+            color = OptionalInt.Value(Color(255, 255, 50).rgb),
+            fields = Optional.Value(listOf(
+                EmbedFieldData(name = "請求金額だっピ", inline = OptionalBoolean.Value(true), value = "0 円")
+            ))
+        )
+
+        // execute
+        val actual = RegisterBillRequest.of(embedData, GARA_ID, "test")
+
+        // assert
+        assertSoftly {
+            actual.shouldBeLeft()
+            actual.value shouldHaveSize 1
+            actual.value shouldBe nonEmptyListOf(
+                RegisterBillValidationError.AmountError.of(0)
+            )
         }
     }
 
@@ -181,7 +231,7 @@ class RegisterBillRequestTest : StringSpec({
             ))
         )
 
-        val sut = RegisterBillRequest.of(embedData, GARA_ID, "test").let { if (it is Valid) it.value else null }!!
+        val sut = RegisterBillRequest.of(embedData, GARA_ID, "test").getOrNull()!!
 
         // execute
         val actual = sut.toParam()

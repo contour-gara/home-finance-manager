@@ -2,27 +2,21 @@ package org.contourgara.eventlistener
 
 import arrow.core.Either
 import arrow.core.NonEmptyList
-import arrow.core.combine
+import arrow.core.raise.ExperimentalRaiseAccumulateApi
 import arrow.core.raise.accumulate
 import arrow.core.raise.either
-import arrow.core.raise.ensure
-import arrow.core.raise.zipOrAccumulate
-import arrow.core.right
 import dev.kord.common.Color
 import dev.kord.common.entity.optional.orEmpty
 import dev.kord.core.cache.data.EmbedData
-import dev.kord.core.cache.data.EmbedFieldData
 import dev.kord.rest.builder.message.EmbedBuilder
-import io.konform.validation.Validation
-import io.konform.validation.ValidationResult
-import io.konform.validation.constraints.enum
-import io.konform.validation.constraints.maximum
-import io.konform.validation.constraints.minLength
-import io.konform.validation.constraints.minimum
-import io.konform.validation.constraints.notBlank
 import org.contourgara.application.RegisterBillParam
 import org.contourgara.eventlistener.RegisterBillValidation.validateAmount
+import org.contourgara.eventlistener.RegisterBillValidation.validateAmountEmbedData
+import org.contourgara.eventlistener.RegisterBillValidation.validateClaimant
+import org.contourgara.eventlistener.RegisterBillValidation.validateMemo
+import org.contourgara.eventlistener.RegisterBillValidation.RegisterBillValidationError
 
+@OptIn(ExperimentalRaiseAccumulateApi::class)
 @ConsistentCopyVisibility
 data class RegisterBillRequest private constructor(
     val amount: Int,
@@ -30,46 +24,29 @@ data class RegisterBillRequest private constructor(
     val memo: String = ""
 ) {
     companion object {
-        private val AMOUNT_CHECK = Validation<Int> {
-            minimum(1) hint "請求金額は 1 円未満ではならない"
-            maximum(Int.MAX_VALUE)  hint "請求金額は Int の最大値円超過ではならない"
-        }
-
-        private val CLAIMANT_CHECK = Validation<User> {
-            enum(User.GARA, User.YUKI) hint "請求者は gara か yuki でないとならない"
-        }
-
-        private val MEMO_CHECK = Validation<String> {
-            notBlank() hint "メモは空白のみではならない"
-            minLength(1) hint "メモは 1 文字未満ではならない"
-        }
-
-        fun of(amount: Int): Either<NonEmptyList<RegisterBillValidation.RegisterBillValidationError>, RegisterBillRequest> =
+        fun of(amount: Int): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillRequest> =
             either {
                 accumulate {
-                    validateAmount(amount).bind()
-                    RegisterBillRequest(amount)
+                    validateAmount(amount).bindNelOrAccumulate()
                 }
+                RegisterBillRequest(amount)
             }
 
-        fun of(onlyAmountEmbedData: EmbedData, userId: Long, memo: String): ValidationResult<RegisterBillRequest> =
-            Validation {
-                RegisterBillRequest::amount {
-                    run(AMOUNT_CHECK)
+        fun of(onlyAmountEmbedData: EmbedData, userId: Long, memo: String): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillRequest> =
+            either {
+                accumulate {
+                    validateAmountEmbedData(onlyAmountEmbedData).bindNelOrAccumulate()
                 }
-
-                RegisterBillRequest::claimant {
-                    run(CLAIMANT_CHECK)
+                accumulate {
+                    validateClaimant(userId).bindNelOrAccumulate()
+                    validateMemo(memo).bindNelOrAccumulate()
                 }
-
-                RegisterBillRequest::memo {
-                    run(MEMO_CHECK)
-                }
-            }(RegisterBillRequest(
-                amount = onlyAmountEmbedData.fields.orEmpty().first().value.split(" ").first().toInt(),
-                claimant = User.of(userId),
-                memo = memo
-            ))
+                RegisterBillRequest(
+                    amount = onlyAmountEmbedData.fields.orEmpty().first().value.split(" ").first().toInt(),
+                    claimant = User.of(userId),
+                    memo = memo
+                )
+            }
     }
 
     fun toEmbedBuilder(): EmbedBuilder.() -> Unit = {
