@@ -21,21 +21,6 @@ object RegisterBillValidation {
             Unit.right()
         }
 
-    fun validateClaimant(userId: Long): Either<NonEmptyList<RegisterBillValidationError>, Unit> =
-        User.of(userId).let {
-            either {
-                accumulate {
-                    ensureOrAccumulate(
-                        listOf(
-                            User.GARA,
-                            User.YUKI
-                        ).contains(it)
-                    ) { RegisterBillValidationError.ClaimantError.of(it) }
-                }
-                Unit.right()
-            }
-        }
-
     fun validateClaimant(user: User): Either<NonEmptyList<RegisterBillValidationError>, Unit> =
         either {
             accumulate {
