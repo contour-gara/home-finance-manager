@@ -18,6 +18,7 @@ dependencies {
     ksp(libs.koin.ksp.compiler)
     implementation(libs.kotlin.logging)
     implementation(libs.arrow.core)
+    implementation(libs.ulid.kotlin)
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.assertions.arrow)
