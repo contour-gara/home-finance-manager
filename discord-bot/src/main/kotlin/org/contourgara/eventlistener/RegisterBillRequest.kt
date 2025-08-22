@@ -37,15 +37,17 @@ data class RegisterBillRequest private constructor(
                 accumulate {
                     validateAmountEmbedData(onlyAmountEmbedData).bindNelOrAccumulate()
                 }
+                of(onlyAmountEmbedData.fields.orEmpty().first().value.split(" ").first().toInt(), User.of(userId), memo).bind()
+            }
+
+        private fun of(amount: Int, claimant: User, memo: String): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillRequest> =
+            either {
                 accumulate {
-                    validateClaimant(userId).bindNelOrAccumulate()
+                    validateAmount(amount).bindNelOrAccumulate()
+                    validateClaimant(claimant).bindNelOrAccumulate()
                     validateMemo(memo).bindNelOrAccumulate()
                 }
-                RegisterBillRequest(
-                    amount = onlyAmountEmbedData.fields.orEmpty().first().value.split(" ").first().toInt(),
-                    claimant = User.of(userId),
-                    memo = memo
-                )
+                RegisterBillRequest(amount, claimant, memo)
             }
     }
 

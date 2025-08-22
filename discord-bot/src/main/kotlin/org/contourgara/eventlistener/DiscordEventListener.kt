@@ -1,5 +1,6 @@
 package org.contourgara.eventlistener
 
+import arrow.core.Either
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
 import dev.kord.core.behavior.interaction.response.respond
@@ -84,10 +85,14 @@ class DiscordEventListener() {
                     sendMessage()
                     val messageId = interaction.command.strings["message-id"]!!
                     val message = kord.getChannelOf<MessageChannel>(Snowflake(1402331708459581591))?.getMessage(Snowflake(messageId))!!
-                    val registerBillResponse = RegisterBillResponse.fromEmbedData(message.embeds.first().data)
-                    interaction.deferPublicResponse().respond {
-                        content = "削除内容確認"
-                        embed(registerBillResponse.toEmbedBuilder())
+                    when (val validationResult = RegisterBillResponse.from(message.embeds.first().data)) {
+                        is Either.Right -> interaction.deferPublicResponse().respond {
+                            content = "削除内容確認"
+                            embed(validationResult.value.toEmbedBuilder())
+                        }
+                        is Either.Left -> interaction.deferPublicResponse().respond {
+                            content = "エラー"
+                        }
                     }
                 }
             }

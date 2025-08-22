@@ -36,6 +36,19 @@ object RegisterBillValidation {
             }
         }
 
+    fun validateClaimant(user: User): Either<NonEmptyList<RegisterBillValidationError>, Unit> =
+        either {
+            accumulate {
+                ensureOrAccumulate(
+                    listOf(
+                        User.GARA,
+                        User.YUKI
+                    ).contains(user)
+                ) { RegisterBillValidationError.ClaimantError.of(user) }
+            }
+            Unit.right()
+        }
+
     fun validateMemo(memo: String): Either<NonEmptyList<RegisterBillValidationError>, Unit> =
         either {
             accumulate {
@@ -48,11 +61,21 @@ object RegisterBillValidation {
         either {
             accumulate {
                 validateEmbedDataTitle(embedData).bindOrAccumulate()
-                validateEmbedDataStatus(embedData).bindOrAccumulate()
+                validateEmbedDataStatusProgress(embedData).bindOrAccumulate()
                 validateAmountEmbedDataField(embedData).bindOrAccumulate()
             }
             validateAmountEmbedDataFieldFormat(embedData).bind()
-            validateAmount(embedData.fields.orEmpty().first().value.split(" ").first().toInt()).bind()
+            Unit.right()
+        }
+
+    fun validateEmbedData(embedData: EmbedData): Either<NonEmptyList<RegisterBillValidationError>, Unit> =
+        either {
+            accumulate {
+                validateEmbedDataTitle(embedData).bindOrAccumulate()
+                validateEmbedDataStatusComplete(embedData).bindOrAccumulate()
+                validateEmbedDataField(embedData).bindOrAccumulate()
+            }
+            validateAmountEmbedDataFieldFormat(embedData).bind()
             Unit.right()
         }
 
@@ -64,10 +87,18 @@ object RegisterBillValidation {
             }
         }
 
-    private fun validateEmbedDataStatus(embedData: EmbedData): Either<RegisterBillValidationError, Unit> =
+    private fun validateEmbedDataStatusProgress(embedData: EmbedData): Either<RegisterBillValidationError, Unit> =
         Color(embedData.color.asNullable ?: 0).let {
             either {
-                ensure(it == Color(255, 255, 50)) { RegisterBillValidationError.EmbedDataColorError.of(it) }
+                ensure(it == Color(255, 255, 50)) { RegisterBillValidationError.EmbedDataColorError.of(it, "黄色") }
+                Unit.right()
+            }
+        }
+
+    private fun validateEmbedDataStatusComplete(embedData: EmbedData): Either<RegisterBillValidationError, Unit> =
+        Color(embedData.color.asNullable ?: 0).let {
+            either {
+                ensure(it == Color(0, 255, 0)) { RegisterBillValidationError.EmbedDataColorError.of(it, "緑色") }
                 Unit.right()
             }
         }
@@ -77,16 +108,32 @@ object RegisterBillValidation {
             it.name
         }.let {
             either {
-                ensure(it == listOf("請求金額だっピ")) { RegisterBillValidationError.EmbedDataFieldNamesError.of(it) }
+                val validEmbedDataFieldNames = listOf("請求金額だっピ")
+                ensure(it == validEmbedDataFieldNames) { RegisterBillValidationError.EmbedDataFieldNamesError.of(it, validEmbedDataFieldNames) }
+                Unit.right()
+            }
+        }
+
+    private fun validateEmbedDataField(embedData: EmbedData): Either<RegisterBillValidationError, Unit> =
+        embedData.fields.orEmpty().map {
+            it.name
+        }.let {
+            either {
+                val validEmbedDataFieldNames = listOf("申請 ID だっピ", "請求金額だっピ", "請求者だっピ", "メモだっピ")
+                ensure(it == validEmbedDataFieldNames) { RegisterBillValidationError.EmbedDataFieldNamesError.of(it, validEmbedDataFieldNames) }
                 Unit.right()
             }
         }
 
     private fun validateAmountEmbedDataFieldFormat(embedData: EmbedData): Either<NonEmptyList<RegisterBillValidationError>, Unit> =
-        embedData.fields.orEmpty().first().value.let {
+        embedData.fields.orEmpty().associate {
+            it.name to it.value
+        }.let {
+            it["請求金額だっピ"]!!
+        }.let {
             either {
                 accumulate {
-                    ensureOrAccumulate(Regex("""^\d+\s円$""").matches(it)) { RegisterBillValidationError.AmountFormatError.of(it) }
+                    ensureOrAccumulate(Regex("""^\d+\s円$""").matches(it)) { RegisterBillValidationError.EmbedDataFieldAmountFormatError.of(it) }
                 }
                 Unit.right()
             }
@@ -145,8 +192,8 @@ object RegisterBillValidation {
             override val dataPath: String = "EmbedData.color"
         ) : RegisterBillValidationError {
             companion object {
-                fun of(inValidColor: Color): EmbedDataColorError =
-                    EmbedDataColorError("EmbedData のカラーは黄色でないとならない: $inValidColor")
+                fun of(inValidColor: Color, validColor: String): EmbedDataColorError =
+                    EmbedDataColorError("EmbedData のカラーは $validColor でないとならない: $inValidColor")
             }
         }
 
@@ -156,19 +203,19 @@ object RegisterBillValidation {
             override val dataPath: String = "EmbedData.field.names"
         ) : RegisterBillValidationError {
             companion object {
-                fun of(inValidEmbedDataFieldNames: List<String>): EmbedDataFieldNamesError =
-                    EmbedDataFieldNamesError("EmbedData のフィールド名は [請求金額だっピ] でないとならない: $inValidEmbedDataFieldNames")
+                fun of(inValidEmbedDataFieldNames: List<String>, validEmbedDataFieldNames: List<String>): EmbedDataFieldNamesError =
+                    EmbedDataFieldNamesError("EmbedData のフィールド名は $validEmbedDataFieldNames でないとならない: $inValidEmbedDataFieldNames")
             }
         }
 
         @ConsistentCopyVisibility
-        data class AmountFormatError internal constructor(
+        data class EmbedDataFieldAmountFormatError internal constructor(
             override val message: String,
             override val dataPath: String = "EmbedData.field.value"
         ) : RegisterBillValidationError {
             companion object {
-                fun of(inValidFormatAmount: String): AmountFormatError =
-                    AmountFormatError("請求金額のフォーマットは 'x 円' でないとならない: $inValidFormatAmount")
+                fun of(inValidFormatAmount: String): EmbedDataFieldAmountFormatError =
+                    EmbedDataFieldAmountFormatError("請求金額のフォーマットは 'x 円' でないとならない: $inValidFormatAmount")
             }
         }
     }

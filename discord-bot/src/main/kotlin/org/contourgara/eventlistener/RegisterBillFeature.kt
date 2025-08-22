@@ -2,6 +2,7 @@ package org.contourgara.eventlistener
 
 import arrow.core.Either
 import arrow.core.NonEmptyList
+import arrow.core.flatMap
 import dev.kord.common.Color
 import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.TextInputStyle
@@ -70,12 +71,13 @@ object RegisterBillFeature : KoinComponent {
 
         when (val validationResult = interaction.textInputs.keys.first().let {
             RegisterBillRequest.of(interaction.message?.embeds?.first()?.data!!, it.toLong(), interaction.textInputs[it]?.value!!)
+        }.flatMap {
+            RegisterBillResponse.from(registerBillUseCase.execute(it.toParam()))
         }) {
             is Either.Right -> {
-                val registerBillResponse = RegisterBillResponse.fromDto(registerBillUseCase.execute(validationResult.value.toParam()))
-                val user = kord.getUser(Snowflake(registerBillResponse.claimant.id))
+                val user = kord.getUser(Snowflake(validationResult.value.claimant.id))
                 content = "${user?.mention} 請求を受け付けたっピ"
-                embed(registerBillResponse.toEmbedBuilder())
+                embed(validationResult.value.toEmbedBuilder())
             }
             is Either.Left -> embed(validationResult.value.toEmbedBuilder())
         }

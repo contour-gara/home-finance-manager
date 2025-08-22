@@ -68,7 +68,7 @@ class RegisterBillRequestTest : StringSpec({
         }
     }
 
-    "EmbedData と userId とメモからインスタンスを生成で、請求金額が 0 の場合インスタンスを生成できない" {
+    "EmbedData と userId とメモからインスタンスを生成で、請求金額が 0 または無効な userId またはメモが空白のみの場合インスタンスを生成できない" {
         // setup
         val embedData = EmbedData(
             title = Optional.Value("入力情報だっピ"),
@@ -79,34 +79,14 @@ class RegisterBillRequestTest : StringSpec({
         )
 
         // execute
-        val actual = RegisterBillRequest.of(embedData, GARA_ID, "test")
+        val actual = RegisterBillRequest.of(embedData, 0, " 　")
 
         // assert
         assertSoftly {
             actual.shouldBeLeft()
-            actual.value shouldHaveSize 1
-            actual.value.first() shouldBe RegisterBillValidationError.AmountError.of(0)
-        }
-    }
-
-    "EmbedData と userId とメモからインスタンスを生成で、無効な userId またはメモが空白のみの場合インスタンスを生成できない" {
-        // setup
-        val embedData = EmbedData(
-            title = Optional.Value("入力情報だっピ"),
-            color = OptionalInt.Value(Color(255, 255, 50).rgb),
-            fields = Optional.Value(listOf(
-                EmbedFieldData(name = "請求金額だっピ", inline = OptionalBoolean.Value(true), value = "1 円")
-            ))
-        )
-
-        // execute
-        val actual = RegisterBillRequest.of(embedData, 1, " 　")
-
-        // assert
-        assertSoftly {
-            actual.shouldBeLeft()
-            actual.value shouldHaveSize 2
-            actual.value shouldBe nonEmptyListOf(
+            actual.value shouldHaveSize 3
+            actual.value shouldBe listOf(
+                RegisterBillValidationError.AmountError.of(0),
                 RegisterBillValidationError.ClaimantError.of(User.UNDEFINED),
                 RegisterBillValidationError.MemoError.of(" 　")
             )
@@ -153,8 +133,8 @@ class RegisterBillRequestTest : StringSpec({
             actual.value shouldHaveSize 3
             actual.value shouldBe nonEmptyListOf(
                 RegisterBillValidationError.EmbedDataTitleError.of("test"),
-                RegisterBillValidationError.EmbedDataColorError.of(Color(0, 0, 0)),
-                RegisterBillValidationError.EmbedDataFieldNamesError.of(emptyList())
+                RegisterBillValidationError.EmbedDataColorError.of(Color(0, 0, 0), "黄色"),
+                RegisterBillValidationError.EmbedDataFieldNamesError.of(emptyList(), listOf("請求金額だっピ"))
             )
         }
     }
@@ -177,30 +157,7 @@ class RegisterBillRequestTest : StringSpec({
             actual.shouldBeLeft()
             actual.value shouldHaveSize 1
             actual.value shouldBe nonEmptyListOf(
-                RegisterBillValidationError.AmountFormatError.of("1円")
-            )
-        }
-    }
-
-    "EmbedData と userId とメモからインスタンスを生成で、EmbedData の請求金額が 0 の場合インスタンスを生成できない" {
-        // setup
-        val embedData = EmbedData(
-            title = Optional.Value("入力情報だっピ"),
-            color = OptionalInt.Value(Color(255, 255, 50).rgb),
-            fields = Optional.Value(listOf(
-                EmbedFieldData(name = "請求金額だっピ", inline = OptionalBoolean.Value(true), value = "0 円")
-            ))
-        )
-
-        // execute
-        val actual = RegisterBillRequest.of(embedData, GARA_ID, "test")
-
-        // assert
-        assertSoftly {
-            actual.shouldBeLeft()
-            actual.value shouldHaveSize 1
-            actual.value shouldBe nonEmptyListOf(
-                RegisterBillValidationError.AmountError.of(0)
+                RegisterBillValidationError.EmbedDataFieldAmountFormatError.of("1円")
             )
         }
     }
