@@ -16,6 +16,7 @@ import dev.kord.rest.builder.interaction.string
 import dev.kord.rest.builder.message.embed
 import dev.kord.rest.request.KtorRequestHandler
 import dev.kord.rest.service.RestClient
+import org.contourgara.DiscordBotConfig
 import org.contourgara.eventlistener.RegisterBillFeature.REGISTER_BILL_COMMAND_DESCRIPTION
 import org.contourgara.eventlistener.RegisterBillFeature.REGISTER_BILL_COMMAND_NAME
 import org.contourgara.eventlistener.RegisterBillFeature.REGISTER_BILL_MODAL_ID
@@ -29,12 +30,15 @@ import org.contourgara.eventlistener.TestModalFeature.TEST_MODAL_COMMAND_NAME
 import org.contourgara.eventlistener.TestModalFeature.TEST_MODAL_MODAL_ID
 import org.contourgara.eventlistener.TestModalFeature.openTestModal
 import org.contourgara.eventlistener.TestModalFeature.submitTestModal
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class DiscordEventListener() {
+class DiscordEventListener() : KoinComponent {
+    private val discordBotConfig: DiscordBotConfig by inject()
     private lateinit var kord: Kord
 
     suspend fun start() {
-        kord = Kord(System.getenv("HOME_FINANCE_MANAGER_BOT_TOKEN"))
+        kord = Kord(discordBotConfig.homeFinanceManagerBotToken)
         createMessageEvent()
         createCommand()
         createExecuteCommandEvent()

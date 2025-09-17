@@ -1,0 +1,4 @@
+services:
+  discord-bot:
+    environment:
+      HOME_FINANCE_MANAGER_CHANNEL_ID: ${HOME_FINANCE_MANAGER_CHANNEL_ID}

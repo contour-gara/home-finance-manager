@@ -17,6 +17,7 @@ import dev.kord.rest.builder.interaction.integer
 import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.actionRow
 import dev.kord.rest.builder.message.embed
+import org.contourgara.DiscordBotConfig
 import org.contourgara.application.RegisterBillUseCase
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -30,6 +31,7 @@ object RegisterBillFeature : KoinComponent {
     private const val REGISTER_BILL_COMMAND_ARGUMENT_NAME = "billing-amount"
     private const val REGISTER_BILL_COMMAND_ARGUMENT_DESCRIPTION = "請求金額"
     private val registerBillUseCase: RegisterBillUseCase by inject()
+    private val discordBotConfig: DiscordBotConfig by inject()
 
     fun createRegisterBillCommandArgument(): ChatInputCreateBuilder.() -> Unit = {
         integer(REGISTER_BILL_COMMAND_ARGUMENT_NAME, REGISTER_BILL_COMMAND_ARGUMENT_DESCRIPTION) {
@@ -40,16 +42,23 @@ object RegisterBillFeature : KoinComponent {
     }
 
     suspend fun GuildChatInputCommandInteractionCreateEvent.sendSelectUserMessage() = interaction.deferPublicResponse().respond {
-        when (val validationResult = RegisterBillRequest.of(interaction.command.integers[REGISTER_BILL_COMMAND_ARGUMENT_NAME]?.toInt()!!)) {
-            is Either.Right -> {
-                embed(validationResult.value.toEmbedBuilder())
-                actionRow {
-                    userSelect(REGISTER_BILL_SELECT_MENU_ID) {
-                        placeholder = "請求者を選択してっピ"
+        when (interaction.channelId) {
+            Snowflake(discordBotConfig.homeFinanceManagerBotChannelId) -> {
+                when (val validationResult = RegisterBillRequest.of(interaction.command.integers[REGISTER_BILL_COMMAND_ARGUMENT_NAME]?.toInt()!!)) {
+                    is Either.Right -> {
+                        embed(validationResult.value.toEmbedBuilder())
+                        actionRow {
+                            userSelect(REGISTER_BILL_SELECT_MENU_ID) {
+                                placeholder = "請求者を選択してっピ"
+                            }
+                        }
                     }
+
+                    is Either.Left -> embed(validationResult.value.toEmbedBuilder())
                 }
             }
-            is Either.Left -> embed(validationResult.value.toEmbedBuilder())
+
+            else -> content = "${kord.getChannel(Snowflake(discordBotConfig.homeFinanceManagerBotChannelId))?.mention} で実行してね"
         }
     }
 
