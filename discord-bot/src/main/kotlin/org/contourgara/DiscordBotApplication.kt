@@ -1,14 +1,17 @@
 package org.contourgara
 
 import org.contourgara.eventlistener.DiscordEventListener
-import org.koin.core.context.startKoin
+import org.koin.core.annotation.KoinApplication
 import org.koin.environmentProperties
-import org.koin.ksp.generated.module
+import org.koin.ksp.generated.*
+
+@KoinApplication
+object DiscordBotApplication
 
 suspend fun main() {
-    startKoin {
+    DiscordBotApplication.startKoin {
+        printLogger()
         environmentProperties()
-        modules(DiscordBotModule().module)
     }
 
     DiscordEventListener().start()

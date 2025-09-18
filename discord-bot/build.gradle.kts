@@ -32,11 +32,7 @@ java {
 }
 
 application {
-    mainClass = "org.contourgara.MainKt"
-}
-
-sourceSets.main {
-    java.srcDir("build/generated/ksp/main/kotlin")
+    mainClass = "org.contourgara.DiscordBotApplicationKt"
 }
 
 tasks.withType<Test> {
@@ -59,7 +55,7 @@ tasks.withType<Test> {
 }
 
 tasks.withType<Jar> {
-    manifest { attributes["Main-Class"] = "org.contourgara.MainKt" }
+    manifest { attributes["Main-Class"] = "org.contourgara.DiscordBotApplicationKt" }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     configurations.compileClasspath.get().forEach {
