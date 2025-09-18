@@ -1,0 +1,84 @@
+name: Docker Push
+
+on:
+  workflow_dispatch:
+    inputs:
+      module:
+        description: 'push するモジュール'
+        type: choice
+        required: true
+        options:
+          - 'discord-bot'
+
+permissions:
+  packages: write
+  contents: write
+
+jobs:
+  upload-jar-file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'corretto'
+          java-version: '21'
+          cache: 'gradle'
+
+      - name: Build jar file
+        run: ./gradlew clean ${{ inputs.module }}:build -x test
+
+      - name: Upload Dockerfile and jar file
+        uses: actions/upload-artifact@v4
+        with:
+          name: jar-and-Dockerfile
+          path: |
+            ${{ inputs.module }}/Dockerfile
+            ${{ inputs.module }}/build/libs/${{ inputs.module }}.jar
+
+  create-git-tag:
+    needs: upload-jar-file
+    runs-on: ubuntu-latest
+    outputs:
+      tagName: ${{ steps.create-tag.outputs.tagName }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Create git tag
+        id: create-tag
+        run: |
+          TAG_NAME=$(date +%Y.%m.%d-%H%M%S)
+          git tag $TAG_NAME
+          git push origin $TAG_NAME
+          echo "tagName=$TAG_NAME" >> $GITHUB_OUTPUT
+
+  build_and_push_docker_image:
+    needs: create-git-tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Dockerfile and jar file
+        uses: actions/download-artifact@v5
+        with:
+          name: jar-and-Dockerfile
+
+      - name: Login to GitHub container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build docker image
+        run: |
+          docker build \
+          --tag ghcr.io/$GITHUB_ACTOR/home-finance-manager-discord-bot:latest \
+          --tag ghcr.io/$GITHUB_ACTOR/home-finance-manager-discord-bot:${{ needs.create-git-tag.outputs.tagName }} .
+
+      - name: Push docker image
+        run: |
+          docker push ghcr.io/$GITHUB_ACTOR/home-finance-manager-discord-bot:latest
+          docker push ghcr.io/$GITHUB_ACTOR/home-finance-manager-discord-bot:${{ needs.create-git-tag.outputs.tagName }}

@@ -14,10 +14,9 @@
 
 1. `mise.local.toml` に以下の値を設定
    - `HOME_FINANCE_MANAGER_CHANNEL_ID`
-2. ビルドし、docker 実行
+2. docker 実行
    ```shell
-   ./gradlew clean build -x test
-   docker compose -f compose.prd.yaml -f compose.yaml up --build -d
+   docker compose -f compose.prd.yaml up -d
    ```
 
 ## Discord Bot の設定
