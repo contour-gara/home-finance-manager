@@ -13,7 +13,8 @@ repositories {
 
 dependencies {
     implementation(libs.kord.core)
-    implementation(libs.koin)
+    implementation(project.dependencies.platform(libs.koin.bom))
+    implementation(libs.koin.core)
     implementation(libs.koin.annotations)
     ksp(libs.koin.ksp.compiler)
     implementation(libs.kotlin.logging)

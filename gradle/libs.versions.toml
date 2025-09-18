@@ -2,7 +2,7 @@
 kotlin = "2.2.10"
 ksp = "2.2.10-2.0.2"
 kord-core = "0.15.0"
-koin = "4.1.0"
+koin-bom  = "4.1.0"
 koin-annotations = "2.1.0"
 kotlin-logging = "3.0.5"
 arrow = "2.1.0"
@@ -12,7 +12,8 @@ kotest-assertions-arrow = "2.0.0"
 
 [libraries]
 kord-core = { module = "dev.kord:kord-core", version.ref = "kord-core" }
-koin = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
+koin-core = { module = "io.insert-koin:koin-core" }
 koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations" }
 koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations" }
 kotlin-logging = { module = "io.github.microutils:kotlin-logging", version.ref = "kotlin-logging" }
