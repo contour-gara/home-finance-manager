@@ -2,17 +2,18 @@
 kotlin = "2.2.10"
 ksp = "2.2.10-2.0.2"
 kord-core = "0.15.0"
-koin-bom  = "4.1.0"
+koin  = "4.1.0"
 koin-annotations = "2.2.0-RC1"
 kotlin-logging = "3.0.5"
 arrow = "2.1.0"
 ulid-kotlin = "1.5.0"
-kotest = "5.9.1"
+kotest = "6.0.3"
 kotest-assertions-arrow = "2.0.0"
+mockk = "1.14.5"
 
 [libraries]
 kord-core = { module = "dev.kord:kord-core", version.ref = "kord-core" }
-koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations" }
 koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations" }
@@ -20,8 +21,12 @@ kotlin-logging = { module = "io.github.microutils:kotlin-logging", version.ref =
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 ulid-kotlin = { module = "com.aallam.ulid:ulid-kotlin", version.ref = "ulid-kotlin" }
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest" }
+kotest-extensions-koin = { module = "io.kotest:kotest-extensions-koin", version.ref = "kotest" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotest-assertions-arrow = { module = "io.kotest.extensions:kotest-assertions-arrow", version.ref = "kotest-assertions-arrow" }
+koin-test = { module = "io.insert-koin:koin-test" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

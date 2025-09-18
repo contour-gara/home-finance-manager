@@ -21,8 +21,12 @@ dependencies {
     implementation(libs.arrow.core)
     implementation(libs.ulid.kotlin)
     testImplementation(libs.kotest.runner.junit5)
+    testImplementation(libs.kotest.property)
+    testImplementation(libs.kotest.extensions.koin)
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.assertions.arrow)
+    testImplementation(libs.koin.test)
+    testImplementation(libs.mockk)
 }
 
 java {
