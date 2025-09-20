@@ -21,7 +21,7 @@ object RegisterBillValidation {
             Unit.right()
         }
 
-    fun validateClaimant(user: User): Either<NonEmptyList<RegisterBillValidationError>, Unit> =
+    fun validateUser(user: User): Either<NonEmptyList<RegisterBillValidationError>, Unit> =
         either {
             accumulate {
                 ensureOrAccumulate(
@@ -29,7 +29,7 @@ object RegisterBillValidation {
                         User.GARA,
                         User.YUKI
                     ).contains(user)
-                ) { RegisterBillValidationError.ClaimantError.of(user) }
+                ) { RegisterBillValidationError.UserError.of(user) }
             }
             Unit.right()
         }
@@ -140,13 +140,13 @@ object RegisterBillValidation {
         }
 
         @ConsistentCopyVisibility
-        data class ClaimantError internal constructor(
+        data class UserError internal constructor(
             override val message: String,
             override val dataPath: String = "claimant"
         ) : RegisterBillValidationError {
             companion object {
-                fun of(inValidUser: User): ClaimantError =
-                    ClaimantError("請求者は gara か yuki でないとならない: ${inValidUser.name.lowercase()}")
+                fun of(inValidUser: User): UserError =
+                    UserError("請求者・請求先は gara か yuki でないとならない: ${inValidUser.name.lowercase()}")
             }
         }
 

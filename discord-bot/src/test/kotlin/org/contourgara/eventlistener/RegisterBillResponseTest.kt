@@ -30,7 +30,7 @@ class RegisterBillResponseTest : StringSpec({
             actual.getOrNull()?.id shouldBe "ID"
             actual.getOrNull()?.amount shouldBe 1
             actual.getOrNull()?.lender shouldBe User.YUKI
-            actual.getOrNull()?.claimant shouldBe User.GARA
+            actual.getOrNull()?.borrower shouldBe User.GARA
             actual.getOrNull()?.memo shouldBe "test"
         }
     }
@@ -48,7 +48,7 @@ class RegisterBillResponseTest : StringSpec({
             actual.value shouldHaveSize 3
             actual.value shouldBe listOf(
                 RegisterBillValidationError.AmountError.of(0),
-                RegisterBillValidationError.ClaimantError.of(User.UNDEFINED),
+                RegisterBillValidationError.UserError.of(User.UNDEFINED),
                 RegisterBillValidationError.MemoError.of(""),
             )
         }
@@ -79,7 +79,7 @@ class RegisterBillResponseTest : StringSpec({
             actual.getOrNull()?.id shouldBe "ID"
             actual.getOrNull()?.amount shouldBe 1
             actual.getOrNull()?.lender shouldBe User.YUKI
-            actual.getOrNull()?.claimant shouldBe User.GARA
+            actual.getOrNull()?.borrower shouldBe User.GARA
             actual.getOrNull()?.memo shouldBe "test"
         }
     }
@@ -161,7 +161,7 @@ class RegisterBillResponseTest : StringSpec({
             actual.value shouldHaveSize 3
             actual.value shouldBe listOf(
                 RegisterBillValidationError.AmountError.of(0),
-                RegisterBillValidationError.ClaimantError.of(User.UNDEFINED),
+                RegisterBillValidationError.UserError.of(User.UNDEFINED),
                 RegisterBillValidationError.MemoError.of(""),
             )
         }

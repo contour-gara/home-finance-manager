@@ -7,7 +7,7 @@ data class Bill private constructor(
     val id: ULID,
     val amount: Int,
     val lender: User,
-    val claimant: User,
+    val borrower: User,
     val memo: String,
 ) {
     init {
@@ -16,7 +16,13 @@ data class Bill private constructor(
     }
 
     companion object {
-        fun of(id: ULID, amount: Int, lenderName: String, claimantName: String, memo: String) =
-            Bill(id, amount, User.of(lenderName), User.of(claimantName), memo)
+        fun of(id: ULID, amount: Int, lenderName: String, borrowerName: String, memo: String) =
+            Bill(
+                id = id,
+                amount = amount,
+                lender = User.of(lenderName),
+                borrower = User.of(borrowerName),
+                memo = memo,
+            )
     }
 }

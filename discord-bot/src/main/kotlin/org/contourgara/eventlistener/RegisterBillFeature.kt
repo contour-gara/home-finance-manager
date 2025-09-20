@@ -82,7 +82,7 @@ object RegisterBillFeature : KoinComponent {
             RegisterBillRequest.of(
                 onlyAmountEmbedData = interaction.message?.embeds?.first()?.data!!,
                 lender = interaction.user.id.value.toLong(),
-                claimant = it.toLong(),
+                borrower = it.toLong(),
                 memo = interaction.textInputs[it]?.value!!,
             )
         }.flatMap {

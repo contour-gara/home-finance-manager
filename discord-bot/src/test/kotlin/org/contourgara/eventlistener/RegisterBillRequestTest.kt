@@ -30,7 +30,8 @@ class RegisterBillRequestTest : StringSpec({
         assertSoftly {
             actual.shouldBeRight()
             actual.getOrNull()?.amount shouldBe 1
-            actual.getOrNull()?.claimant shouldBe User.UNDEFINED
+            actual.getOrNull()?.lender shouldBe User.UNDEFINED
+            actual.getOrNull()?.borrower shouldBe User.UNDEFINED
             actual.getOrNull()?.memo.shouldBeEmpty()
         }
     }
@@ -64,7 +65,8 @@ class RegisterBillRequestTest : StringSpec({
         assertSoftly {
             actual.shouldBeRight()
             actual.getOrNull()?.amount shouldBe 1
-            actual.getOrNull()?.claimant shouldBe User.GARA
+            actual.getOrNull()?.lender shouldBe User.YUKI
+            actual.getOrNull()?.borrower shouldBe User.GARA
             actual.getOrNull()?.memo shouldBe "test"
         }
     }
@@ -86,7 +88,8 @@ class RegisterBillRequestTest : StringSpec({
         assertSoftly {
             actual.shouldBeRight()
             actual.getOrNull()?.amount shouldBe 1000
-            actual.getOrNull()?.claimant shouldBe User.GARA
+            actual.getOrNull()?.lender shouldBe User.YUKI
+            actual.getOrNull()?.borrower shouldBe User.GARA
             actual.getOrNull()?.memo shouldBe "test"
         }
     }
@@ -110,7 +113,7 @@ class RegisterBillRequestTest : StringSpec({
             actual.value shouldHaveSize 3
             actual.value shouldBe listOf(
                 RegisterBillValidationError.AmountError.of(0),
-                RegisterBillValidationError.ClaimantError.of(User.UNDEFINED),
+                RegisterBillValidationError.UserError.of(User.UNDEFINED),
                 RegisterBillValidationError.MemoError.of(" 　")
             )
         }

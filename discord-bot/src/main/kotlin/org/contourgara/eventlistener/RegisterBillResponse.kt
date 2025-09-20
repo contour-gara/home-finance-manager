@@ -12,7 +12,7 @@ import dev.kord.rest.builder.message.EmbedBuilder
 import org.contourgara.application.RegisterBillDto
 import org.contourgara.eventlistener.RegisterBillValidation.RegisterBillValidationError
 import org.contourgara.eventlistener.RegisterBillValidation.validateAmount
-import org.contourgara.eventlistener.RegisterBillValidation.validateClaimant
+import org.contourgara.eventlistener.RegisterBillValidation.validateUser
 import org.contourgara.eventlistener.RegisterBillValidation.validateEmbedData
 import org.contourgara.eventlistener.RegisterBillValidation.validateMemo
 import kotlin.collections.first
@@ -24,13 +24,19 @@ data class RegisterBillResponse private constructor (
     val id: String,
     val amount: Int,
     val lender: User,
-    val claimant: User,
+    val borrower: User,
     val memo: String
 ) {
     companion object {
         fun from(dto: RegisterBillDto): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillResponse> =
             either {
-                of(dto.id, dto.amount, User.of(dto.lender), User.of(dto.claimant), dto.memo).bind()
+                of(
+                    id = dto.id,
+                    amount = dto.amount,
+                    lender = User.of(dto.lender),
+                    borrower = User.of(dto.borrower),
+                    memo = dto.memo,
+                ).bind()
             }
 
         fun from(embedData: EmbedData): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillResponse> =
@@ -42,19 +48,25 @@ data class RegisterBillResponse private constructor (
                     id = embedData.fields.orEmpty().first().value,
                     amount = embedData.fields.orEmpty()[1].value.split(" ").first().replace(",", "").toInt(),
                     lender = User.of(embedData.fields.orEmpty()[2].value),
-                    claimant = User.of(embedData.fields.orEmpty()[3].value),
+                    borrower = User.of(embedData.fields.orEmpty()[3].value),
                     memo = embedData.fields.orEmpty().last().value
                 ).bind()
             }
 
-        private fun of(id: String, amount: Int, lender: User, claimant: User, memo: String): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillResponse> =
+        private fun of(id: String, amount: Int, lender: User, borrower: User, memo: String): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillResponse> =
             either {
                 accumulate {
                     validateAmount(amount).bindNelOrAccumulate()
-                    validateClaimant(claimant).bindNelOrAccumulate()
+                    validateUser(borrower).bindNelOrAccumulate()
                     validateMemo(memo).bindNelOrAccumulate()
                 }
-                RegisterBillResponse(id, amount, lender, claimant, memo)
+                RegisterBillResponse(
+                    id = id,
+                    amount = amount,
+                    lender = lender,
+                    borrower = borrower,
+                    memo = memo,
+                )
             }
     }
 
@@ -64,7 +76,7 @@ data class RegisterBillResponse private constructor (
         field(name = "申請 ID", inline = true, value = { id })
         field(name = "請求金額", inline = true, value = { "${amount.toString().reversed().chunked(3).joinToString(",").reversed()} 円" })
         field(name = "請求者", inline = true, value = { lender.name.lowercase() })
-        field(name = "請求先", inline = true, value = { claimant.name.lowercase() })
+        field(name = "請求先", inline = true, value = { borrower.name.lowercase() })
         field(name = "メモ", inline = true, value = { memo })
     }
 }
