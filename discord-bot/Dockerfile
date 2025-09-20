@@ -14,8 +14,8 @@ WORKDIR /deployments
 RUN apt-get update -y && apt-get install -y curl
 COPY --from=build /jlink/jre-min /opt/jre-min
 ENV JAVA_HOME=/opt/jre-min
-ENV PATH $JAVA_HOME/bin:$PATH
-ENV LANG C.UTF-8
+ENV PATH=$JAVA_HOME/bin:$PATH
+ENV LANG=C.UTF-8
 ARG JAR_FILE=build/libs/*.jar
 COPY ${JAR_FILE} app.jar
 
