@@ -28,4 +28,11 @@ class BillTest : StringSpec({
             Bill.of(ulid, 1, "yuki", "gara", "")
         }.message shouldBe "メモは空文字ではならない"
     }
+
+    "インスタンス生成で、請求者と請求先が同じ場合例外が飛ぶ" {
+        // execute & assert
+        shouldThrowExactly<IllegalArgumentException> {
+            Bill.of(ulid, 1, "gara", "gara", "")
+        }.message shouldBe "請求者と請求先は同じではならない"
+    }
 })

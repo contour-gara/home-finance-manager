@@ -12,6 +12,7 @@ data class Bill private constructor(
 ) {
     init {
         require(amount in 1..Int.MAX_VALUE) { "請求金額は [0..Int.MAX_VALUE] でないとならない: $amount" }
+        require(lender != borrower) { "請求者と請求先は同じではならない" }
         require(memo.isNotBlank()) { "メモは空文字ではならない" }
     }
 
