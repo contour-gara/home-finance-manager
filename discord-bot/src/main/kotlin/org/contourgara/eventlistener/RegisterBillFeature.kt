@@ -89,7 +89,7 @@ object RegisterBillFeature : KoinComponent {
             RegisterBillResponse.from(registerBillUseCase.execute(it.toParam()))
         }) {
             is Either.Right -> {
-                content = "${interaction.user.mention} 請求が届いたっピ"
+                content = "${validationResult.value.borrower} 請求が届いたっピ"
                 embed(validationResult.value.toEmbedBuilder())
             }
             is Either.Left -> embed(validationResult.value.toEmbedBuilder())
