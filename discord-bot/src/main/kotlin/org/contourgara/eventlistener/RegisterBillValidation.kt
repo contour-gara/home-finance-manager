@@ -21,15 +21,28 @@ object RegisterBillValidation {
             Unit.right()
         }
 
-    fun validateUser(user: User): Either<NonEmptyList<RegisterBillValidationError>, Unit> =
+    fun validateLender(lender: User): Either<NonEmptyList<RegisterBillValidationError>, Unit> =
         either {
             accumulate {
                 ensureOrAccumulate(
                     listOf(
                         User.GARA,
                         User.YUKI
-                    ).contains(user)
-                ) { RegisterBillValidationError.UserError.of(user) }
+                    ).contains(lender)
+                ) { RegisterBillValidationError.LenderError.of(lender) }
+            }
+            Unit.right()
+        }
+
+    fun validateBorrower(borrower: User): Either<NonEmptyList<RegisterBillValidationError>, Unit> =
+        either {
+            accumulate {
+                ensureOrAccumulate(
+                    listOf(
+                        User.GARA,
+                        User.YUKI
+                    ).contains(borrower)
+                ) { RegisterBillValidationError.BorrowerError.of(borrower) }
             }
             Unit.right()
         }
@@ -140,13 +153,24 @@ object RegisterBillValidation {
         }
 
         @ConsistentCopyVisibility
-        data class UserError internal constructor(
+        data class LenderError internal constructor(
             override val message: String,
-            override val dataPath: String = "claimant"
+            override val dataPath: String = "lender"
         ) : RegisterBillValidationError {
             companion object {
-                fun of(inValidUser: User): UserError =
-                    UserError("請求者・請求先は gara か yuki でないとならない: ${inValidUser.name.lowercase()}")
+                fun of(inValidLender: User): LenderError =
+                    LenderError("請求者は gara か yuki でないとならない: ${inValidLender.name.lowercase()}")
+            }
+        }
+
+        @ConsistentCopyVisibility
+        data class BorrowerError internal constructor(
+            override val message: String,
+            override val dataPath: String = "borrower"
+        ) : RegisterBillValidationError {
+            companion object {
+                fun of(inValidBorrower: User): BorrowerError =
+                    BorrowerError("請求先は gara か yuki でないとならない: ${inValidBorrower.name.lowercase()}")
             }
         }
 

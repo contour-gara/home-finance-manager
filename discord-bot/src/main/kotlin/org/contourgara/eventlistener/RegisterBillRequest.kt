@@ -12,9 +12,10 @@ import dev.kord.rest.builder.message.EmbedBuilder
 import org.contourgara.application.RegisterBillParam
 import org.contourgara.eventlistener.RegisterBillValidation.validateAmount
 import org.contourgara.eventlistener.RegisterBillValidation.validateAmountEmbedData
-import org.contourgara.eventlistener.RegisterBillValidation.validateUser
+import org.contourgara.eventlistener.RegisterBillValidation.validateLender
 import org.contourgara.eventlistener.RegisterBillValidation.validateMemo
 import org.contourgara.eventlistener.RegisterBillValidation.RegisterBillValidationError
+import org.contourgara.eventlistener.RegisterBillValidation.validateBorrower
 
 @OptIn(ExperimentalRaiseAccumulateApi::class)
 @ConsistentCopyVisibility
@@ -50,7 +51,8 @@ data class RegisterBillRequest private constructor(
             either {
                 accumulate {
                     validateAmount(amount).bindNelOrAccumulate()
-                    validateUser(borrower).bindNelOrAccumulate()
+                    validateLender(lender).bindNelOrAccumulate()
+                    validateBorrower(borrower).bindNelOrAccumulate()
                     validateMemo(memo).bindNelOrAccumulate()
                 }
                 RegisterBillRequest(

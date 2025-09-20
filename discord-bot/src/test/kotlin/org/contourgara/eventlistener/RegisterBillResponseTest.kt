@@ -37,7 +37,7 @@ class RegisterBillResponseTest : StringSpec({
 
     "DTO からインスタンスで、各項目が不正な場合インスタンスを生成できない" {
         // setup
-        val registerBillDto = RegisterBillDto("ID", 0, "yuki", "test", "")
+        val registerBillDto = RegisterBillDto("ID", 0, "test", "test", "")
 
         // execute
         val actual = RegisterBillResponse.from(registerBillDto)
@@ -45,10 +45,11 @@ class RegisterBillResponseTest : StringSpec({
         // assert
         assertSoftly {
             actual.shouldBeLeft()
-            actual.value shouldHaveSize 3
+            actual.value shouldHaveSize 4
             actual.value shouldBe listOf(
                 RegisterBillValidationError.AmountError.of(0),
-                RegisterBillValidationError.UserError.of(User.UNDEFINED),
+                RegisterBillValidationError.LenderError.of(User.UNDEFINED),
+                RegisterBillValidationError.BorrowerError.of(User.UNDEFINED),
                 RegisterBillValidationError.MemoError.of(""),
             )
         }
@@ -145,7 +146,7 @@ class RegisterBillResponseTest : StringSpec({
                 listOf(
                     EmbedFieldData(name = "申請 ID", inline = OptionalBoolean.Value(true), value = "ID"),
                     EmbedFieldData(name = "請求金額", inline = OptionalBoolean.Value(true), value = "0 円"),
-                    EmbedFieldData(name = "請求者", inline = OptionalBoolean.Value(true), value = "yuki"),
+                    EmbedFieldData(name = "請求者", inline = OptionalBoolean.Value(true), value = "test"),
                     EmbedFieldData(name = "請求先", inline = OptionalBoolean.Value(true), value = "test"),
                     EmbedFieldData(name = "メモ", inline = OptionalBoolean.Value(true), value = "")
                 )
@@ -158,10 +159,11 @@ class RegisterBillResponseTest : StringSpec({
         // assert
         assertSoftly {
             actual.shouldBeLeft()
-            actual.value shouldHaveSize 3
+            actual.value shouldHaveSize 4
             actual.value shouldBe listOf(
                 RegisterBillValidationError.AmountError.of(0),
-                RegisterBillValidationError.UserError.of(User.UNDEFINED),
+                RegisterBillValidationError.LenderError.of(User.UNDEFINED),
+                RegisterBillValidationError.BorrowerError.of(User.UNDEFINED),
                 RegisterBillValidationError.MemoError.of(""),
             )
         }

@@ -12,7 +12,8 @@ import dev.kord.rest.builder.message.EmbedBuilder
 import org.contourgara.application.RegisterBillDto
 import org.contourgara.eventlistener.RegisterBillValidation.RegisterBillValidationError
 import org.contourgara.eventlistener.RegisterBillValidation.validateAmount
-import org.contourgara.eventlistener.RegisterBillValidation.validateUser
+import org.contourgara.eventlistener.RegisterBillValidation.validateBorrower
+import org.contourgara.eventlistener.RegisterBillValidation.validateLender
 import org.contourgara.eventlistener.RegisterBillValidation.validateEmbedData
 import org.contourgara.eventlistener.RegisterBillValidation.validateMemo
 import kotlin.collections.first
@@ -57,7 +58,8 @@ data class RegisterBillResponse private constructor (
             either {
                 accumulate {
                     validateAmount(amount).bindNelOrAccumulate()
-                    validateUser(borrower).bindNelOrAccumulate()
+                    validateLender(lender).bindNelOrAccumulate()
+                    validateBorrower(borrower).bindNelOrAccumulate()
                     validateMemo(memo).bindNelOrAccumulate()
                 }
                 RegisterBillResponse(

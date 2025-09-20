@@ -48,7 +48,7 @@ class RegisterBillRequestTest : StringSpec({
         }
     }
 
-    "請求金額が 1 円の EmbedData と userId とメモからインスタンスを生成できる" {
+    "請求金額が 1 円の EmbedData と請求者と請求先とメモからインスタンスを生成できる" {
         // setup
         val embedData = EmbedData(
             title = Optional.Value("入力情報だっピ"),
@@ -71,7 +71,7 @@ class RegisterBillRequestTest : StringSpec({
         }
     }
 
-    "請求金額が 1,000 円の EmbedData と userId とメモからインスタンスを生成できる" {
+    "請求金額が 1,000 円の EmbedData と請求者と請求先とメモからインスタンスを生成できる" {
         // setup
         val embedData = EmbedData(
             title = Optional.Value("入力情報だっピ"),
@@ -94,7 +94,7 @@ class RegisterBillRequestTest : StringSpec({
         }
     }
 
-    "EmbedData と userId とメモからインスタンスを生成で、請求金額が 0 または無効な userId またはメモが空白のみの場合インスタンスを生成できない" {
+    "EmbedData と請求者と請求先とメモからインスタンスを生成で、請求金額が 0 または無効な請求者または無効な請求先またはメモが空白のみの場合インスタンスを生成できない" {
         // setup
         val embedData = EmbedData(
             title = Optional.Value("入力情報だっピ"),
@@ -105,21 +105,22 @@ class RegisterBillRequestTest : StringSpec({
         )
 
         // execute
-        val actual = RegisterBillRequest.of(embedData, YUKI_ID, 0, " 　")
+        val actual = RegisterBillRequest.of(embedData, 0, 0, " 　")
 
         // assert
         assertSoftly {
             actual.shouldBeLeft()
-            actual.value shouldHaveSize 3
+            actual.value shouldHaveSize 4
             actual.value shouldBe listOf(
                 RegisterBillValidationError.AmountError.of(0),
-                RegisterBillValidationError.UserError.of(User.UNDEFINED),
+                RegisterBillValidationError.LenderError.of(User.UNDEFINED),
+                RegisterBillValidationError.BorrowerError.of(User.UNDEFINED),
                 RegisterBillValidationError.MemoError.of(" 　")
             )
         }
     }
 
-    "EmbedData と userId とメモからインスタンスを生成で、メモが 0 文字の場合インスタンスを生成できない" {
+    "EmbedData と請求者と請求先とメモからインスタンスを生成で、メモが 0 文字の場合インスタンスを生成できない" {
         // setup
         val embedData = EmbedData(
             title = Optional.Value("入力情報だっピ"),
@@ -142,7 +143,7 @@ class RegisterBillRequestTest : StringSpec({
         }
     }
 
-    "EmbedData と userId とメモからインスタンスを生成で、EmbedData のタイトルとカラーが不正で fields が空の場合インスタンスを生成できない" {
+    "EmbedData と請求者と請求先とメモからインスタンスを生成で、EmbedData のタイトルとカラーが不正で fields が空の場合インスタンスを生成できない" {
         // setup
         val embedData = EmbedData(
             title = Optional.Value("test"),
@@ -165,7 +166,7 @@ class RegisterBillRequestTest : StringSpec({
         }
     }
 
-    "EmbedData と userId とメモからインスタンスを生成で、EmbedData の請求金額フォーマットが不正な場合インスタンスを生成できない" {
+    "EmbedData と請求者と請求先とメモからインスタンスを生成で、EmbedData の請求金額フォーマットが不正な場合インスタンスを生成できない" {
         // setup
         val embedData = EmbedData(
             title = Optional.Value("入力情報だっピ"),
