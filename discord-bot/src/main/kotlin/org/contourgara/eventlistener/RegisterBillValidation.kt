@@ -47,6 +47,16 @@ object RegisterBillValidation {
             Unit.right()
         }
 
+    fun validateLenderAnfBorrower(lender: User, borrower: User): Either<NonEmptyList<RegisterBillValidationError>, Unit> =
+        either {
+            accumulate {
+                ensureOrAccumulate(
+                    lender != borrower
+                ) { RegisterBillValidationError.LenderAndBorrowerError.of(lender, borrower) }
+            }
+            Unit.right()
+        }
+
     fun validateMemo(memo: String): Either<NonEmptyList<RegisterBillValidationError>, Unit> =
         either {
             accumulate {
@@ -171,6 +181,17 @@ object RegisterBillValidation {
             companion object {
                 fun of(inValidBorrower: User): BorrowerError =
                     BorrowerError("請求先は gara か yuki でないとならない: ${inValidBorrower.name.lowercase()}")
+            }
+        }
+
+        @ConsistentCopyVisibility
+        data class LenderAndBorrowerError internal constructor(
+            override val message: String,
+            override val dataPath: String = "lender, borrower"
+        ) : RegisterBillValidationError {
+            companion object {
+                fun of(inValidLender: User, inValidBorrower: User): LenderAndBorrowerError =
+                    LenderAndBorrowerError("請求者と請求先が同じではならない: ${inValidLender.name.lowercase()}, ${inValidBorrower.name.lowercase()}")
             }
         }
 

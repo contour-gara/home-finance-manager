@@ -15,6 +15,7 @@ import org.contourgara.eventlistener.RegisterBillValidation.validateAmount
 import org.contourgara.eventlistener.RegisterBillValidation.validateBorrower
 import org.contourgara.eventlistener.RegisterBillValidation.validateLender
 import org.contourgara.eventlistener.RegisterBillValidation.validateEmbedData
+import org.contourgara.eventlistener.RegisterBillValidation.validateLenderAnfBorrower
 import org.contourgara.eventlistener.RegisterBillValidation.validateMemo
 import kotlin.collections.first
 import kotlin.collections.last
@@ -60,6 +61,7 @@ data class RegisterBillResponse private constructor (
                     validateAmount(amount).bindNelOrAccumulate()
                     validateLender(lender).bindNelOrAccumulate()
                     validateBorrower(borrower).bindNelOrAccumulate()
+                    validateLenderAnfBorrower(lender, borrower).bindNelOrAccumulate()
                     validateMemo(memo).bindNelOrAccumulate()
                 }
                 RegisterBillResponse(

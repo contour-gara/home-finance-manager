@@ -45,11 +45,12 @@ class RegisterBillResponseTest : StringSpec({
         // assert
         assertSoftly {
             actual.shouldBeLeft()
-            actual.value shouldHaveSize 4
+            actual.value shouldHaveSize 5
             actual.value shouldBe listOf(
                 RegisterBillValidationError.AmountError.of(0),
                 RegisterBillValidationError.LenderError.of(User.UNDEFINED),
                 RegisterBillValidationError.BorrowerError.of(User.UNDEFINED),
+                RegisterBillValidationError.LenderAndBorrowerError.of(User.UNDEFINED, User.UNDEFINED),
                 RegisterBillValidationError.MemoError.of(""),
             )
         }
@@ -159,11 +160,12 @@ class RegisterBillResponseTest : StringSpec({
         // assert
         assertSoftly {
             actual.shouldBeLeft()
-            actual.value shouldHaveSize 4
+            actual.value shouldHaveSize 5
             actual.value shouldBe listOf(
                 RegisterBillValidationError.AmountError.of(0),
                 RegisterBillValidationError.LenderError.of(User.UNDEFINED),
                 RegisterBillValidationError.BorrowerError.of(User.UNDEFINED),
+                RegisterBillValidationError.LenderAndBorrowerError.of(User.UNDEFINED, User.UNDEFINED),
                 RegisterBillValidationError.MemoError.of(""),
             )
         }
