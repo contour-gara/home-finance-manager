@@ -1,2 +1,5 @@
+[tools]
+java = "corretto-21.0.8.9.1"
+
 [env]
 HOME_FINANCE_MANAGER_BOT_TOKEN = ""
