@@ -60,10 +60,10 @@ class RegisterBillResponseTest : StringSpec({
             color = OptionalInt.Value(Color(0, 255, 0).rgb),
             fields = Optional.Value(
                 listOf(
-                    EmbedFieldData(name = "申請 ID だっピ", inline = OptionalBoolean.Value(true), value = "ID"),
-                    EmbedFieldData(name = "請求金額だっピ", inline = OptionalBoolean.Value(true), value = "1 円"),
-                    EmbedFieldData(name = "請求者だっピ", inline = OptionalBoolean.Value(true), value = "gara"),
-                    EmbedFieldData(name = "メモだっピ", inline = OptionalBoolean.Value(true), value = "test")
+                    EmbedFieldData(name = "申請 ID", inline = OptionalBoolean.Value(true), value = "ID"),
+                    EmbedFieldData(name = "請求金額", inline = OptionalBoolean.Value(true), value = "1 円"),
+                    EmbedFieldData(name = "請求者", inline = OptionalBoolean.Value(true), value = "gara"),
+                    EmbedFieldData(name = "メモ", inline = OptionalBoolean.Value(true), value = "test")
                 )
             )
         )
@@ -99,7 +99,7 @@ class RegisterBillResponseTest : StringSpec({
             actual.value shouldBe listOf(
                 RegisterBillValidationError.EmbedDataTitleError.of("入力情報"),
                 RegisterBillValidationError.EmbedDataColorError.of(Color(255, 255, 50), "緑色"),
-                RegisterBillValidationError.EmbedDataFieldNamesError.of(emptyList(), listOf("申請 ID だっピ", "請求金額だっピ", "請求者だっピ", "メモだっピ"))
+                RegisterBillValidationError.EmbedDataFieldNamesError.of(emptyList(), listOf("申請 ID", "請求金額", "請求者", "メモ"))
             )
         }
     }
@@ -111,10 +111,10 @@ class RegisterBillResponseTest : StringSpec({
             color = OptionalInt.Value(Color(0, 255, 0).rgb),
             fields = Optional.Value(
                 listOf(
-                    EmbedFieldData(name = "申請 ID だっピ", inline = OptionalBoolean.Value(true), value = "ID"),
-                    EmbedFieldData(name = "請求金額だっピ", inline = OptionalBoolean.Value(true), value = "1円"),
-                    EmbedFieldData(name = "請求者だっピ", inline = OptionalBoolean.Value(true), value = "gara"),
-                    EmbedFieldData(name = "メモだっピ", inline = OptionalBoolean.Value(true), value = "test")
+                    EmbedFieldData(name = "申請 ID", inline = OptionalBoolean.Value(true), value = "ID"),
+                    EmbedFieldData(name = "請求金額", inline = OptionalBoolean.Value(true), value = "1円"),
+                    EmbedFieldData(name = "請求者", inline = OptionalBoolean.Value(true), value = "gara"),
+                    EmbedFieldData(name = "メモ", inline = OptionalBoolean.Value(true), value = "test")
                 )
             )
         )
@@ -139,10 +139,10 @@ class RegisterBillResponseTest : StringSpec({
             color = OptionalInt.Value(Color(0, 255, 0).rgb),
             fields = Optional.Value(
                 listOf(
-                    EmbedFieldData(name = "申請 ID だっピ", inline = OptionalBoolean.Value(true), value = "ID"),
-                    EmbedFieldData(name = "請求金額だっピ", inline = OptionalBoolean.Value(true), value = "0 円"),
-                    EmbedFieldData(name = "請求者だっピ", inline = OptionalBoolean.Value(true), value = "test"),
-                    EmbedFieldData(name = "メモだっピ", inline = OptionalBoolean.Value(true), value = "")
+                    EmbedFieldData(name = "申請 ID", inline = OptionalBoolean.Value(true), value = "ID"),
+                    EmbedFieldData(name = "請求金額", inline = OptionalBoolean.Value(true), value = "0 円"),
+                    EmbedFieldData(name = "請求者", inline = OptionalBoolean.Value(true), value = "test"),
+                    EmbedFieldData(name = "メモ", inline = OptionalBoolean.Value(true), value = "")
                 )
             )
         )
@@ -173,10 +173,10 @@ class RegisterBillResponseTest : StringSpec({
         val expected = EmbedBuilder().apply {
             title = "入力情報だっピ"
             color = Color(0, 255, 0)
-            field(name = "申請 ID だっピ", inline = true, value = { "ID" })
-            field(name = "請求金額だっピ", inline = true, value = { "1 円" })
-            field(name = "請求者だっピ", inline = true, value = { "gara" })
-            field(name = "メモだっピ", inline = true, value = { "test" })
+            field(name = "申請 ID", inline = true, value = { "ID" })
+            field(name = "請求金額", inline = true, value = { "1 円" })
+            field(name = "請求者", inline = true, value = { "gara" })
+            field(name = "メモ", inline = true, value = { "test" })
         }.toRequest()
         actual shouldBe expected
     }

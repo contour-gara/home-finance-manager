@@ -93,7 +93,7 @@ object RegisterBillValidation {
             it.name
         }.let {
             either {
-                val validEmbedDataFieldNames = listOf("請求金額だっピ")
+                val validEmbedDataFieldNames = listOf("請求金額")
                 ensure(it == validEmbedDataFieldNames) { RegisterBillValidationError.EmbedDataFieldNamesError.of(it, validEmbedDataFieldNames) }
                 Unit.right()
             }
@@ -104,7 +104,7 @@ object RegisterBillValidation {
             it.name
         }.let {
             either {
-                val validEmbedDataFieldNames = listOf("申請 ID だっピ", "請求金額だっピ", "請求者だっピ", "メモだっピ")
+                val validEmbedDataFieldNames = listOf("申請 ID", "請求金額", "請求者", "メモ")
                 ensure(it == validEmbedDataFieldNames) { RegisterBillValidationError.EmbedDataFieldNamesError.of(it, validEmbedDataFieldNames) }
                 Unit.right()
             }
@@ -114,11 +114,11 @@ object RegisterBillValidation {
         embedData.fields.orEmpty().associate {
             it.name to it.value
         }.let {
-            it["請求金額だっピ"]!!
+            it["請求金額"]!!
         }.let {
             either {
                 accumulate {
-                    ensureOrAccumulate(Regex("""^\d+\s円$""").matches(it)) { RegisterBillValidationError.EmbedDataFieldAmountFormatError.of(it) }
+                    ensureOrAccumulate(Regex("""^\d{1,3}(,\d{3})*\s円$""").matches(it)) { RegisterBillValidationError.EmbedDataFieldAmountFormatError.of(it) }
                 }
                 Unit.right()
             }

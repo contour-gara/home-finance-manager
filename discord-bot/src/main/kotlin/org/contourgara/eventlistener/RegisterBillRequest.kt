@@ -37,7 +37,7 @@ data class RegisterBillRequest private constructor(
                 accumulate {
                     validateAmountEmbedData(onlyAmountEmbedData).bindNelOrAccumulate()
                 }
-                of(onlyAmountEmbedData.fields.orEmpty().first().value.split(" ").first().toInt(), User.of(userId), memo).bind()
+                of(onlyAmountEmbedData.fields.orEmpty().first().value.split(" ").first().replace(",", "").toInt(), User.of(userId), memo).bind()
             }
 
         private fun of(amount: Int, claimant: User, memo: String): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillRequest> =
@@ -54,9 +54,9 @@ data class RegisterBillRequest private constructor(
     fun toEmbedBuilder(): EmbedBuilder.() -> Unit = {
         title = "入力情報だっピ"
         color = Color(255, 255, 50)
-        field(name = "請求金額だっピ", inline = true, value = { "$amount 円" })
-        if (claimant != User.UNDEFINED) field(name = "請求者だっピ", inline = true, value = { claimant.name.lowercase() })
-        if (!memo.isEmpty()) field(name = "メモだっピ", inline = true, value = { memo })
+        field(name = "請求金額", inline = true, value = { "${amount.toString().reversed().chunked(3).joinToString(",").reversed()} 円" })
+        if (claimant != User.UNDEFINED) field(name = "請求者", inline = true, value = { claimant.name.lowercase() })
+        if (!memo.isEmpty()) field(name = "メモ", inline = true, value = { memo })
     }
 
     fun toParam(): RegisterBillParam = RegisterBillParam(amount, claimant.name.lowercase(), memo)

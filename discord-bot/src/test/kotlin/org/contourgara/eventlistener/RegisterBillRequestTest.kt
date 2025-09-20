@@ -46,13 +46,13 @@ class RegisterBillRequestTest : StringSpec({
         }
     }
 
-    "EmbedData と userId とメモからインスタンスを生成できる" {
+    "請求金額が 1 円の EmbedData と userId とメモからインスタンスを生成できる" {
         // setup
         val embedData = EmbedData(
             title = Optional.Value("入力情報だっピ"),
             color = OptionalInt.Value(Color(255, 255, 50).rgb),
             fields = Optional.Value(listOf(
-                EmbedFieldData(name = "請求金額だっピ", inline = OptionalBoolean.Value(true), value = "1 円")
+                EmbedFieldData(name = "請求金額", inline = OptionalBoolean.Value(true), value = "1 円")
             ))
         )
 
@@ -68,13 +68,35 @@ class RegisterBillRequestTest : StringSpec({
         }
     }
 
+    "請求金額が 1,000 円の EmbedData と userId とメモからインスタンスを生成できる" {
+        // setup
+        val embedData = EmbedData(
+            title = Optional.Value("入力情報だっピ"),
+            color = OptionalInt.Value(Color(255, 255, 50).rgb),
+            fields = Optional.Value(listOf(
+                EmbedFieldData(name = "請求金額", inline = OptionalBoolean.Value(true), value = "1,000 円")
+            ))
+        )
+
+        // execute
+        val actual = RegisterBillRequest.of(embedData, GARA_ID, "test")
+
+        // assert
+        assertSoftly {
+            actual.shouldBeRight()
+            actual.getOrNull()?.amount shouldBe 1000
+            actual.getOrNull()?.claimant shouldBe User.GARA
+            actual.getOrNull()?.memo shouldBe "test"
+        }
+    }
+
     "EmbedData と userId とメモからインスタンスを生成で、請求金額が 0 または無効な userId またはメモが空白のみの場合インスタンスを生成できない" {
         // setup
         val embedData = EmbedData(
             title = Optional.Value("入力情報だっピ"),
             color = OptionalInt.Value(Color(255, 255, 50).rgb),
             fields = Optional.Value(listOf(
-                EmbedFieldData(name = "請求金額だっピ", inline = OptionalBoolean.Value(true), value = "0 円")
+                EmbedFieldData(name = "請求金額", inline = OptionalBoolean.Value(true), value = "0 円")
             ))
         )
 
@@ -99,7 +121,7 @@ class RegisterBillRequestTest : StringSpec({
             title = Optional.Value("入力情報だっピ"),
             color = OptionalInt.Value(Color(255, 255, 50).rgb),
             fields = Optional.Value(listOf(
-                EmbedFieldData(name = "請求金額だっピ", inline = OptionalBoolean.Value(true), value = "1 円")
+                EmbedFieldData(name = "請求金額", inline = OptionalBoolean.Value(true), value = "1 円")
             ))
         )
 
@@ -134,7 +156,7 @@ class RegisterBillRequestTest : StringSpec({
             actual.value shouldBe nonEmptyListOf(
                 RegisterBillValidationError.EmbedDataTitleError.of("test"),
                 RegisterBillValidationError.EmbedDataColorError.of(Color(0, 0, 0), "黄色"),
-                RegisterBillValidationError.EmbedDataFieldNamesError.of(emptyList(), listOf("請求金額だっピ"))
+                RegisterBillValidationError.EmbedDataFieldNamesError.of(emptyList(), listOf("請求金額"))
             )
         }
     }
@@ -145,7 +167,7 @@ class RegisterBillRequestTest : StringSpec({
             title = Optional.Value("入力情報だっピ"),
             color = OptionalInt.Value(Color(255, 255, 50).rgb),
             fields = Optional.Value(listOf(
-                EmbedFieldData(name = "請求金額だっピ", inline = OptionalBoolean.Value(true), value = "1円")
+                EmbedFieldData(name = "請求金額", inline = OptionalBoolean.Value(true), value = "1円")
             ))
         )
 
@@ -173,7 +195,7 @@ class RegisterBillRequestTest : StringSpec({
         val expected = EmbedBuilder().apply {
             title = "入力情報だっピ"
             color = Color(255, 255, 50)
-            field(name = "請求金額だっピ", inline = true, value = { "1 円" })
+            field(name = "請求金額", inline = true, value = { "1 円" })
         }.toRequest()
         actual shouldBe expected
     }
@@ -184,7 +206,7 @@ class RegisterBillRequestTest : StringSpec({
             title = Optional.Value("入力情報だっピ"),
             color = OptionalInt.Value(Color(255, 255, 50).rgb),
             fields = Optional.Value(listOf(
-                EmbedFieldData(name = "請求金額だっピ", inline = OptionalBoolean.Value(true), value = "1 円")
+                EmbedFieldData(name = "請求金額", inline = OptionalBoolean.Value(true), value = "1 円")
             ))
         )
 
