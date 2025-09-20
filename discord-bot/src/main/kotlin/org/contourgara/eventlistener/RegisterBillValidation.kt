@@ -104,7 +104,7 @@ object RegisterBillValidation {
             it.name
         }.let {
             either {
-                val validEmbedDataFieldNames = listOf("申請 ID", "請求金額", "請求者", "メモ")
+                val validEmbedDataFieldNames = listOf("申請 ID", "請求金額", "請求者", "請求先", "メモ")
                 ensure(it == validEmbedDataFieldNames) { RegisterBillValidationError.EmbedDataFieldNamesError.of(it, validEmbedDataFieldNames) }
                 Unit.right()
             }

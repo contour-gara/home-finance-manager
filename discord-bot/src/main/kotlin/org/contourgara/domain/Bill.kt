@@ -6,8 +6,9 @@ import ulid.ULID
 data class Bill private constructor(
     val id: ULID,
     val amount: Int,
+    val lender: User,
     val claimant: User,
-    val memo: String
+    val memo: String,
 ) {
     init {
         require(amount in 1..Int.MAX_VALUE) { "請求金額は [0..Int.MAX_VALUE] でないとならない: $amount" }
@@ -15,7 +16,7 @@ data class Bill private constructor(
     }
 
     companion object {
-        fun of(id: ULID, amount: Int, userName: String, memo: String) =
-            Bill(id, amount, User.of(userName), memo)
+        fun of(id: ULID, amount: Int, lenderName: String, claimantName: String, memo: String) =
+            Bill(id, amount, User.of(lenderName), User.of(claimantName), memo)
     }
 }

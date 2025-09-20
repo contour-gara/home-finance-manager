@@ -19,7 +19,7 @@ import org.contourgara.eventlistener.RegisterBillValidation.RegisterBillValidati
 class RegisterBillResponseTest : StringSpec({
     "DTO からインスタンスを生成できる" {
         // setup
-        val registerBillDto = RegisterBillDto("ID", 1, "gara", "test")
+        val registerBillDto = RegisterBillDto("ID", 1, "yuki", "gara", "test")
 
         // execute
         val actual = RegisterBillResponse.from(registerBillDto)
@@ -29,6 +29,7 @@ class RegisterBillResponseTest : StringSpec({
             actual.shouldBeRight()
             actual.getOrNull()?.id shouldBe "ID"
             actual.getOrNull()?.amount shouldBe 1
+            actual.getOrNull()?.lender shouldBe User.YUKI
             actual.getOrNull()?.claimant shouldBe User.GARA
             actual.getOrNull()?.memo shouldBe "test"
         }
@@ -36,7 +37,7 @@ class RegisterBillResponseTest : StringSpec({
 
     "DTO からインスタンスで、各項目が不正な場合インスタンスを生成できない" {
         // setup
-        val registerBillDto = RegisterBillDto("ID", 0, "test", "")
+        val registerBillDto = RegisterBillDto("ID", 0, "yuki", "test", "")
 
         // execute
         val actual = RegisterBillResponse.from(registerBillDto)
@@ -62,7 +63,8 @@ class RegisterBillResponseTest : StringSpec({
                 listOf(
                     EmbedFieldData(name = "申請 ID", inline = OptionalBoolean.Value(true), value = "ID"),
                     EmbedFieldData(name = "請求金額", inline = OptionalBoolean.Value(true), value = "1 円"),
-                    EmbedFieldData(name = "請求者", inline = OptionalBoolean.Value(true), value = "gara"),
+                    EmbedFieldData(name = "請求者", inline = OptionalBoolean.Value(true), value = "yuki"),
+                    EmbedFieldData(name = "請求先", inline = OptionalBoolean.Value(true), value = "gara"),
                     EmbedFieldData(name = "メモ", inline = OptionalBoolean.Value(true), value = "test")
                 )
             )
@@ -76,6 +78,7 @@ class RegisterBillResponseTest : StringSpec({
             actual.shouldBeRight()
             actual.getOrNull()?.id shouldBe "ID"
             actual.getOrNull()?.amount shouldBe 1
+            actual.getOrNull()?.lender shouldBe User.YUKI
             actual.getOrNull()?.claimant shouldBe User.GARA
             actual.getOrNull()?.memo shouldBe "test"
         }
@@ -99,7 +102,7 @@ class RegisterBillResponseTest : StringSpec({
             actual.value shouldBe listOf(
                 RegisterBillValidationError.EmbedDataTitleError.of("入力情報"),
                 RegisterBillValidationError.EmbedDataColorError.of(Color(255, 255, 50), "緑色"),
-                RegisterBillValidationError.EmbedDataFieldNamesError.of(emptyList(), listOf("申請 ID", "請求金額", "請求者", "メモ"))
+                RegisterBillValidationError.EmbedDataFieldNamesError.of(emptyList(), listOf("申請 ID", "請求金額", "請求者", "請求先", "メモ"))
             )
         }
     }
@@ -113,7 +116,8 @@ class RegisterBillResponseTest : StringSpec({
                 listOf(
                     EmbedFieldData(name = "申請 ID", inline = OptionalBoolean.Value(true), value = "ID"),
                     EmbedFieldData(name = "請求金額", inline = OptionalBoolean.Value(true), value = "1円"),
-                    EmbedFieldData(name = "請求者", inline = OptionalBoolean.Value(true), value = "gara"),
+                    EmbedFieldData(name = "請求者", inline = OptionalBoolean.Value(true), value = "yuki"),
+                    EmbedFieldData(name = "請求先", inline = OptionalBoolean.Value(true), value = "gara"),
                     EmbedFieldData(name = "メモ", inline = OptionalBoolean.Value(true), value = "test")
                 )
             )
@@ -141,7 +145,8 @@ class RegisterBillResponseTest : StringSpec({
                 listOf(
                     EmbedFieldData(name = "申請 ID", inline = OptionalBoolean.Value(true), value = "ID"),
                     EmbedFieldData(name = "請求金額", inline = OptionalBoolean.Value(true), value = "0 円"),
-                    EmbedFieldData(name = "請求者", inline = OptionalBoolean.Value(true), value = "test"),
+                    EmbedFieldData(name = "請求者", inline = OptionalBoolean.Value(true), value = "yuki"),
+                    EmbedFieldData(name = "請求先", inline = OptionalBoolean.Value(true), value = "test"),
                     EmbedFieldData(name = "メモ", inline = OptionalBoolean.Value(true), value = "")
                 )
             )
@@ -164,7 +169,7 @@ class RegisterBillResponseTest : StringSpec({
 
     "Embed を生成できる" {
         // setup
-        val sut = RegisterBillResponse.from(RegisterBillDto("ID", 1, "gara", "test")).getOrNull()!!
+        val sut = RegisterBillResponse.from(RegisterBillDto("ID", 1, "yuki", "gara", "test")).getOrNull()!!
 
         // execute
         val actual = EmbedBuilder().apply(sut.toEmbedBuilder()).toRequest()
@@ -175,7 +180,8 @@ class RegisterBillResponseTest : StringSpec({
             color = Color(0, 255, 0)
             field(name = "申請 ID", inline = true, value = { "ID" })
             field(name = "請求金額", inline = true, value = { "1 円" })
-            field(name = "請求者", inline = true, value = { "gara" })
+            field(name = "請求者", inline = true, value = { "yuki" })
+            field(name = "請求先", inline = true, value = { "gara" })
             field(name = "メモ", inline = true, value = { "test" })
         }.toRequest()
         actual shouldBe expected

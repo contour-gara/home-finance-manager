@@ -7,7 +7,7 @@ import org.koin.core.annotation.Single
 @Single
 class RegisterBillUseCase(private val ulidGenerator: UlidGenerator) {
     fun execute(param: RegisterBillParam): RegisterBillDto =
-        Bill.of(ulidGenerator.generate(), param.amount, param.claimant, param.memo).let {
+        Bill.of(ulidGenerator.generate(), param.amount, param.lender, param.claimant, param.memo).let {
             println("execute UseCase")
             RegisterBillDto.from(it)
         }

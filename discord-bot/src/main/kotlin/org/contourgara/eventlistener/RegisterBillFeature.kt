@@ -79,13 +79,17 @@ object RegisterBillFeature : KoinComponent {
         }
 
         when (val validationResult = interaction.textInputs.keys.first().let {
-            RegisterBillRequest.of(interaction.message?.embeds?.first()?.data!!, it.toLong(), interaction.textInputs[it]?.value!!)
+            RegisterBillRequest.of(
+                onlyAmountEmbedData = interaction.message?.embeds?.first()?.data!!,
+                lender = interaction.user.id.value.toLong(),
+                claimant = it.toLong(),
+                memo = interaction.textInputs[it]?.value!!,
+            )
         }.flatMap {
             RegisterBillResponse.from(registerBillUseCase.execute(it.toParam()))
         }) {
             is Either.Right -> {
-                val user = kord.getUser(Snowflake(validationResult.value.claimant.id))
-                content = "${user?.mention} 請求を受け付けたっピ"
+                content = "${interaction.user.mention} 請求が届いたっピ"
                 embed(validationResult.value.toEmbedBuilder())
             }
             is Either.Left -> embed(validationResult.value.toEmbedBuilder())

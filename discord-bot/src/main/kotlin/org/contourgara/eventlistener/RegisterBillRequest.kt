@@ -20,8 +20,9 @@ import org.contourgara.eventlistener.RegisterBillValidation.RegisterBillValidati
 @ConsistentCopyVisibility
 data class RegisterBillRequest private constructor(
     val amount: Int,
+    val lender: User = User.UNDEFINED,
     val claimant: User = User.UNDEFINED,
-    val memo: String = ""
+    val memo: String = "",
 ) {
     companion object {
         fun of(amount: Int): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillRequest> =
@@ -32,22 +33,32 @@ data class RegisterBillRequest private constructor(
                 RegisterBillRequest(amount)
             }
 
-        fun of(onlyAmountEmbedData: EmbedData, userId: Long, memo: String): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillRequest> =
+        fun of(onlyAmountEmbedData: EmbedData, lender: Long, claimant: Long, memo: String): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillRequest> =
             either {
                 accumulate {
                     validateAmountEmbedData(onlyAmountEmbedData).bindNelOrAccumulate()
                 }
-                of(onlyAmountEmbedData.fields.orEmpty().first().value.split(" ").first().replace(",", "").toInt(), User.of(userId), memo).bind()
+                of(
+                    amount = onlyAmountEmbedData.fields.orEmpty().first().value.split(" ").first().replace(",", "").toInt(),
+                    lender = User.of(lender),
+                    claimant = User.of(claimant),
+                    memo = memo,
+                ).bind()
             }
 
-        private fun of(amount: Int, claimant: User, memo: String): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillRequest> =
+        private fun of(amount: Int, claimant: User, lender: User, memo: String): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillRequest> =
             either {
                 accumulate {
                     validateAmount(amount).bindNelOrAccumulate()
                     validateClaimant(claimant).bindNelOrAccumulate()
                     validateMemo(memo).bindNelOrAccumulate()
                 }
-                RegisterBillRequest(amount, claimant, memo)
+                RegisterBillRequest(
+                    amount = amount,
+                    lender = lender,
+                    claimant = claimant,
+                    memo = memo,
+                )
             }
     }
 
@@ -55,9 +66,10 @@ data class RegisterBillRequest private constructor(
         title = "入力情報だっピ"
         color = Color(255, 255, 50)
         field(name = "請求金額", inline = true, value = { "${amount.toString().reversed().chunked(3).joinToString(",").reversed()} 円" })
-        if (claimant != User.UNDEFINED) field(name = "請求者", inline = true, value = { claimant.name.lowercase() })
+        if (lender != User.UNDEFINED) field(name = "請求者", inline = true, value = { lender.name.lowercase() })
+        if (claimant != User.UNDEFINED) field(name = "請求先", inline = true, value = { claimant.name.lowercase() })
         if (!memo.isEmpty()) field(name = "メモ", inline = true, value = { memo })
     }
 
-    fun toParam(): RegisterBillParam = RegisterBillParam(amount, claimant.name.lowercase(), memo)
+    fun toParam(): RegisterBillParam = RegisterBillParam(amount, lender.name.lowercase(), claimant.name.lowercase(), memo)
 }

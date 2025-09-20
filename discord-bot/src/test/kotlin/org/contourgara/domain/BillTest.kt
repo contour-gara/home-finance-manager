@@ -11,21 +11,21 @@ class BillTest : StringSpec({
     "インスタンス生成で、請求金額が 0 の場合例外が飛ぶ" {
         // execute & assert
         shouldThrowExactly<IllegalArgumentException> {
-            Bill.of(ulid, 0, "gara", "test")
+            Bill.of(ulid, 0, "yuki", "gara", "test")
         }.message shouldBe "請求金額は [0..Int.MAX_VALUE] でないとならない: 0"
     }
 
     "インスタンス生成で、メモがスペースのみの場合例外が飛ぶ" {
         // execute & assert
         shouldThrowExactly<IllegalArgumentException> {
-            Bill.of(ulid, 1, "gara", "　 ")
+            Bill.of(ulid, 1, "yuki", "gara", "　 ")
         }.message shouldBe "メモは空文字ではならない"
     }
 
     "インスタンス生成で、メモが 0 文字の場合例外が飛ぶ" {
         // execute & assert
         shouldThrowExactly<IllegalArgumentException> {
-            Bill.of(ulid, 1, "gara", "")
+            Bill.of(ulid, 1, "yuki", "gara", "")
         }.message shouldBe "メモは空文字ではならない"
     }
 })

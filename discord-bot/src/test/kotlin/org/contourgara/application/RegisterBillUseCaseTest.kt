@@ -3,11 +3,6 @@ package org.contourgara.application
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.koin.KoinExtension
 import io.kotest.matchers.shouldBe
-import io.kotest.property.Arb
-import io.kotest.property.arbitrary.element
-import io.kotest.property.assume
-import io.kotest.property.checkAll
-import io.kotest.property.forAll
 import io.mockk.every
 import io.mockk.mockk
 import org.contourgara.domain.UlidGenerator
@@ -29,13 +24,13 @@ class RegisterBillUseCaseTest : KoinTest, StringSpec() {
 
             val sut:RegisterBillUseCase by inject()
 
-            val registerBillParam = RegisterBillParam(1, "gara", "memo")
+            val registerBillParam = RegisterBillParam(1, "yuki", "gara", "memo")
 
             // execute
             val actual = sut.execute(registerBillParam)
 
             // assert
-            val expected = RegisterBillDto("01K5EZVS4SQ695EMPX61GM7KHW", 1, "gara", "memo")
+            val expected = RegisterBillDto("01K5EZVS4SQ695EMPX61GM7KHW", 1, "yuki", "gara", "memo")
             actual shouldBe expected
         }
 
@@ -47,34 +42,14 @@ class RegisterBillUseCaseTest : KoinTest, StringSpec() {
 
             val sut:RegisterBillUseCase by inject()
 
-            val registerBillParam = RegisterBillParam(1, "gara", "memo")
+            val registerBillParam = RegisterBillParam(1, "yuki", "gara", "memo")
 
             // execute
             val actual = sut.execute(registerBillParam)
 
             // assert
-            val expected = RegisterBillDto("01K5C11Z3TPPZ5H95MMTQV77RP", 1, "gara", "memo")
+            val expected = RegisterBillDto("01K5C11Z3TPPZ5H95MMTQV77RP", 1, "yuki", "gara", "memo")
             actual shouldBe expected
         }
-
-//        "test" {
-//            checkAll(Arb.element(listOf("01K5EZVS4SQ695EMPX61GM7KHW", "01K5C11Z3TPPZ5H95MMTQV77RP"))) { ulid ->
-//                // setup
-//                declareMock<UlidGenerator> {
-//                    every { generate() } returns ULID.parseULID(ulid)
-//                }
-//
-//                val sut:RegisterBillUseCase by inject()
-//
-//                val registerBillParam = RegisterBillParam(1, "gara", "memo")
-//
-//                // execute
-//                val actual = sut.execute(registerBillParam)
-//
-//                // assert
-//                val expected = RegisterBillDto(ulid, 1, "gara", "memo")
-//                actual shouldBe expected
-//            }
-//        }
     }
 }

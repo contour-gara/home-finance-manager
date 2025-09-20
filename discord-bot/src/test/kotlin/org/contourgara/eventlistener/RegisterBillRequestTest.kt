@@ -20,6 +20,7 @@ import org.contourgara.eventlistener.RegisterBillValidation.RegisterBillValidati
 
 class RegisterBillRequestTest : StringSpec({
     val GARA_ID = 703805458116509818
+    val YUKI_ID = 889339009061507143
 
     "請求金額からインスタンスを生成できる" {
         // execute
@@ -57,7 +58,7 @@ class RegisterBillRequestTest : StringSpec({
         )
 
         // execute
-        val actual = RegisterBillRequest.of(embedData, GARA_ID, "test")
+        val actual = RegisterBillRequest.of(embedData, YUKI_ID, GARA_ID, "test")
 
         // assert
         assertSoftly {
@@ -79,7 +80,7 @@ class RegisterBillRequestTest : StringSpec({
         )
 
         // execute
-        val actual = RegisterBillRequest.of(embedData, GARA_ID, "test")
+        val actual = RegisterBillRequest.of(embedData, YUKI_ID, GARA_ID, "test")
 
         // assert
         assertSoftly {
@@ -101,7 +102,7 @@ class RegisterBillRequestTest : StringSpec({
         )
 
         // execute
-        val actual = RegisterBillRequest.of(embedData, 0, " 　")
+        val actual = RegisterBillRequest.of(embedData, YUKI_ID, 0, " 　")
 
         // assert
         assertSoftly {
@@ -126,7 +127,7 @@ class RegisterBillRequestTest : StringSpec({
         )
 
         // execute
-        val actual = RegisterBillRequest.of(embedData, GARA_ID, "")
+        val actual = RegisterBillRequest.of(embedData, YUKI_ID, GARA_ID, "")
 
         // assert
         assertSoftly {
@@ -147,7 +148,7 @@ class RegisterBillRequestTest : StringSpec({
         )
 
         // execute
-        val actual = RegisterBillRequest.of(embedData, GARA_ID, "test")
+        val actual = RegisterBillRequest.of(embedData, YUKI_ID, GARA_ID, "test")
 
         // assert
         assertSoftly {
@@ -172,7 +173,7 @@ class RegisterBillRequestTest : StringSpec({
         )
 
         // execute
-        val actual = RegisterBillRequest.of(embedData, GARA_ID, "test")
+        val actual = RegisterBillRequest.of(embedData, YUKI_ID, GARA_ID, "test")
 
         // assert
         assertSoftly {
@@ -210,13 +211,13 @@ class RegisterBillRequestTest : StringSpec({
             ))
         )
 
-        val sut = RegisterBillRequest.of(embedData, GARA_ID, "test").getOrNull()!!
+        val sut = RegisterBillRequest.of(embedData, YUKI_ID, GARA_ID, "test").getOrNull()!!
 
         // execute
         val actual = sut.toParam()
 
         // assert
-        val expected = RegisterBillParam(1, "gara", "test")
+        val expected = RegisterBillParam(1, "yuki", "gara", "test")
         actual shouldBe expected
     }
 })
