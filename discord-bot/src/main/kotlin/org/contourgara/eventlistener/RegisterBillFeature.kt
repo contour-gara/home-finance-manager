@@ -49,7 +49,7 @@ object RegisterBillFeature : KoinComponent {
                         embed(validationResult.value.toEmbedBuilder())
                         actionRow {
                             userSelect(REGISTER_BILL_SELECT_MENU_ID) {
-                                placeholder = "請求者を選択してっピ"
+                                placeholder = "請求先を選択してっピ"
                             }
                         }
                     }
