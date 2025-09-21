@@ -54,9 +54,9 @@ data class RegisterBillRequest private constructor(
         title = "入力情報だっピ"
         color = Color(255, 255, 50)
         field(name = "請求金額", inline = true, value = { "${amount.toString().reversed().chunked(3).joinToString(",").reversed()} 円" })
-        if (lender != User.UNDEFINED) field(name = "請求者", inline = true, value = { lender.name.lowercase() })
-        if (borrower != User.UNDEFINED) field(name = "請求先", inline = true, value = { borrower.name.lowercase() })
-        if (!memo.isEmpty()) field(name = "メモ", inline = true, value = { memo })
+        field(name = "請求者", inline = true, value = { lender.name.lowercase() })
+        field(name = "請求先", inline = true, value = { borrower.name.lowercase() })
+        field(name = "メモ", inline = true, value = { memo })
     }
 
     fun toParam(): RegisterBillParam = RegisterBillParam(amount, lender.name.lowercase(), borrower.name.lowercase(), memo)
