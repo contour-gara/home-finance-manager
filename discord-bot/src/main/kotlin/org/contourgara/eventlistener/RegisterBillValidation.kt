@@ -13,14 +13,6 @@ import dev.kord.core.cache.data.EmbedData
 
 @OptIn(ExperimentalRaiseAccumulateApi::class)
 object RegisterBillValidation {
-    fun validateAmount(amount: Int): Either<NonEmptyList<RegisterBillValidationError>, Unit> =
-        either {
-            accumulate {
-                ensureOrAccumulate(amount >= 1) { RegisterBillValidationError.AmountError.of(amount) }
-            }
-            Unit.right()
-        }
-
     fun validateAmount(amount: String): Either<NonEmptyList<RegisterBillValidationError>, Unit> =
         either {
             accumulate {
@@ -102,17 +94,6 @@ object RegisterBillValidation {
             }
         }
 
-    private fun validateAmountEmbedDataField(embedData: EmbedData): Either<RegisterBillValidationError, Unit> =
-        embedData.fields.orEmpty().map {
-            it.name
-        }.let {
-            either {
-                val validEmbedDataFieldNames = listOf("請求金額")
-                ensure(it == validEmbedDataFieldNames) { RegisterBillValidationError.EmbedDataFieldNamesError.of(it, validEmbedDataFieldNames) }
-                Unit.right()
-            }
-        }
-
     private fun validateEmbedDataField(embedData: EmbedData): Either<RegisterBillValidationError, Unit> =
         embedData.fields.orEmpty().map {
             it.name
@@ -148,9 +129,6 @@ object RegisterBillValidation {
             override val dataPath: String = "amount"
         ) : RegisterBillValidationError {
             companion object {
-                fun of(inValidAmount: Int): AmountError =
-                    AmountError("請求金額は 1 円以上 2147483647 円以下でないとならない: $inValidAmount")
-
                 fun of(inValidAmount: String): AmountError =
                     AmountError("請求金額は 1 円以上 2147483647 円以下の数字でないとならない: $inValidAmount")
             }

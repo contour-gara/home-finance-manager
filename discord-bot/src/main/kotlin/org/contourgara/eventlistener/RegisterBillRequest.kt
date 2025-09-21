@@ -18,35 +18,31 @@ import org.contourgara.eventlistener.RegisterBillValidation.validateLenderAndBor
 @OptIn(ExperimentalRaiseAccumulateApi::class)
 @ConsistentCopyVisibility
 data class RegisterBillRequest private constructor(
-    val amount: Int,
-    val lender: User = User.UNDEFINED,
-    val borrower: User = User.UNDEFINED,
-    val memo: String = "",
+    private val amount: Int,
+    private val lender: User = User.UNDEFINED,
+    private val borrower: User = User.UNDEFINED,
+    private val memo: String = "",
 ) {
     companion object {
         fun of(amount: String, lender: Long, borrower: Long, memo: String): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillRequest> =
+            of(
+                amount = amount,
+                lender = User.of(lender),
+                borrower = User.of(borrower),
+                memo = memo,
+            )
+
+        private fun of(amount: String, lender: User, borrower: User, memo: String): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillRequest> =
             either {
                 accumulate {
                     validateAmount(amount).bindNelOrAccumulate()
-                }
-                of(
-                    amount = amount.toInt(),
-                    lender = User.of(lender),
-                    borrower = User.of(borrower),
-                    memo = memo,
-                ).bind()
-            }
-
-        private fun of(amount: Int, lender: User, borrower: User, memo: String): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillRequest> =
-            either {
-                accumulate {
                     validateLender(lender).bindNelOrAccumulate()
                     validateBorrower(borrower).bindNelOrAccumulate()
                     validateLenderAndBorrower(lender, borrower).bindNelOrAccumulate()
                     validateMemo(memo).bindNelOrAccumulate()
                 }
                 RegisterBillRequest(
-                    amount = amount,
+                    amount = amount.toInt(),
                     lender = lender,
                     borrower = borrower,
                     memo = memo,

@@ -2,6 +2,7 @@ package org.contourgara.eventlistener
 
 import dev.kord.common.Color
 import dev.kord.rest.builder.message.EmbedBuilder
+import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import org.contourgara.application.RegisterBillParam
@@ -9,6 +10,14 @@ import org.contourgara.application.RegisterBillParam
 class RegisterBillRequestTest : StringSpec({
     val GARA_ID = 703805458116509818
     val YUKI_ID = 889339009061507143
+
+    "インスタンス生成で、請求金額、請求者、請求先、メモが適切な場合、Right が返る" {
+        // execute
+        val actual = RegisterBillRequest.of("1", YUKI_ID, GARA_ID, "test")
+
+        // assert
+        actual.shouldBeRight()
+    }
 
     "Embed を生成できる" {
         // setup

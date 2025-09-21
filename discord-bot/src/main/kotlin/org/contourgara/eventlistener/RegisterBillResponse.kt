@@ -6,6 +6,7 @@ import arrow.core.raise.ExperimentalRaiseAccumulateApi
 import arrow.core.raise.accumulate
 import arrow.core.raise.either
 import dev.kord.common.Color
+import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.optional.orEmpty
 import dev.kord.core.cache.data.EmbedData
 import dev.kord.rest.builder.message.EmbedBuilder
@@ -23,23 +24,21 @@ import kotlin.collections.last
 @OptIn(ExperimentalRaiseAccumulateApi::class)
 @ConsistentCopyVisibility
 data class RegisterBillResponse private constructor (
-    val id: String,
-    val amount: Int,
-    val lender: User,
-    val borrower: User,
-    val memo: String
+    private val id: String,
+    private val amount: Int,
+    private val lender: User,
+    private val borrower: User,
+    private val memo: String,
 ) {
     companion object {
         fun from(dto: RegisterBillDto): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillResponse> =
-            either {
-                of(
-                    id = dto.id,
-                    amount = dto.amount,
-                    lender = User.of(dto.lender),
-                    borrower = User.of(dto.borrower),
-                    memo = dto.memo,
-                ).bind()
-            }
+            of(
+                id = dto.id,
+                amount = dto.amount.toString(),
+                lender = User.of(dto.lender),
+                borrower = User.of(dto.borrower),
+                memo = dto.memo,
+            )
 
         fun from(embedData: EmbedData): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillResponse> =
             either {
@@ -48,14 +47,14 @@ data class RegisterBillResponse private constructor (
                 }
                 of(
                     id = embedData.fields.orEmpty().first().value,
-                    amount = embedData.fields.orEmpty()[1].value.split(" ").first().replace(",", "").toInt(),
+                    amount = embedData.fields.orEmpty()[1].value.split(" ").first().replace(",", ""),
                     lender = User.of(embedData.fields.orEmpty()[2].value),
                     borrower = User.of(embedData.fields.orEmpty()[3].value),
                     memo = embedData.fields.orEmpty().last().value
                 ).bind()
             }
 
-        private fun of(id: String, amount: Int, lender: User, borrower: User, memo: String): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillResponse> =
+        private fun of(id: String, amount: String, lender: User, borrower: User, memo: String): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillResponse> =
             either {
                 accumulate {
                     validateAmount(amount).bindNelOrAccumulate()
@@ -66,7 +65,7 @@ data class RegisterBillResponse private constructor (
                 }
                 RegisterBillResponse(
                     id = id,
-                    amount = amount,
+                    amount = amount.toInt(),
                     lender = lender,
                     borrower = borrower,
                     memo = memo,
@@ -83,4 +82,6 @@ data class RegisterBillResponse private constructor (
         field(name = "請求先", inline = true, value = { borrower.name.lowercase() })
         field(name = "メモ", inline = true, value = { memo })
     }
+
+    fun getBorrowerId(): Snowflake = Snowflake(borrower.id)
 }

@@ -77,7 +77,7 @@ object RegisterBillFeature : KoinComponent {
             RegisterBillResponse.from(registerBillUseCase.execute(it.toParam()))
         }) {
             is Either.Right -> {
-                content = "${kord.getUser(Snowflake(validationResult.value.borrower.id))?.mention} 請求が届いたっピ"
+                content = "${kord.getUser(validationResult.value.getBorrowerId())?.mention} 請求が届いたっピ"
                 embed(validationResult.value.toEmbedBuilder())
             }
             is Either.Left -> embed(validationResult.value.toEmbedBuilder())

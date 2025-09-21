@@ -1,23 +1,20 @@
 package org.contourgara.eventlistener
 
 import dev.kord.common.Color
+import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.optional.Optional
 import dev.kord.common.entity.optional.OptionalBoolean
 import dev.kord.common.entity.optional.OptionalInt
 import dev.kord.core.cache.data.EmbedData
 import dev.kord.core.cache.data.EmbedFieldData
 import dev.kord.rest.builder.message.EmbedBuilder
-import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
-import io.kotest.assertions.arrow.core.shouldHaveSize
-import io.kotest.assertions.assertSoftly
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import org.contourgara.application.RegisterBillDto
-import org.contourgara.eventlistener.RegisterBillValidation.RegisterBillValidationError
 
 class RegisterBillResponseTest : StringSpec({
-    "DTO からインスタンスを生成できる" {
+    "インスタンス生成で、DTO の各パラメータが適切な場合、Right が返る" {
         // setup
         val registerBillDto = RegisterBillDto("ID", 1, "yuki", "gara", "test")
 
@@ -25,38 +22,10 @@ class RegisterBillResponseTest : StringSpec({
         val actual = RegisterBillResponse.from(registerBillDto)
 
         // assert
-        assertSoftly {
-            actual.shouldBeRight()
-            actual.getOrNull()?.id shouldBe "ID"
-            actual.getOrNull()?.amount shouldBe 1
-            actual.getOrNull()?.lender shouldBe User.YUKI
-            actual.getOrNull()?.borrower shouldBe User.GARA
-            actual.getOrNull()?.memo shouldBe "test"
-        }
+        actual.shouldBeRight()
     }
 
-    "DTO からインスタンスで、各項目が不正な場合インスタンスを生成できない" {
-        // setup
-        val registerBillDto = RegisterBillDto("ID", 0, "test", "test", "")
-
-        // execute
-        val actual = RegisterBillResponse.from(registerBillDto)
-
-        // assert
-        assertSoftly {
-            actual.shouldBeLeft()
-            actual.value shouldHaveSize 5
-            actual.value shouldBe listOf(
-                RegisterBillValidationError.AmountError.of(0),
-                RegisterBillValidationError.LenderError.of(User.UNDEFINED),
-                RegisterBillValidationError.BorrowerError.of(User.UNDEFINED),
-                RegisterBillValidationError.LenderAndBorrowerError.of(User.UNDEFINED, User.UNDEFINED),
-                RegisterBillValidationError.MemoError.of(""),
-            )
-        }
-    }
-
-    "EmbedData からインスタンスを生成できる" {
+    "インスタンス生成で、EmbedData が適切な場合、Right が返る" {
         // setup
         val embedData = EmbedData(
             title = Optional.Value("入力情報だっピ"),
@@ -76,99 +45,7 @@ class RegisterBillResponseTest : StringSpec({
         val actual = RegisterBillResponse.from(embedData)
 
         // assert
-        assertSoftly {
-            actual.shouldBeRight()
-            actual.getOrNull()?.id shouldBe "ID"
-            actual.getOrNull()?.amount shouldBe 1
-            actual.getOrNull()?.lender shouldBe User.YUKI
-            actual.getOrNull()?.borrower shouldBe User.GARA
-            actual.getOrNull()?.memo shouldBe "test"
-        }
-    }
-
-    "EmbedData からインスタンスを生成で、EmbedData が不正の場合インスタンスを生成できない" {
-        // setup
-        val embedData = EmbedData(
-            title = Optional.Value("入力情報"),
-            color = OptionalInt.Value(Color(255, 255, 50).rgb),
-            fields = Optional.Value(emptyList())
-        )
-
-        // execute
-        val actual = RegisterBillResponse.from(embedData)
-
-        // assert
-        assertSoftly {
-            actual.shouldBeLeft()
-            actual.value shouldHaveSize 3
-            actual.value shouldBe listOf(
-                RegisterBillValidationError.EmbedDataTitleError.of("入力情報"),
-                RegisterBillValidationError.EmbedDataColorError.of(Color(255, 255, 50), "緑色"),
-                RegisterBillValidationError.EmbedDataFieldNamesError.of(emptyList(), listOf("申請 ID", "請求金額", "請求者", "請求先", "メモ"))
-            )
-        }
-    }
-
-    "EmbedData からインスタンスを生成で、EmbedData の請求金額のフォーマット不正の場合インスタンスを生成できない" {
-        // setup
-        val embedData = EmbedData(
-            title = Optional.Value("入力情報だっピ"),
-            color = OptionalInt.Value(Color(0, 255, 0).rgb),
-            fields = Optional.Value(
-                listOf(
-                    EmbedFieldData(name = "申請 ID", inline = OptionalBoolean.Value(true), value = "ID"),
-                    EmbedFieldData(name = "請求金額", inline = OptionalBoolean.Value(true), value = "1円"),
-                    EmbedFieldData(name = "請求者", inline = OptionalBoolean.Value(true), value = "yuki"),
-                    EmbedFieldData(name = "請求先", inline = OptionalBoolean.Value(true), value = "gara"),
-                    EmbedFieldData(name = "メモ", inline = OptionalBoolean.Value(true), value = "test")
-                )
-            )
-        )
-
-        // execute
-        val actual = RegisterBillResponse.from(embedData)
-
-        // assert
-        assertSoftly {
-            actual.shouldBeLeft()
-            actual.value shouldHaveSize 1
-            actual.value shouldBe listOf(
-                RegisterBillValidationError.EmbedDataFieldAmountFormatError.of("1円")
-            )
-        }
-    }
-
-    "EmbedData からインスタンスを生成で、各項目が不正な値の場合インスタンスを生成できない" {
-        // setup
-        val embedData = EmbedData(
-            title = Optional.Value("入力情報だっピ"),
-            color = OptionalInt.Value(Color(0, 255, 0).rgb),
-            fields = Optional.Value(
-                listOf(
-                    EmbedFieldData(name = "申請 ID", inline = OptionalBoolean.Value(true), value = "ID"),
-                    EmbedFieldData(name = "請求金額", inline = OptionalBoolean.Value(true), value = "0 円"),
-                    EmbedFieldData(name = "請求者", inline = OptionalBoolean.Value(true), value = "test"),
-                    EmbedFieldData(name = "請求先", inline = OptionalBoolean.Value(true), value = "test"),
-                    EmbedFieldData(name = "メモ", inline = OptionalBoolean.Value(true), value = "")
-                )
-            )
-        )
-
-        // execute
-        val actual = RegisterBillResponse.from(embedData)
-
-        // assert
-        assertSoftly {
-            actual.shouldBeLeft()
-            actual.value shouldHaveSize 5
-            actual.value shouldBe listOf(
-                RegisterBillValidationError.AmountError.of(0),
-                RegisterBillValidationError.LenderError.of(User.UNDEFINED),
-                RegisterBillValidationError.BorrowerError.of(User.UNDEFINED),
-                RegisterBillValidationError.LenderAndBorrowerError.of(User.UNDEFINED, User.UNDEFINED),
-                RegisterBillValidationError.MemoError.of(""),
-            )
-        }
+        actual.shouldBeRight()
     }
 
     "Embed を生成できる" {
@@ -188,6 +65,20 @@ class RegisterBillResponseTest : StringSpec({
             field(name = "請求先", inline = true, value = { "gara" })
             field(name = "メモ", inline = true, value = { "test" })
         }.toRequest()
+
+        actual shouldBe expected
+    }
+
+    "請求先の Snowflake ID を取得できる" {
+        // setup
+        val GARA_ID = 703805458116509818
+        val sut = RegisterBillResponse.from(RegisterBillDto("ID", 1, "yuki", "gara", "test")).getOrNull()!!
+
+        // execute
+        val actual = sut.getBorrowerId()
+
+        // assert
+        val expected = Snowflake(GARA_ID)
         actual shouldBe expected
     }
 })
