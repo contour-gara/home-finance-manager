@@ -85,7 +85,7 @@ object RegisterBillFeature : KoinComponent {
     }
 
     private fun NonEmptyList<RegisterBillValidation.RegisterBillValidationError>.toEmbedBuilder(): EmbedBuilder.() -> Unit = {
-        title = "Bad Request"
+        title = "Bad Request だっピ"
         color = Color(255, 0, 0)
         this@toEmbedBuilder.forEach {
             field(name = it.dataPath, inline = true, value = { it.message })
