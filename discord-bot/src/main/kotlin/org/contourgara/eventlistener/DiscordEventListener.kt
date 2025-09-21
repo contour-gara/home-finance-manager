@@ -21,7 +21,6 @@ import org.contourgara.eventlistener.RegisterBillFeature.REGISTER_BILL_COMMAND_D
 import org.contourgara.eventlistener.RegisterBillFeature.REGISTER_BILL_COMMAND_NAME
 import org.contourgara.eventlistener.RegisterBillFeature.REGISTER_BILL_MODAL_ID
 import org.contourgara.eventlistener.RegisterBillFeature.REGISTER_BILL_SELECT_MENU_ID
-import org.contourgara.eventlistener.RegisterBillFeature.createRegisterBillCommandArgument
 import org.contourgara.eventlistener.RegisterBillFeature.openBillMemoModal
 import org.contourgara.eventlistener.RegisterBillFeature.sendSelectUserMessage
 import org.contourgara.eventlistener.RegisterBillFeature.submitBillMemoModal
@@ -66,7 +65,6 @@ class DiscordEventListener() : KoinComponent {
             Snowflake(889318150615744523),
             REGISTER_BILL_COMMAND_NAME,
             REGISTER_BILL_COMMAND_DESCRIPTION,
-//            createRegisterBillCommandArgument()
         )
 
         kord.createGuildChatInputCommand(

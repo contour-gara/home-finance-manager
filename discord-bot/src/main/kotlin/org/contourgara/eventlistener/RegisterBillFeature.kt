@@ -12,8 +12,6 @@ import dev.kord.core.behavior.interaction.response.respond
 import dev.kord.core.event.interaction.GuildChatInputCommandInteractionCreateEvent
 import dev.kord.core.event.interaction.ModalSubmitInteractionCreateEvent
 import dev.kord.core.event.interaction.SelectMenuInteractionCreateEvent
-import dev.kord.rest.builder.interaction.ChatInputCreateBuilder
-import dev.kord.rest.builder.interaction.integer
 import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.actionRow
 import dev.kord.rest.builder.message.embed
@@ -28,19 +26,9 @@ object RegisterBillFeature : KoinComponent {
     const val REGISTER_BILL_COMMAND_DESCRIPTION = "請求を登録するっピ"
     const val REGISTER_BILL_SELECT_MENU_ID = "claimant"
     const val REGISTER_BILL_MODAL_ID = "register-bill-memo"
-    private const val REGISTER_BILL_COMMAND_ARGUMENT_NAME = "billing-amount"
-    private const val REGISTER_BILL_COMMAND_ARGUMENT_DESCRIPTION = "請求金額"
     private const val REGISTER_BILL_MODAL_AMOUNT_ID = "amount"
     private val registerBillUseCase: RegisterBillUseCase by inject()
     private val discordBotConfig: DiscordBotConfig by inject()
-
-    fun createRegisterBillCommandArgument(): ChatInputCreateBuilder.() -> Unit = {
-        integer(REGISTER_BILL_COMMAND_ARGUMENT_NAME, REGISTER_BILL_COMMAND_ARGUMENT_DESCRIPTION) {
-            required = true
-            minValue = 1
-            maxValue = 2147483647
-        }
-    }
 
     suspend fun GuildChatInputCommandInteractionCreateEvent.sendSelectUserMessage() = interaction.deferPublicResponse().respond {
         when (interaction.channelId) {

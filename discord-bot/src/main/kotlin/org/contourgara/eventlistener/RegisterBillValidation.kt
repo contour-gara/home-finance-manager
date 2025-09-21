@@ -24,7 +24,9 @@ object RegisterBillValidation {
     fun validateAmount(amount: String): Either<NonEmptyList<RegisterBillValidationError>, Unit> =
         either {
             accumulate {
-                ensureOrAccumulate(amount.toIntOrNull() != null) { RegisterBillValidationError.AmountError.of(amount) }
+                ensureOrAccumulate(amount.toIntOrNull() != null && amount.toInt() >= 1) {
+                    RegisterBillValidationError.AmountError.of(amount)
+                }
             }
             Unit.right()
         }
@@ -55,7 +57,7 @@ object RegisterBillValidation {
             Unit.right()
         }
 
-    fun validateLenderAnfBorrower(lender: User, borrower: User): Either<NonEmptyList<RegisterBillValidationError>, Unit> =
+    fun validateLenderAndBorrower(lender: User, borrower: User): Either<NonEmptyList<RegisterBillValidationError>, Unit> =
         either {
             accumulate {
                 ensureOrAccumulate(
@@ -70,17 +72,6 @@ object RegisterBillValidation {
             accumulate {
                 ensureOrAccumulate(memo.isNotBlank()) { RegisterBillValidationError.MemoError.of(memo) }
             }
-            Unit.right()
-        }
-
-    fun validateAmountEmbedData(embedData: EmbedData): Either<NonEmptyList<RegisterBillValidationError>, Unit> =
-        either {
-            accumulate {
-                validateEmbedDataTitle(embedData).bindOrAccumulate()
-                validateEmbedDataStatusProgress(embedData).bindOrAccumulate()
-                validateAmountEmbedDataField(embedData).bindOrAccumulate()
-            }
-            validateAmountEmbedDataFieldFormat(embedData).bind()
             Unit.right()
         }
 
@@ -99,14 +90,6 @@ object RegisterBillValidation {
         embedData.title.value.let {
             either {
                 ensure(it == "入力情報だっピ") { RegisterBillValidationError.EmbedDataTitleError.of(it) }
-                Unit.right()
-            }
-        }
-
-    private fun validateEmbedDataStatusProgress(embedData: EmbedData): Either<RegisterBillValidationError, Unit> =
-        Color(embedData.color.asNullable ?: 0).let {
-            either {
-                ensure(it == Color(255, 255, 50)) { RegisterBillValidationError.EmbedDataColorError.of(it, "黄色") }
                 Unit.right()
             }
         }
@@ -166,7 +149,7 @@ object RegisterBillValidation {
         ) : RegisterBillValidationError {
             companion object {
                 fun of(inValidAmount: Int): AmountError =
-                    AmountError("請求金額は 1 円以上 Int の最大値以下ではならない: $inValidAmount")
+                    AmountError("請求金額は 1 円以上 2147483647 円以下でないとならない: $inValidAmount")
 
                 fun of(inValidAmount: String): AmountError =
                     AmountError("請求金額は 1 円以上 2147483647 円以下の数字でないとならない: $inValidAmount")
