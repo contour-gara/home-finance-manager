@@ -30,6 +30,7 @@ object RegisterBillFeature : KoinComponent {
     const val REGISTER_BILL_MODAL_ID = "register-bill-memo"
     private const val REGISTER_BILL_COMMAND_ARGUMENT_NAME = "billing-amount"
     private const val REGISTER_BILL_COMMAND_ARGUMENT_DESCRIPTION = "請求金額"
+    private const val REGISTER_BILL_MODAL_AMOUNT_ID = "amount"
     private val registerBillUseCase: RegisterBillUseCase by inject()
     private val discordBotConfig: DiscordBotConfig by inject()
 
@@ -44,28 +45,27 @@ object RegisterBillFeature : KoinComponent {
     suspend fun GuildChatInputCommandInteractionCreateEvent.sendSelectUserMessage() = interaction.deferPublicResponse().respond {
         when (interaction.channelId) {
             Snowflake(discordBotConfig.homeFinanceManagerBotChannelId) -> {
-                when (val validationResult = RegisterBillRequest.of(interaction.command.integers[REGISTER_BILL_COMMAND_ARGUMENT_NAME]?.toInt()!!)) {
-                    is Either.Right -> {
-                        embed(validationResult.value.toEmbedBuilder())
-                        actionRow {
-                            userSelect(REGISTER_BILL_SELECT_MENU_ID) {
-                                placeholder = "請求先を選択してっピ"
-                            }
-                        }
+                actionRow {
+                    userSelect(REGISTER_BILL_SELECT_MENU_ID) {
+                        placeholder = "請求先を選択してっピ"
                     }
-
-                    is Either.Left -> embed(validationResult.value.toEmbedBuilder())
                 }
             }
 
-            else -> content = "${kord.getChannel(Snowflake(discordBotConfig.homeFinanceManagerBotChannelId))?.mention} で実行してね"
+            else -> content = "${kord.getChannel(Snowflake(discordBotConfig.homeFinanceManagerBotChannelId))?.mention} で実行してっピ"
         }
     }
 
-    suspend fun SelectMenuInteractionCreateEvent.openBillMemoModal() = interaction.modal("メモ", REGISTER_BILL_MODAL_ID) {
+    suspend fun SelectMenuInteractionCreateEvent.openBillMemoModal() = interaction.modal("請求情報を入力するっピ", REGISTER_BILL_MODAL_ID) {
+        actionRow {
+            textInput(TextInputStyle.Short, REGISTER_BILL_MODAL_AMOUNT_ID, "請求金額") {
+                placeholder = "請求金額を入力するっピ (半角数字)"
+                allowedLength = 1..10
+            }
+        }
         actionRow {
             textInput(TextInputStyle.Paragraph, interaction.values.first(), "メモ") {
-                placeholder = "メモを入力してっピ"
+                placeholder = "メモを入力するっピ"
                 allowedLength = 1..999
             }
         }
@@ -78,9 +78,9 @@ object RegisterBillFeature : KoinComponent {
             }
         }
 
-        when (val validationResult = interaction.textInputs.keys.first().let {
+        when (val validationResult = interaction.textInputs.keys.last().let {
             RegisterBillRequest.of(
-                onlyAmountEmbedData = interaction.message?.embeds?.first()?.data!!,
+                amount = interaction.textInputs[REGISTER_BILL_MODAL_AMOUNT_ID]?.value!!,
                 lender = interaction.user.id.value.toLong(),
                 borrower = it.toLong(),
                 memo = interaction.textInputs[it]?.value!!,
@@ -89,7 +89,7 @@ object RegisterBillFeature : KoinComponent {
             RegisterBillResponse.from(registerBillUseCase.execute(it.toParam()))
         }) {
             is Either.Right -> {
-                content = "${validationResult.value.borrower} 請求が届いたっピ"
+                content = "${kord.getUser(Snowflake(validationResult.value.borrower.id))?.mention} 請求が届いたっピ"
                 embed(validationResult.value.toEmbedBuilder())
             }
             is Either.Left -> embed(validationResult.value.toEmbedBuilder())

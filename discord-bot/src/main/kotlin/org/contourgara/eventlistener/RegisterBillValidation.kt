@@ -21,6 +21,14 @@ object RegisterBillValidation {
             Unit.right()
         }
 
+    fun validateAmount(amount: String): Either<NonEmptyList<RegisterBillValidationError>, Unit> =
+        either {
+            accumulate {
+                ensureOrAccumulate(amount.toIntOrNull() != null) { RegisterBillValidationError.AmountError.of(amount) }
+            }
+            Unit.right()
+        }
+
     fun validateLender(lender: User): Either<NonEmptyList<RegisterBillValidationError>, Unit> =
         either {
             accumulate {
@@ -159,6 +167,9 @@ object RegisterBillValidation {
             companion object {
                 fun of(inValidAmount: Int): AmountError =
                     AmountError("請求金額は 1 円以上 Int の最大値以下ではならない: $inValidAmount")
+
+                fun of(inValidAmount: String): AmountError =
+                    AmountError("請求金額は 1 円以上 2147483647 円以下の数字でないとならない: $inValidAmount")
             }
         }
 

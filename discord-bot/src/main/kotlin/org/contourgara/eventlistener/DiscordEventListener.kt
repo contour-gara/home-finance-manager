@@ -66,7 +66,7 @@ class DiscordEventListener() : KoinComponent {
             Snowflake(889318150615744523),
             REGISTER_BILL_COMMAND_NAME,
             REGISTER_BILL_COMMAND_DESCRIPTION,
-            createRegisterBillCommandArgument()
+//            createRegisterBillCommandArgument()
         )
 
         kord.createGuildChatInputCommand(

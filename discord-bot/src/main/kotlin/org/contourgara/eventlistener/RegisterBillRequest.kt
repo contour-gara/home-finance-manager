@@ -48,6 +48,19 @@ data class RegisterBillRequest private constructor(
                 ).bind()
             }
 
+        fun of(amount: String, lender: Long, borrower: Long, memo: String): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillRequest> =
+            either {
+                accumulate {
+                    validateAmount(amount).bindNelOrAccumulate()
+                }
+                of(
+                    amount = amount.toInt(),
+                    lender = User.of(lender),
+                    borrower = User.of(borrower),
+                    memo = memo,
+                ).bind()
+            }
+
         private fun of(amount: Int, lender: User, borrower: User, memo: String): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillRequest> =
             either {
                 accumulate {
