@@ -4,6 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ksp)
+    jacoco
     application
 }
 
@@ -63,5 +64,18 @@ tasks.withType<Jar> {
 
     configurations.compileClasspath.get().forEach {
         from(if (it.isDirectory) it else zipTree(it))
+    }
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(false)
+        csv.required.set(false)
+        html.required.set(true)
     }
 }
