@@ -47,7 +47,7 @@ data class RegisterBillResponse private constructor (
                 }
                 of(
                     id = embedData.fields.orEmpty().first().value,
-                    amount = embedData.fields.orEmpty()[1].value.split(" ").first().replace(",", ""),
+                    amount = embedData.fields.orEmpty()[1].value.parseAmount(),
                     lender = User.of(embedData.fields.orEmpty()[2].value),
                     borrower = User.of(embedData.fields.orEmpty()[3].value),
                     memo = embedData.fields.orEmpty().last().value
@@ -77,7 +77,7 @@ data class RegisterBillResponse private constructor (
         title = "入力情報だっピ"
         color = Color(0, 255, 0)
         field(name = "申請 ID", inline = true, value = { id })
-        field(name = "請求金額", inline = true, value = { "${amount.toString().reversed().chunked(3).joinToString(",").reversed()} 円" })
+        field(name = "請求金額", inline = true, value = { amount.formatAmount() })
         field(name = "請求者", inline = true, value = { lender.name.lowercase() })
         field(name = "請求先", inline = true, value = { borrower.name.lowercase() })
         field(name = "メモ", inline = true, value = { memo })

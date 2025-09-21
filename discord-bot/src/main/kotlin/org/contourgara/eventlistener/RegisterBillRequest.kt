@@ -53,7 +53,7 @@ data class RegisterBillRequest private constructor(
     fun toEmbedBuilder(): EmbedBuilder.() -> Unit = {
         title = "入力情報だっピ"
         color = Color(255, 255, 50)
-        field(name = "請求金額", inline = true, value = { "${amount.toString().reversed().chunked(3).joinToString(",").reversed()} 円" })
+        field(name = "請求金額", inline = true, value = { amount.formatAmount() })
         field(name = "請求者", inline = true, value = { lender.name.lowercase() })
         field(name = "請求先", inline = true, value = { borrower.name.lowercase() })
         field(name = "メモ", inline = true, value = { memo })
