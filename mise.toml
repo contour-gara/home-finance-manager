@@ -30,6 +30,7 @@ else
     --print-module-deps \
     --ignore-missing-deps \
     --recursive \
+    --multi-release 21 \
     -quiet \
     {{arg(name="module")}}/build/libs/{{arg(name="module")}}.jar
 fi
