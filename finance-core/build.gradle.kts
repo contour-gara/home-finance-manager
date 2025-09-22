@@ -3,7 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.ksp)
+    alias(libs.plugins.spring.boot)
     jacoco
     application
 }
@@ -16,24 +16,13 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.kord.core)
-    implementation(project.dependencies.platform(libs.koin.bom))
-    implementation(libs.koin.core)
-    implementation(libs.koin.annotations)
-    ksp(libs.koin.ksp.compiler)
-    implementation(libs.kotlin.logging)
-    implementation(libs.arrow.core)
-    implementation(libs.ulid.kotlin)
+    implementation(project.dependencies.platform(libs.spring.boot.dependencies))
+    implementation(libs.spring.boot.starter.web)
+    implementation(libs.spring.boot.starter.actuator)
+    testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.kotest.runner.junit5)
-    testImplementation(libs.kotest.extensions.koin)
     testImplementation(libs.kotest.assertions.core)
-    testImplementation(libs.kotest.assertions.arrow)
-    testImplementation(libs.koin.test)
-    testImplementation(libs.mockk)
-}
-
-application {
-    mainClass = "org.contourgara.DiscordBotApplicationKt"
+    testImplementation(libs.kotest.extensions.spring)
 }
 
 kotlin {
@@ -67,14 +56,5 @@ tasks.jacocoTestReport {
         xml.required.set(false)
         csv.required.set(false)
         html.required.set(true)
-    }
-}
-
-tasks.withType<Jar> {
-    manifest { attributes["Main-Class"] = "org.contourgara.DiscordBotApplicationKt" }
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-    configurations.compileClasspath.get().forEach {
-        from(if (it.isDirectory) it else zipTree(it))
     }
 }
