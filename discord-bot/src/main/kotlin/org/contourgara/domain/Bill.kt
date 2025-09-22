@@ -11,7 +11,7 @@ data class Bill private constructor(
     val memo: String,
 ) {
     init {
-        require(amount in 1..Int.MAX_VALUE) { "請求金額は [0..Int.MAX_VALUE] でないとならない: $amount" }
+        require(amount >= 1) { "請求金額は 1 円以上でないとならない: $amount" }
         require(lender != borrower) { "請求者と請求先は同じではならない" }
         require(memo.isNotBlank()) { "メモは空文字ではならない" }
     }

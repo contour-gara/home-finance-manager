@@ -12,7 +12,7 @@ class BillTest : StringSpec({
         // execute & assert
         shouldThrowExactly<IllegalArgumentException> {
             Bill.of(ulid, 0, "yuki", "gara", "test")
-        }.message shouldBe "請求金額は [0..Int.MAX_VALUE] でないとならない: 0"
+        }.message shouldBe "請求金額は 1 円以上でないとならない: 0"
     }
 
     "インスタンス生成で、メモがスペースのみの場合例外が飛ぶ" {
