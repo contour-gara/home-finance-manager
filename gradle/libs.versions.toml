@@ -40,8 +40,7 @@ kotest-assertions-arrow = { module = "io.kotest.extensions:kotest-assertions-arr
 koin-test = { module = "io.insert-koin:koin-test" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
-#ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
-#kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
