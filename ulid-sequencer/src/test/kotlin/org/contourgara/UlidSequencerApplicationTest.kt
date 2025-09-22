@@ -1,5 +1,6 @@
 package org.contourgara
 
+import io.kotest.assertions.ktor.client.shouldHaveStatus
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.ktor.client.request.get
@@ -18,7 +19,7 @@ class UlidSequencerApplicationTest : FunSpec({
             val actual = client.get("/")
 
             // assert
-            actual.status.value shouldBe 200
+            actual shouldHaveStatus 200
             actual.bodyAsText() shouldBe "Hello World!"
         }
     }

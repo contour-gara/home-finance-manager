@@ -22,6 +22,7 @@ dependencies {
     implementation(libs.ktor.server.config.yaml)
     implementation(libs.ulid.kotlin)
     testImplementation(libs.kotest.runner.junit5)
+    testImplementation(libs.kotest.extensions.ktor)
     testImplementation(libs.ktor.server.test.host)
 }
 
