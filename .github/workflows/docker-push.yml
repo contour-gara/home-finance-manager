@@ -9,6 +9,7 @@ on:
         required: true
         options:
           - 'discord-bot'
+          - 'finance-core'
 
 permissions:
   packages: write
@@ -75,10 +76,10 @@ jobs:
       - name: Build docker image
         run: |
           docker build \
-          --tag ghcr.io/$GITHUB_ACTOR/home-finance-manager-discord-bot:latest \
-          --tag ghcr.io/$GITHUB_ACTOR/home-finance-manager-discord-bot:${{ needs.create-git-tag.outputs.tagName }} .
+          --tag ghcr.io/$GITHUB_ACTOR/home-finance-manager-${{ inputs.module }}:latest \
+          --tag ghcr.io/$GITHUB_ACTOR/home-finance-manager-${{ inputs.module }}:${{ needs.create-git-tag.outputs.tagName }} .
 
       - name: Push docker image
         run: |
-          docker push ghcr.io/$GITHUB_ACTOR/home-finance-manager-discord-bot:latest
-          docker push ghcr.io/$GITHUB_ACTOR/home-finance-manager-discord-bot:${{ needs.create-git-tag.outputs.tagName }}
+          docker push ghcr.io/$GITHUB_ACTOR/home-finance-manager-${{ inputs.module }}:latest
+          docker push ghcr.io/$GITHUB_ACTOR/home-finance-manager-${{ inputs.module }}:${{ needs.create-git-tag.outputs.tagName }}
