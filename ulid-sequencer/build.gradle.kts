@@ -21,9 +21,14 @@ dependencies {
     implementation(libs.logback.classic)
     implementation(libs.ktor.server.config.yaml)
     implementation(libs.ulid.kotlin)
+    implementation(libs.exposed.core)
+    implementation(libs.exposed.jdbc)
+    runtimeOnly(libs.mysql.connector.j)
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.extensions.ktor)
     testImplementation(libs.ktor.server.test.host)
+    testImplementation(libs.testcontainers.mysql)
+    testImplementation(libs.database.rider.core)
 }
 
 kotlin {
@@ -46,6 +51,8 @@ tasks.jar {
 
 tasks.test {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+    jvmArgs("--add-opens=java.base/java.util=ALL-UNNAMED")
 
     testLogging {
         events = setOf(
@@ -61,8 +68,6 @@ tasks.test {
         showCauses = true
         showStackTraces = true
     }
-
-    finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.jacocoTestReport {

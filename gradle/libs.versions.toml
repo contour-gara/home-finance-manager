@@ -10,10 +10,14 @@ ulid-kotlin = "1.5.0"
 spring-boot = "3.5.5"
 ktor = "3.3.0"
 logback = "1.4.14"
+exposed = "1.0.0-rc-1"
+mysql = "9.4.0"
 
 kotest = "6.0.3"
 kotest-assertions-arrow = "2.0.0"
 mockk = "1.14.5"
+testcontainers = "1.21.3"
+database-rider = "1.44.0"
 
 [libraries]
 kord-core = { module = "dev.kord:kord-core", version.ref = "kord-core" }
@@ -31,6 +35,9 @@ ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor"
 ktor-server-config-yaml = { module = "io.ktor:ktor-server-config-yaml", version.ref = "ktor" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 ulid-kotlin = { module = "com.aallam.ulid:ulid-kotlin", version.ref = "ulid-kotlin" }
+exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
+exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+mysql-connector-j = { module = "com.mysql:mysql-connector-j", version.ref = "mysql" }
 
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 kotest-extensions-koin = { module = "io.kotest:kotest-extensions-koin", version.ref = "kotest" }
@@ -42,6 +49,8 @@ koin-test = { module = "io.insert-koin:koin-test" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
+testcontainers-mysql = { module = "org.testcontainers:mysql", version.ref = "testcontainers" }
+database-rider-core = { module = "com.github.database-rider:rider-core", version.ref = "database-rider" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
