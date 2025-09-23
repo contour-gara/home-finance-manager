@@ -1,6 +1,21 @@
 services:
   discord-bot:
     image: ghcr.io/contour-gara/home-finance-manager-discord-bot:latest
+    depends_on:
+      - ulid-sequencer
     environment:
       HOME_FINANCE_MANAGER_BOT_TOKEN: ${HOME_FINANCE_MANAGER_BOT_TOKEN}
       HOME_FINANCE_MANAGER_CHANNEL_ID: ${HOME_FINANCE_MANAGER_CHANNEL_ID}
+
+  ulid-sequencer:
+    image: ghcr.io/contour-gara/home-finance-manager-ulid-sequencer:latest
+    healthcheck:
+      test: "curl -f http://localhost:8080 || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    environment:
+      ULID_SEQUENCER_DATASOURCE_URL: ${ULID_SEQUENCER_DATASOURCE_URL}
+      DATASOURCE_USERNAME: ${DATASOURCE_USERNAME
+      DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD}

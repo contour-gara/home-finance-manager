@@ -3,5 +3,42 @@ services:
     build:
       context: ./discord-bot
       dockerfile: Dockerfile
+    depends_on:
+      - ulid-sequencer
     environment:
       HOME_FINANCE_MANAGER_BOT_TOKEN: ${HOME_FINANCE_MANAGER_BOT_TOKEN}
+
+  ulid-sequencer:
+    build:
+      context: ./ulid-sequencer
+      dockerfile: Dockerfile
+    healthcheck:
+      test: "curl -f http://localhost:8080 || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      - mysql
+    ports:
+      - 18080:8080
+    environment:
+      ULID_SEQUENCER_DATASOURCE_URL: "jdbc:mysql://mysql:3306/ulid_db"
+      DATASOURCE_USERNAME: "user"
+      DATASOURCE_PASSWORD: "password"
+
+  mysql:
+    image: mysql:8.0.43-bookworm
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: ulid_db
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
