@@ -1,59 +1,60 @@
 [versions]
 kotlin = "2.2.10"
 ksp = "2.2.10-2.0.2"
-kord-core = "0.15.0"
-koin  = "4.1.0"
-koin-annotations = "2.2.0-RC1"
-kotlin-logging = "3.0.5"
-arrow = "2.1.0"
-ulid-kotlin = "1.5.0"
-spring-boot = "3.5.5"
+
 ktor = "3.3.0"
-logback = "1.4.14"
+spring-boot = "3.5.5"
 exposed = "1.0.0-rc-1"
 mysql = "9.4.0"
+kotlin-logging = "3.0.5"
+logback = "1.4.14"
+arrow = "2.1.0"
+koin  = "4.1.0"
+koin-annotations = "2.2.0-RC1"
+kord-core = "0.15.0"
+ulid-kotlin = "1.5.0"
 
 kotest = "6.0.3"
 kotest-assertions-arrow = "2.0.0"
+database-rider = "1.44.0"
 mockk = "1.14.5"
 testcontainers = "1.21.3"
-database-rider = "1.44.0"
 
 [libraries]
-kord-core = { module = "dev.kord:kord-core", version.ref = "kord-core" }
+ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
+ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
+ktor-server-config-yaml = { module = "io.ktor:ktor-server-config-yaml", version.ref = "ktor" }
+spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
+spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
+exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+mysql-connector-j = { module = "com.mysql:mysql-connector-j", version.ref = "mysql" }
+kotlin-logging = { module = "io.github.microutils:kotlin-logging", version.ref = "kotlin-logging" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations" }
 koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations" }
-kotlin-logging = { module = "io.github.microutils:kotlin-logging", version.ref = "kotlin-logging" }
-arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
-spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
-spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
-spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
-ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
-ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
-ktor-server-config-yaml = { module = "io.ktor:ktor-server-config-yaml", version.ref = "ktor" }
-logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+kord-core = { module = "dev.kord:kord-core", version.ref = "kord-core" }
 ulid-kotlin = { module = "com.aallam.ulid:ulid-kotlin", version.ref = "ulid-kotlin" }
-exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
-exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
-mysql-connector-j = { module = "com.mysql:mysql-connector-j", version.ref = "mysql" }
 
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
-kotest-extensions-koin = { module = "io.kotest:kotest-extensions-koin", version.ref = "kotest" }
-kotest-extensions-spring = { module = "io.kotest:kotest-extensions-spring", version.ref = "kotest" }
 kotest-extensions-ktor = { module = "io.kotest:kotest-assertions-ktor", version.ref = "kotest" }
+kotest-extensions-spring = { module = "io.kotest:kotest-extensions-spring", version.ref = "kotest" }
+kotest-extensions-koin = { module = "io.kotest:kotest-extensions-koin", version.ref = "kotest" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotest-assertions-arrow = { module = "io.kotest.extensions:kotest-assertions-arrow", version.ref = "kotest-assertions-arrow" }
-koin-test = { module = "io.insert-koin:koin-test" }
-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
-spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
-testcontainers-mysql = { module = "org.testcontainers:mysql", version.ref = "testcontainers" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+koin-test = { module = "io.insert-koin:koin-test" }
 database-rider-core = { module = "com.github.database-rider:rider-core", version.ref = "database-rider" }
+testcontainers-mysql = { module = "org.testcontainers:mysql", version.ref = "testcontainers" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
