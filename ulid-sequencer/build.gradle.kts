@@ -29,6 +29,7 @@ dependencies {
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.testcontainers.mysql)
     testImplementation(libs.database.rider.core)
+    testImplementation(libs.mockk)
 }
 
 kotlin {
