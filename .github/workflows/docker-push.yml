@@ -3,84 +3,115 @@ name: Docker Push
 on:
   workflow_dispatch:
     inputs:
-      module:
-        description: 'push するモジュール'
-        type: choice
+      discord-bot:
+        description: 'discord-bot を push する場合は選択'
+        type: boolean
         required: true
-        options:
-          - 'discord-bot'
-          - 'finance-core'
-          - 'ulid-sequencer'
+        default: false
+      finance-core:
+        description: 'finance-core を push する場合は選択'
+        type: boolean
+        required: true
+        default: false
+      ulid-sequencer:
+        description: 'ulid-sequencer を push する場合は選択'
+        type: boolean
+        required: true
+        default: false
 
 permissions:
   packages: write
   contents: write
 
 jobs:
-  upload-jar-file:
+  setup:
     runs-on: ubuntu-latest
+    outputs:
+      modules: ${{ steps.create-push-modules-list.outputs.result }}
+    steps:
+      - name: Create push modules list
+        uses: actions/github-script@v8
+        id: create-push-modules-list
+        with:
+          script: |
+            const modules = []
+            if (${{ inputs.discord-bot }}) {
+              modules[modules.length] = "discord-bot"
+            }
+            if (${{ inputs.finance-core }}) {
+              modules[modules.length] = "finance-core"
+            }
+            if (${{ inputs.ulid-sequencer }}) {
+              modules[modules.length] = "ulid-sequencer"
+            }
+            return modules
+
+  upload-jar-file:
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module: ${{ fromJSON(needs.setup.outputs.modules) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-
       - name: Set up Java
         uses: actions/setup-java@v5
         with:
           distribution: 'corretto'
           java-version: '21'
           cache: 'gradle'
-
       - name: Build jar file
-        run: ./gradlew clean ${{ inputs.module }}:build -x test
-
+        run: ./gradlew clean ${{ matrix.module }}:build -x test
       - name: Upload Dockerfile and jar file
         uses: actions/upload-artifact@v4
         with:
-          name: jar-and-Dockerfile
+          name: ${{ matrix.module }}-jar-and-Dockerfile
           path: |
-            ${{ inputs.module }}/Dockerfile
-            ${{ inputs.module }}/build/libs/${{ inputs.module }}.jar
+            ${{ matrix.module }}/Dockerfile
+            ${{ matrix.module }}/build/libs/${{ matrix.module }}.jar
 
   create-git-tag:
     needs: upload-jar-file
     runs-on: ubuntu-latest
     outputs:
-      tagName: ${{ steps.create-tag.outputs.tagName }}
+      tag-name: ${{ steps.create-tag.outputs.tagName }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-
       - name: Create git tag
         id: create-tag
         run: |
           TAG_NAME=$(date +%Y.%m.%d-%H%M%S)
           git tag $TAG_NAME
           git push origin $TAG_NAME
-          echo "tagName=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "tag-name=$TAG_NAME" >> $GITHUB_OUTPUT
 
   build_and_push_docker_image:
-    needs: create-git-tag
+    needs:
+      - setup
+      - create-git-tag
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module: ${{ fromJSON(needs.setup.outputs.modules) }}
     steps:
       - name: Download Dockerfile and jar file
         uses: actions/download-artifact@v5
         with:
-          name: jar-and-Dockerfile
-
+          name: ${{ matrix.module }}-jar-and-Dockerfile
       - name: Login to GitHub container registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Build docker image
         run: |
           docker build \
-          --tag ghcr.io/$GITHUB_ACTOR/home-finance-manager-${{ inputs.module }}:latest \
-          --tag ghcr.io/$GITHUB_ACTOR/home-finance-manager-${{ inputs.module }}:${{ needs.create-git-tag.outputs.tagName }} .
-
+          --tag ghcr.io/$GITHUB_ACTOR/home-finance-manager-${{ matrix.module }}:latest \
+          --tag ghcr.io/$GITHUB_ACTOR/home-finance-manager-${{ matrix.module }}:${{ needs.create-git-tag.outputs.tag-name }} .
       - name: Push docker image
         run: |
-          docker push ghcr.io/$GITHUB_ACTOR/home-finance-manager-${{ inputs.module }}:latest
-          docker push ghcr.io/$GITHUB_ACTOR/home-finance-manager-${{ inputs.module }}:${{ needs.create-git-tag.outputs.tagName }}
+          docker push ghcr.io/$GITHUB_ACTOR/home-finance-manager-${{ matrix.module }}:latest
+          docker push ghcr.io/$GITHUB_ACTOR/home-finance-manager-${{ matrix.module }}:${{ needs.create-git-tag.outputs.tag-name }}
