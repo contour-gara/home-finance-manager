@@ -6,5 +6,5 @@ import ulid.ULID
 
 @Single
 class UlidGeneratorImpl : UlidGenerator {
-    override fun generate(): ULID = ULID.nextULID()
+    override fun nextUlid(): ULID = ULID.nextULID()
 }

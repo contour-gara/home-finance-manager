@@ -19,7 +19,7 @@ class RegisterBillUseCaseTest : KoinTest, StringSpec() {
         "生成される ULID が 01K5EZVS4SQ695EMPX61GM7KHW の場合" {
             // setup
             declareMock<UlidGenerator> {
-                every { generate() } returns ULID.parseULID("01K5EZVS4SQ695EMPX61GM7KHW")
+                every { nextUlid() } returns ULID.parseULID("01K5EZVS4SQ695EMPX61GM7KHW")
             }
 
             val sut:RegisterBillUseCase by inject()
@@ -37,7 +37,7 @@ class RegisterBillUseCaseTest : KoinTest, StringSpec() {
         "生成される ULID が 01K5C11Z3TPPZ5H95MMTQV77RP の場合" {
             // setup
             declareMock<UlidGenerator> {
-                every { generate() } returns ULID.parseULID("01K5C11Z3TPPZ5H95MMTQV77RP")
+                every { nextUlid() } returns ULID.parseULID("01K5C11Z3TPPZ5H95MMTQV77RP")
             }
 
             val sut:RegisterBillUseCase by inject()
