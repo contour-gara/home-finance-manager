@@ -15,7 +15,7 @@ import ulid.ULID
 import java.sql.DriverManager
 
 class UlidSequenceRepositoryTest : FunSpec({
-    val mysql = MySQLContainer("mysql:8.0.43-bookworm").apply {
+    val mysql = MySQLContainer("mysql:8.0.43-oraclelinux9").apply {
         startupAttempts = 1
     }
 

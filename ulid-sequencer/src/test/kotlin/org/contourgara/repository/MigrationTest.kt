@@ -9,7 +9,7 @@ import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.testcontainers.containers.MySQLContainer
 
 class MigrationTest : FunSpec({
-    val mysql = MySQLContainer("mysql:8.0.43-bookworm").apply {
+    val mysql = MySQLContainer("mysql:8.0.43-oraclelinux9").apply {
         startupAttempts = 1
     }
 

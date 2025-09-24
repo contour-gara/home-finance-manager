@@ -28,7 +28,7 @@ services:
       DATASOURCE_PASSWORD: password
 
   mysql:
-    image: mysql:8.0.43-bookworm
+    image: mysql:8.0.43-oraclelinux9
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
       interval: 5s
