@@ -13,9 +13,10 @@ import ulid.ULID
 @Single
 class UlidGeneratorImpl(private val discordBotConfig: DiscordBotConfig) : UlidGenerator {
     override fun nextUlid(): ULID = runBlocking {
-        HttpClient(CIO)
-            .get("${discordBotConfig.ulidSequencerBaseUrl}/next-ulid")
-            .body<String>()
-            .let { ULID.parseULID(it) }
+        HttpClient(CIO).use {
+            it.get("${discordBotConfig.ulidSequencerBaseUrl}/next-ulid")
+                .body<String>()
+                .let { ULID.parseULID(it) }
+        }
     }
 }
