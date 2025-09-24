@@ -11,8 +11,15 @@ on:
       - 'README.md'
 
 jobs:
-  unit-test-discord-bot:
+  unit-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module:
+          - discord-bot
+          - finance-core
+          - ulid-sequencer
+      fail-fast: false
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -25,36 +32,4 @@ jobs:
           cache: 'gradle'
 
       - name: Run unit test
-        run: ./gradlew clean discord-bot:test
-
-  unit-test-finance-core:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Set up Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'corretto'
-          java-version: '21'
-          cache: 'gradle'
-
-      - name: Run unit test
-        run: ./gradlew clean finance-core:test
-
-  unit-test-ulid-sequencer:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Set up Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'corretto'
-          java-version: '21'
-          cache: 'gradle'
-
-      - name: Run unit test
-        run: ./gradlew clean ulid-sequencer:test
+        run: ./gradlew clean ${{ matrix.module }}:test
