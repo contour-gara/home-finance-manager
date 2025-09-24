@@ -9,7 +9,9 @@ data class DiscordBotConfig(
     @Property("HOME_FINANCE_MANAGER_BOT_TOKEN")
     val homeFinanceManagerBotToken: String,
     @Property("HOME_FINANCE_MANAGER_CHANNEL_ID")
-    val homeFinanceManagerBotChannelId: String
+    val homeFinanceManagerBotChannelId: String,
+    @Property("ULID_SEQUENCER_BASE_URL")
+    val ulidSequencerBaseUrl: String,
 ) {
     companion object {
         @PropertyValue("HOME_FINANCE_MANAGER_CHANNEL_ID")

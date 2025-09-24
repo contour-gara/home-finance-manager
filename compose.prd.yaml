@@ -6,6 +6,7 @@ services:
     environment:
       HOME_FINANCE_MANAGER_BOT_TOKEN: ${HOME_FINANCE_MANAGER_BOT_TOKEN}
       HOME_FINANCE_MANAGER_CHANNEL_ID: ${HOME_FINANCE_MANAGER_CHANNEL_ID}
+      ULID_SEQUENCER_BASE_URL: http://ulid-sequencer:8080
 
   ulid-sequencer:
     image: ghcr.io/contour-gara/home-finance-manager-ulid-sequencer:latest
