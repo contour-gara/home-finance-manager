@@ -5,12 +5,13 @@ import com.github.database.rider.core.configuration.DBUnitConfig
 import com.github.database.rider.core.configuration.DataSetConfig
 import com.github.database.rider.core.dsl.RiderDSL
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.datatest.withData
+import io.kotest.engine.names.WithDataTestName
 import io.kotest.extensions.system.OverrideMode
 import io.kotest.extensions.system.withEnvironment
 import io.kotest.matchers.shouldBe
-import org.jetbrains.exposed.v1.jdbc.select
-import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.testcontainers.containers.MySQLContainer
+import ulid.ULID
 import java.sql.DriverManager
 
 class UlidSequenceRepositoryTest : FunSpec({
@@ -32,25 +33,67 @@ class UlidSequenceRepositoryTest : FunSpec({
         }
     }
 
-    test("Database Rider 確認") {
-        // setup
-        RiderDSL.withConnection(
-            DriverManager.getConnection(mysql.jdbcUrl, mysql.username, mysql.password)
-        )
-        RiderDSL.DataSetConfigDSL
-            .withDataSetConfig(DataSetConfig("ulid.yaml"))
-        RiderDSL.DBUnitConfigDSL
-            .withDBUnitConfig(
-                DBUnitConfig().caseInsensitiveStrategy(Orthography.LOWERCASE)
-            )
-            .createDataSet()
+    context("最新の ULID を取得できる") {
+        data class TestCase(val setupData: String, val expected: ULID) : WithDataTestName {
+            override fun dataTestName(): String = "初期状態が $setupData の場合、$expected が返る"
+        }
 
-        transaction {
+        withData(
+            TestCase("ulid1.yaml", ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79")),
+            TestCase("ulid3.yaml", ULID.parseULID("01K5WW47HCRZYKEX8MQN5PKDA8")),
+        ) { (setupData, expected) ->
+            // setup
+            RiderDSL.withConnection(
+                DriverManager.getConnection(mysql.jdbcUrl, mysql.username, mysql.password)
+            )
+            RiderDSL.DataSetConfigDSL
+                .withDataSetConfig(DataSetConfig(setupData))
+            RiderDSL.DBUnitConfigDSL
+                .withDBUnitConfig(
+                    DBUnitConfig().caseInsensitiveStrategy(Orthography.LOWERCASE)
+                )
+                .createDataSet()
+
             // execute
-            val actual = UlidSequence.select(UlidSequence.ulid).single()[UlidSequence.ulid]
+            val actual = UlidSequenceRepository.findLatestUlid()
 
             // assert
-            actual shouldBe "01K4MXEKC0PMTJ8FA055N4SH79"
+            actual shouldBe expected
+
+            RiderDSL.DataSetConfigDSL
+                .withDataSetConfig(DataSetConfig(setupData))
+            RiderDSL.DBUnitConfigDSL.expectDataSet()
+        }
+    }
+
+    context("ULID を挿入できる") {
+        data class TestCase(val setupData: String, val expectedData: String, val ulid: ULID) : WithDataTestName {
+            override fun dataTestName(): String = "初期状態が $setupData で $ulid を挿入した場合、テーブルが $expectedData の状態になる"
+        }
+
+        withData(
+            TestCase("ulid1.yaml", "ulid2.yaml", ULID.parseULID("01K5WW47H8XQWXDGW7458533JF")),
+            TestCase("ulid2.yaml", "ulid3.yaml", ULID.parseULID("01K5WW47HCRZYKEX8MQN5PKDA8")),
+        ) { (setupData, expectedData, ulid) ->
+            // setup
+            RiderDSL.withConnection(
+                DriverManager.getConnection(mysql.jdbcUrl, mysql.username, mysql.password)
+            )
+            RiderDSL.DataSetConfigDSL
+                .withDataSetConfig(DataSetConfig(setupData))
+            RiderDSL.DBUnitConfigDSL
+                .withDBUnitConfig(
+                    DBUnitConfig().caseInsensitiveStrategy(Orthography.LOWERCASE)
+                )
+                .createDataSet()
+
+            // execute
+            UlidSequenceRepository.insert(ulid)
+
+            // assert
+            RiderDSL.DataSetConfigDSL
+                .withDataSetConfig(DataSetConfig(expectedData))
+            RiderDSL.DBUnitConfigDSL.expectDataSet()
         }
     }
 })
