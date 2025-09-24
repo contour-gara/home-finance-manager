@@ -4,7 +4,8 @@ import io.ktor.server.application.Application
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
-import ulid.ULID
+import org.contourgara.application.nextUlid
+import org.contourgara.repository.UlidSequenceRepository
 
 fun Application.configureRouting() {
     routing {
@@ -13,7 +14,12 @@ fun Application.configureRouting() {
         }
 
         get("/next-ulid") {
-            call.respondText(ULID.nextULID().toString())
+            call.respondText(
+                nextUlid(
+                    { UlidSequenceRepository.findLatestUlid() },
+                    { ulid -> UlidSequenceRepository.insert(ulid) }
+                ).toString()
+            )
         }
     }
 }

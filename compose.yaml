@@ -23,9 +23,9 @@ services:
     ports:
       - 18080:8080
     environment:
-      ULID_SEQUENCER_DATASOURCE_URL: "jdbc:mysql://mysql:3306/ulid_db"
-      DATASOURCE_USERNAME: "user"
-      DATASOURCE_PASSWORD: "password"
+      ULID_SEQUENCER_DATASOURCE_URL: jdbc:mysql://mysql:3306/ulid_db
+      DATASOURCE_USERNAME: user
+      DATASOURCE_PASSWORD: password
 
   mysql:
     image: mysql:8.0.43-bookworm
