@@ -6,6 +6,7 @@ import com.github.database.rider.core.configuration.DataSetConfig
 import com.github.database.rider.core.dsl.RiderDSL
 import io.kotest.assertions.assertSoftly
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.extensions.system.OverrideMode
 import io.kotest.extensions.system.withEnvironment
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
@@ -23,11 +24,14 @@ class UlidSequenceRepositoryTest : FunSpec({
     beforeSpec {
         mysql.start()
         println("before")
-        withEnvironment(mapOf(
-            "ULID_SEQUENCER_DATASOURCE_URL" to mysql.jdbcUrl,
-            "DATASOURCE_USERNAME" to mysql.username,
-            "DATASOURCE_PASSWORD" to mysql.password,
-        )) {
+        withEnvironment(
+            environment = mapOf(
+                "ULID_SEQUENCER_DATASOURCE_URL" to mysql.jdbcUrl,
+                "DATASOURCE_USERNAME" to mysql.username,
+                "DATASOURCE_PASSWORD" to mysql.password,
+            ),
+            mode = OverrideMode.SetOrOverride,
+            ) {
             migration()
         }
     }
