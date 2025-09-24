@@ -22,7 +22,7 @@ class RegisterBillUseCaseTest : KoinTest, StringSpec() {
                 every { nextUlid() } returns ULID.parseULID("01K5EZVS4SQ695EMPX61GM7KHW")
             }
 
-            val sut:RegisterBillUseCase by inject()
+            val sut: RegisterBillUseCase by inject()
 
             val registerBillParam = RegisterBillParam(1, "yuki", "gara", "memo")
 
@@ -40,7 +40,7 @@ class RegisterBillUseCaseTest : KoinTest, StringSpec() {
                 every { nextUlid() } returns ULID.parseULID("01K5C11Z3TPPZ5H95MMTQV77RP")
             }
 
-            val sut:RegisterBillUseCase by inject()
+            val sut: RegisterBillUseCase by inject()
 
             val registerBillParam = RegisterBillParam(1, "yuki", "gara", "memo")
 
