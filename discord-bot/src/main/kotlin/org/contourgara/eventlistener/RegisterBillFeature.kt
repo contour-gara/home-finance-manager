@@ -32,7 +32,7 @@ object RegisterBillFeature : KoinComponent {
 
     suspend fun GuildChatInputCommandInteractionCreateEvent.sendSelectUserMessage() = interaction.deferPublicResponse().respond {
         when (interaction.channelId) {
-            Snowflake(discordBotConfig.homeFinanceManagerBotChannelId) -> {
+            Snowflake(discordBotConfig.channelId) -> {
                 actionRow {
                     userSelect(REGISTER_BILL_SELECT_MENU_ID) {
                         placeholder = "請求先を選択してっピ"
@@ -40,7 +40,7 @@ object RegisterBillFeature : KoinComponent {
                 }
             }
 
-            else -> content = "${kord.getChannel(Snowflake(discordBotConfig.homeFinanceManagerBotChannelId))?.mention} で実行してっピ"
+            else -> content = "${kord.getChannel(Snowflake(discordBotConfig.channelId))?.mention} で実行してっピ"
         }
     }
 

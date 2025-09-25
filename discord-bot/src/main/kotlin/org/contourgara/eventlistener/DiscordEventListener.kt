@@ -37,7 +37,7 @@ class DiscordEventListener() : KoinComponent {
     private lateinit var kord: Kord
 
     suspend fun start() {
-        kord = Kord(discordBotConfig.homeFinanceManagerBotToken)
+        kord = Kord(discordBotConfig.botToken)
         createMessageEvent()
         createCommand()
         createExecuteCommandEvent()

@@ -6,7 +6,7 @@ services:
     depends_on:
       - ulid-sequencer
     environment:
-      HOME_FINANCE_MANAGER_BOT_TOKEN: ${BOT_TOKEN}
+      BOT_TOKEN: ${BOT_TOKEN}
       ULID_SEQUENCER_BASE_URL: http://ulid-sequencer:8080
 
   ulid-sequencer:

@@ -6,15 +6,15 @@ import org.koin.core.annotation.Single
 
 @Single
 data class DiscordBotConfig(
-    @Property("HOME_FINANCE_MANAGER_BOT_TOKEN")
-    val homeFinanceManagerBotToken: String,
-    @Property("HOME_FINANCE_MANAGER_CHANNEL_ID")
-    val homeFinanceManagerBotChannelId: String,
+    @Property("BOT_TOKEN")
+    val botToken: String,
+    @Property("CHANNEL_ID")
+    val channelId: String,
     @Property("ULID_SEQUENCER_BASE_URL")
     val ulidSequencerBaseUrl: String,
 ) {
     companion object {
-        @PropertyValue("HOME_FINANCE_MANAGER_CHANNEL_ID")
-        const val HOME_FINANCE_MANAGER_CHANNEL_ID = "1402331708459581591"
+        @PropertyValue("CHANNEL_ID")
+        const val CHANNEL_ID = "1402331708459581591"
     }
 }
