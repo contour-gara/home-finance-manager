@@ -17,6 +17,6 @@ services:
       retries: 3
       start_period: 30s
     environment:
-      ULID_SEQUENCER_DATASOURCE_URL: ${ULID_SEQUENCER_DATASOURCE_URL}
+      ULID_SEQUENCER_DATASOURCE_URL: jdbc:mysql://gateway01.ap-northeast-1.prod.aws.tidbcloud.com:4000/home_finance_manager_ulid_db?sslMode=VERIFY_IDENTITY
       DATASOURCE_USERNAME: ${DATASOURCE_USERNAME}
       DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD}
