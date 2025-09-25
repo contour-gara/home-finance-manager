@@ -3,7 +3,7 @@
 ## Getting start
 
 1. `mise.local.toml` を作成
-   - `HOME_FINANCE_MANAGER_BOT_TOKEN` の値を設定
+   - `BOT_TOKEN` の値を設定
 2. ビルドし、docker 実行
    ```shell
    ./gradlew clean build -x test
@@ -13,7 +13,9 @@
 ## 本番実行
 
 1. `mise.local.toml` に以下の値を設定
-   - `HOME_FINANCE_MANAGER_CHANNEL_ID`
+   - `CHANNEL_ID`
+   - `DATASOURCE_USERNAME`
+   - `DATASOURCE_PASSWORD`
 2. docker 実行
    ```shell
    docker compose -f compose.prd.yaml up -d
@@ -26,7 +28,7 @@ https://discord.com/developers/applications
 ### Application の Bot 設定
 
 1. Token を作成
-   - `mise.local.toml` の `HOME_FINANCE_MANAGER_BOT_TOKEN` に設定
+   - `mise.local.toml` の `BOT_TOKEN` に設定
 2. `Message Content Intent` のラジオボタンを有効に
 
 ### サーバーに Bot を追加

@@ -2,10 +2,10 @@
 java = "corretto-21.0.8.9.1"
 
 [env]
+BOT_TOKEN = ""
+ULID_SEQUENCER_DATASOURCE_URL = ""
 DATASOURCE_USERNAME = ""
 DATASOURCE_PASSWORD = ""
-HOME_FINANCE_MANAGER_BOT_TOKEN = ""
-ULID_SEQUENCER_DATASOURCE_URL = ""
 
 [tasks.jdeps]
 description = "Show module dependencies of jar"
