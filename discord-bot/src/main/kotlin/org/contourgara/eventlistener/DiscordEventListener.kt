@@ -32,7 +32,7 @@ import org.contourgara.eventlistener.TestModalFeature.submitTestModal
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class DiscordEventListener() : KoinComponent {
+object DiscordEventListener : KoinComponent {
     private val discordBotConfig: DiscordBotConfig by inject()
     private lateinit var kord: Kord
 
