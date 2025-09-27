@@ -14,6 +14,7 @@ koin  = "4.1.0"
 koin-annotations = "2.2.0-RC1"
 kord-core = "0.15.0"
 ulid-kotlin = "1.5.0"
+kotlinx-serialization = "1.9.0"
 
 kotest = "6.0.3"
 kotest-assertions-arrow = "2.0.0"
@@ -44,6 +45,7 @@ koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "
 koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations" }
 kord-core = { module = "dev.kord:kord-core", version.ref = "kord-core" }
 ulid-kotlin = { module = "com.aallam.ulid:ulid-kotlin", version.ref = "ulid-kotlin" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 kotest-extensions-ktor = { module = "io.kotest:kotest-assertions-ktor", version.ref = "kotest" }
@@ -64,3 +66,4 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+serializatio = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

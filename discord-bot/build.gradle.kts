@@ -4,6 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.serializatio)
     jacoco
     application
 }
@@ -28,6 +29,7 @@ dependencies {
     implementation(libs.slf4j.simple)
     implementation(libs.arrow.core)
     implementation(libs.ulid.kotlin)
+    implementation(libs.kotlinx.serialization.json)
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.extensions.koin)
     testImplementation(libs.kotest.extensions.wiremock)
