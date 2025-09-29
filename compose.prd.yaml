@@ -3,10 +3,12 @@ services:
     image: ghcr.io/contour-gara/home-finance-manager-discord-bot:latest
     depends_on:
       - ulid-sequencer
+      - kafka-rest-proxy
     environment:
       BOT_TOKEN: ${BOT_TOKEN}
       CHANNEL_ID: ${CHANNEL_ID}
       ULID_SEQUENCER_BASE_URL: http://ulid-sequencer:8080
+      KAFKA_REST_PROXY_BASE_URL: http://kafka-rest-proxy:8082
 
   ulid-sequencer:
     image: ghcr.io/contour-gara/home-finance-manager-ulid-sequencer:latest
@@ -20,3 +22,45 @@ services:
       ULID_SEQUENCER_DATASOURCE_URL: jdbc:mysql://gateway01.ap-northeast-1.prod.aws.tidbcloud.com:4000/home_finance_manager_ulid_db?sslMode=VERIFY_IDENTITY
       DATASOURCE_USERNAME: ${DATASOURCE_USERNAME}
       DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD}
+
+  kafka-broker:
+    image: confluentinc/cp-kafka:8.0.0
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka-broker:29092,PLAINTEXT_HOST://localhost:9092"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka-broker:29093"
+      KAFKA_LISTENERS: "PLAINTEXT://kafka-broker:29092,CONTROLLER://kafka-broker:29093,PLAINTEXT_HOST://0.0.0.0:9092"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_LOG_DIRS: "/tmp/kraft-combined-logs"
+      CLUSTER_ID: "home-finance-manager-kafka"
+
+  kafka-rest-proxy:
+    image: confluentinc/cp-kafka-rest:8.0.0
+    depends_on:
+      - kafka-broker
+    environment:
+      KAFKA_REST_HOST_NAME: rest-proxy
+      KAFKA_REST_BOOTSTRAP_SERVERS: "kafka-broker:29092"
+      KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    profiles:
+      - kafka-ui
+    restart: always
+    ports:
+      - "18081:8080"
+    depends_on:
+      - kafka-broker
+    environment:
+      KAFKA_CLUSTERS_0_NAME: kafka-broker
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-broker:29092
