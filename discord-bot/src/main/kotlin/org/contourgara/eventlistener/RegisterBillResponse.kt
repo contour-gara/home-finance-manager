@@ -24,7 +24,7 @@ import kotlin.collections.last
 @OptIn(ExperimentalRaiseAccumulateApi::class)
 @ConsistentCopyVisibility
 data class RegisterBillResponse private constructor (
-    private val id: String,
+    private val billId: String,
     private val amount: Int,
     private val lender: User,
     private val borrower: User,
@@ -33,7 +33,7 @@ data class RegisterBillResponse private constructor (
     companion object {
         fun from(dto: RegisterBillDto): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillResponse> =
             of(
-                id = dto.id,
+                billId = dto.billId,
                 amount = dto.amount.toString(),
                 lender = User.of(dto.lender),
                 borrower = User.of(dto.borrower),
@@ -46,7 +46,7 @@ data class RegisterBillResponse private constructor (
                     validateEmbedData(embedData).bindNelOrAccumulate()
                 }
                 of(
-                    id = embedData.fields.orEmpty().first().value,
+                    billId = embedData.fields.orEmpty().first().value,
                     amount = embedData.fields.orEmpty()[1].value.parseAmount(),
                     lender = User.of(embedData.fields.orEmpty()[2].value),
                     borrower = User.of(embedData.fields.orEmpty()[3].value),
@@ -54,7 +54,7 @@ data class RegisterBillResponse private constructor (
                 ).bind()
             }
 
-        private fun of(id: String, amount: String, lender: User, borrower: User, memo: String): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillResponse> =
+        private fun of(billId: String, amount: String, lender: User, borrower: User, memo: String): Either<NonEmptyList<RegisterBillValidationError>, RegisterBillResponse> =
             either {
                 accumulate {
                     validateAmount(amount).bindNelOrAccumulate()
@@ -64,7 +64,7 @@ data class RegisterBillResponse private constructor (
                     validateMemo(memo).bindNelOrAccumulate()
                 }
                 RegisterBillResponse(
-                    id = id,
+                    billId = billId,
                     amount = amount.toInt(),
                     lender = lender,
                     borrower = borrower,
@@ -76,7 +76,7 @@ data class RegisterBillResponse private constructor (
     fun toEmbedBuilder(): EmbedBuilder.() -> Unit = {
         title = "入力情報だっピ"
         color = Color(0, 255, 0)
-        field(name = "申請 ID", inline = true, value = { id })
+        field(name = "申請 ID", inline = true, value = { billId })
         field(name = "請求金額", inline = true, value = { amount.formatAmount() })
         field(name = "請求者", inline = true, value = { lender.name.lowercase() })
         field(name = "請求先", inline = true, value = { borrower.name.lowercase() })

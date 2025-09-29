@@ -87,7 +87,7 @@ class EventSendClientImpl(
 
             fun from(bill: Bill) = ProduceRecordHeader(
                 name = "billId",
-                value = bill.id.toString().toByteArray()
+                value = bill.billId.toString().toByteArray()
             )
         }
     }
@@ -108,7 +108,7 @@ class EventSendClientImpl(
     ) {
         companion object {
             fun from(bill: Bill) = ProduceRecordValueData(
-                billId = bill.id.toString(),
+                billId = bill.billId.toString(),
                 amount = bill.amount,
                 lender = bill.lender.name,
                 borrower = bill.borrower.name,

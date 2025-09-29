@@ -15,7 +15,7 @@ class RegisterBillUseCase(
         ulidGenerator.nextUlid()
             .let {
                 Bill.of(
-                    id = it,
+                    billId = it,
                     amount = param.amount,
                     lenderName = param.lender,
                     borrowerName = param.borrower,
