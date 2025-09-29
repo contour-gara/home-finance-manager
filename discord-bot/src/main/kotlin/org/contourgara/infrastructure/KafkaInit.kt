@@ -47,7 +47,7 @@ object KafkaInit : KoinComponent {
                         setBody(CreateTopicRequest(discordBotConfig.kafkaTopicName))
                     }
                 }
-                ?.let {
+                ?.also {
                     if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
                 }
                 ?: println("Topic already exists")

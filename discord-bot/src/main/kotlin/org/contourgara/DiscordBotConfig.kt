@@ -25,6 +25,6 @@ data class DiscordBotConfig(
         @PropertyValue("KAFKA_CLUSTER_ID")
         const val KAFKA_CLUSTER_ID = "home-finance-manager-kafka"
         @PropertyValue("KAFKA_TOPIC_NAME")
-        const val KAFKA_TOPIC_NAME = "test-topic"
+        const val KAFKA_TOPIC_NAME = "home-finance-manager-topic"
     }
 }

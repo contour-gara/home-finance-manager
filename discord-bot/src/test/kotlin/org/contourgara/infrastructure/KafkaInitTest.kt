@@ -15,22 +15,20 @@ import io.kotest.extensions.wiremock.WireMockListener
 import io.kotest.koin.KoinExtension
 import io.kotest.matchers.shouldBe
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.mockkClass
 import kotlinx.serialization.json.Json
 import org.contourgara.DiscordBotConfig
 import org.koin.ksp.generated.org_contourgara_DiscordBotModule
 import org.koin.test.KoinTest
 import org.koin.test.mock.declareMock
 import wiremock.com.google.common.net.HttpHeaders
-import wiremock.com.google.common.net.MediaType
-import java.nio.charset.Charset
 
 class KafkaInitTest : KoinTest, FunSpec() {
     init {
         val wireMockServer = WireMockServer(28080)
 
         extensions(
-            KoinExtension(org_contourgara_DiscordBotModule) { mockk<DiscordBotConfig>() },
+            KoinExtension(org_contourgara_DiscordBotModule) { mockkClass(it) },
             WireMockListener(wireMockServer, ListenerMode.PER_SPEC),
         )
 
@@ -39,7 +37,7 @@ class KafkaInitTest : KoinTest, FunSpec() {
             declareMock<DiscordBotConfig> {
                 every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
                 every { kafkaClusterId } returns "home-finance-manager-kafka"
-                every { kafkaTopicName } returns "test-topic"
+                every { kafkaTopicName } returns "home-finance-manager-topic"
             }
 
             wireMockServer.stubFor(
@@ -54,7 +52,7 @@ class KafkaInitTest : KoinTest, FunSpec() {
             wireMockServer.stubFor(
                 post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics"))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
-                    .withRequestBody(equalTo(Json.encodeToString(KafkaInit.CreateTopicRequest("test-topic"))))
+                    .withRequestBody(equalTo(Json.encodeToString(KafkaInit.CreateTopicRequest("home-finance-manager-topic"))))
                     .willReturn(
                         aResponse()
                             .withStatus(201)
@@ -71,7 +69,7 @@ class KafkaInitTest : KoinTest, FunSpec() {
             declareMock<DiscordBotConfig> {
                 every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
                 every { kafkaClusterId } returns "home-finance-manager-kafka"
-                every { kafkaTopicName } returns "test-topic"
+                every { kafkaTopicName } returns "home-finance-manager-topic"
             }
 
             wireMockServer.stubFor(
@@ -86,7 +84,7 @@ class KafkaInitTest : KoinTest, FunSpec() {
             wireMockServer.stubFor(
                 post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics"))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
-                    .withRequestBody(equalTo(Json.encodeToString(KafkaInit.CreateTopicRequest("test-topic"))))
+                    .withRequestBody(equalTo(Json.encodeToString(KafkaInit.CreateTopicRequest("home-finance-manager-topic"))))
                     .willReturn(
                         aResponse()
                             .withStatus(400)

@@ -1,11 +1,16 @@
 package org.contourgara.application
 
 import org.contourgara.domain.Bill
+import org.contourgara.domain.BillOperation
+import org.contourgara.domain.EventSendClient
 import org.contourgara.domain.UlidGenerator
 import org.koin.core.annotation.Single
 
 @Single
-class RegisterBillUseCase(private val ulidGenerator: UlidGenerator) {
+class RegisterBillUseCase(
+    private val ulidGenerator: UlidGenerator,
+    private val eventSendClient: EventSendClient,
+) {
     fun execute(param: RegisterBillParam): RegisterBillDto =
         ulidGenerator.nextUlid()
             .let {
@@ -17,6 +22,6 @@ class RegisterBillUseCase(private val ulidGenerator: UlidGenerator) {
                     memo = param.memo,
                 )
             }
+            .also { eventSendClient.execute(BillOperation.REGISTER, it) }
             .let { RegisterBillDto.from(it) }
-            .also { println("execute UseCase") }
 }
