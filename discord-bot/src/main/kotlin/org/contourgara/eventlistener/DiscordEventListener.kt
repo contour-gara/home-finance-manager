@@ -102,7 +102,7 @@ object DiscordEventListener : KoinComponent {
     }
 
     private suspend fun sendMessage() {
-        val rest = RestClient(KtorRequestHandler(System.getenv("HOME_FINANCE_MANAGER_BOT_TOKEN")))
+        val rest = RestClient(KtorRequestHandler(discordBotConfig.botToken))
         rest.channel.createMessage(Snowflake(1402331708459581591)) {
             content = "send message test"
         }
