@@ -4,12 +4,12 @@ import io.kotest.core.extensions.ApplyExtension
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.nulls.shouldNotBeNull
-import org.springframework.test.context.ContextConfiguration
+import org.springframework.boot.test.context.SpringBootTest
 
 @ApplyExtension(SpringExtension::class)
-@ContextConfiguration(classes = [FinanceCoreApplication::class])
-class FinanceCoreApplicationTest(testComponent: TestComponent) : FunSpec({
-    test("context loads") {
-        testComponent.shouldNotBeNull()
-    }
+@SpringBootTest
+class FinanceCoreApplicationTest(val consumer: Consumer) : FunSpec({
+        test("context loads") {
+            consumer.shouldNotBeNull()
+        }
 })

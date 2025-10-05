@@ -19,10 +19,16 @@ dependencies {
     implementation(project.dependencies.platform(libs.spring.boot.dependencies))
     implementation(libs.spring.boot.starter.web)
     implementation(libs.spring.boot.starter.actuator)
+    implementation(libs.spring.kafka)
     testImplementation(libs.spring.boot.starter.test)
+    testImplementation(libs.spring.boot.testcontainers)
+    testImplementation(libs.spring.kafka.test)
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.extensions.spring)
+    testImplementation(libs.kotest.extensions.testcontainers)
+    testImplementation(libs.testcontainers.kafka)
+    testImplementation(libs.awaitility.kotlin)
 }
 
 kotlin {

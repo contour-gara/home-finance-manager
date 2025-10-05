@@ -31,14 +31,17 @@ services:
       DATASOURCE_USERNAME: user
       DATASOURCE_PASSWORD: password
 
-#  finance-core:
-#    build:
-#      context: ./finance-core
-#      dockerfile: Dockerfile
-#    depends_on:
-#      - ulid-sequencer
-#      - mysql
-#      - kafka-broker
+  finance-core:
+    build:
+      context: ./finance-core
+      dockerfile: Dockerfile
+    depends_on:
+      - ulid-sequencer
+      - mysql
+      - kafka-broker
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-broker:29092
+      SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET: latest
 
   mysql:
     image: mysql:8.0.43-oraclelinux9

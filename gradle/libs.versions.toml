@@ -32,6 +32,7 @@ ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "k
 spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+spring-kafka = { module = "org.springframework.kafka:spring-kafka" }
 exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
 exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
 mysql-connector-j = { module = "com.mysql:mysql-connector-j", version.ref = "mysql" }
@@ -52,14 +53,19 @@ kotest-extensions-ktor = { module = "io.kotest:kotest-assertions-ktor", version.
 kotest-extensions-spring = { module = "io.kotest:kotest-extensions-spring", version.ref = "kotest" }
 kotest-extensions-koin = { module = "io.kotest:kotest-extensions-koin", version.ref = "kotest" }
 kotest-extensions-wiremock = { module = "io.kotest:kotest-extensions-wiremock", version.ref = "kotest" }
+kotest-extensions-testcontainers = { module = "io.kotest:kotest-extensions-testcontainers", version.ref = "kotest" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotest-assertions-arrow = { module = "io.kotest.extensions:kotest-assertions-arrow", version.ref = "kotest-assertions-arrow" }
 ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-boot-testcontainers = { module = "org.springframework.boot:spring-boot-testcontainers" }
+spring-kafka-test = { module = "org.springframework.kafka:spring-kafka-test" }
 koin-test = { module = "io.insert-koin:koin-test" }
 database-rider-core = { module = "com.github.database-rider:rider-core", version.ref = "database-rider" }
 testcontainers-mysql = { module = "org.testcontainers:mysql", version.ref = "testcontainers" }
+testcontainers-kafka = { module = "org.testcontainers:kafka" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+awaitility-kotlin = { module = "org.awaitility:awaitility-kotlin" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
