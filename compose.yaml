@@ -11,6 +11,17 @@ services:
       ULID_SEQUENCER_BASE_URL: http://ulid-sequencer:8080
       KAFKA_REST_PROXY_BASE_URL: http://kafka-rest-proxy:8082
 
+  finance-core:
+    build:
+      context: ./finance-core
+      dockerfile: Dockerfile
+    depends_on:
+      - ulid-sequencer
+      - kafka-broker
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-broker:29092
+      SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET: latest
+
   ulid-sequencer:
     build:
       context: ./ulid-sequencer
@@ -22,7 +33,7 @@ services:
       retries: 3
       start_period: 30s
     depends_on:
-      mysql:
+      mysql-ulid-sequencer:
         condition: service_healthy
     ports:
       - "18080:8080"
@@ -31,19 +42,7 @@ services:
       DATASOURCE_USERNAME: user
       DATASOURCE_PASSWORD: password
 
-  finance-core:
-    build:
-      context: ./finance-core
-      dockerfile: Dockerfile
-    depends_on:
-      - ulid-sequencer
-      - mysql
-      - kafka-broker
-    environment:
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-broker:29092
-      SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET: latest
-
-  mysql:
+  mysql-ulid-sequencer:
     image: mysql:8.0.43-oraclelinux9
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
