@@ -38,7 +38,7 @@ services:
     ports:
       - "18080:8080"
     environment:
-      ULID_SEQUENCER_DATASOURCE_URL: jdbc:mysql://mysql:3306/home_finance_manager_ulid_db
+      ULID_SEQUENCER_DATASOURCE_URL: jdbc:mysql://mysql-ulid-sequencer:3306/home_finance_manager_ulid_db
       DATASOURCE_USERNAME: user
       DATASOURCE_PASSWORD: password
 
