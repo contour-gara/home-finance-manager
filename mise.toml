@@ -39,3 +39,10 @@ else
     {{arg(name="module")}}/build/libs/{{arg(name="module")}}.jar
 fi
 """
+
+[tasks.native-image-agent]
+description = "Run the application with GraalVM Native Image Agent to generate configuration files"
+run = """
+./gradlew clean ulid-sequencer:build -x test
+java -agentlib:native-image-agent=config-output-dir=./ulid-sequencer/src/main/resources/META-INF/native-image -jar ulid-sequencer/build/libs/ulid-sequencer.jar
+"""
