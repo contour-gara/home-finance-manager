@@ -4,6 +4,7 @@ ksp = "2.2.10-2.0.2"
 
 ktor = "3.3.0"
 spring-boot = "3.5.5"
+axon = "4.12.1"
 exposed = "1.0.0-rc-1"
 mysql = "9.4.0"
 kotlin-logging = "3.0.5"
@@ -32,7 +33,10 @@ ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "k
 spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
 spring-kafka = { module = "org.springframework.kafka:spring-kafka" }
+axon-bom = { module = "org.axonframework:axon-bom", version.ref = "axon" }
+axon-spring-boot-starter = { module = "org.axonframework:axon-spring-boot-starter" }
 exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
 exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
 mysql-connector-j = { module = "com.mysql:mysql-connector-j", version.ref = "mysql" }
@@ -47,6 +51,7 @@ koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref =
 kord-core = { module = "dev.kord:kord-core", version.ref = "kord-core" }
 ulid-kotlin = { module = "com.aallam.ulid:ulid-kotlin", version.ref = "ulid-kotlin" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin" }
 
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 kotest-extensions-ktor = { module = "io.kotest:kotest-assertions-ktor", version.ref = "kotest" }

@@ -7,3 +7,16 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     template:
       default-topic: home-finance-manager-topic
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: update
+
+axon:
+  axonserver:
+    enabled: false
+  serializer:
+    general: jackson
+    events: jackson

@@ -16,11 +16,16 @@ services:
       context: ./finance-core
       dockerfile: Dockerfile
     depends_on:
-      - ulid-sequencer
-      - kafka-broker
+      mysql-finance-core:
+        condition: service_healthy
+      kafka-broker:
+        condition: service_started
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-broker:29092
       SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET: latest
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-finance-core:3306/home_finance_manager_core_db
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
 
   ulid-sequencer:
     build:
@@ -41,6 +46,22 @@ services:
       ULID_SEQUENCER_DATASOURCE_URL: jdbc:mysql://mysql-ulid-sequencer:3306/home_finance_manager_ulid_db
       DATASOURCE_USERNAME: user
       DATASOURCE_PASSWORD: password
+
+  mysql-finance-core:
+    image: mysql:8.0.43-oraclelinux9
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: home_finance_manager_core_db
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
 
   mysql-ulid-sequencer:
     image: mysql:8.0.43-oraclelinux9
