@@ -1,6 +1,7 @@
 [versions]
 kotlin = "2.2.10"
 ksp = "2.2.10-2.0.2"
+native = "0.11.1"
 
 ktor = "3.3.0"
 spring-boot = "3.5.5"
@@ -80,3 +81,4 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
 serializatio = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+native = { id = "org.graalvm.buildtools.native", version.ref = "native" }
