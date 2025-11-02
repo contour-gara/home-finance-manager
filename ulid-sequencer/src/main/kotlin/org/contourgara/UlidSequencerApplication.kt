@@ -1,7 +1,7 @@
 package org.contourgara
 
 import io.ktor.server.application.Application
-import io.ktor.server.netty.EngineMain
+import io.ktor.server.cio.EngineMain
 import org.contourgara.presentation.configureRouting
 import org.contourgara.repository.migration
 
