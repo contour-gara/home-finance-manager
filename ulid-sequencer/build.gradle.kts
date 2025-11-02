@@ -37,7 +37,7 @@ kotlin {
 }
 
 application {
-    mainClass = "org.contourgara.UlidSequencerApplicationKt"
+    mainClass = "io.ktor.server.cio.EngineMain"
 }
 
 ktor {
