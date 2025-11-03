@@ -25,7 +25,8 @@ jobs:
         run: |
           docker build \
           --tag ghcr.io/$GITHUB_ACTOR/home-finance-manager-ulid-sequencer-native:latest \
-          ./ulid-sequencer
+          -f ./ulid-sequencer/Dockerfile \
+          .
       - name: Push docker image
         run: |
           docker push ghcr.io/$GITHUB_ACTOR/home-finance-manager-ulid-sequencer-native:latest
