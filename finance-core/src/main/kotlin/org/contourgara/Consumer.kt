@@ -1,6 +1,7 @@
 package org.contourgara
 
-import kotlinx.serialization.json.Json
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.springframework.kafka.annotation.KafkaListener
@@ -21,7 +22,8 @@ class Consumer(
         println("billId: $billId")
 //        println("Received message: ${record.value()}")
 
-        val value = Json.decodeFromString<RegisterBill>(record.value())
+//        val value = Json.decodeFromString<RegisterBill>(record.value())
+        val value = ObjectMapper().registerKotlinModule().readValue(record.value(), RegisterBill::class.java)
         println(value)
 
         testComponent.execute()
@@ -31,7 +33,7 @@ class Consumer(
                 "REGISTER" -> commandGateway.sendAndWait<RegisterBillCommand>(
                     RegisterBillCommand(
                         Bill.of(
-                            billId = value.billId,
+                            billId = ULID.parseULID(value.billId),
                             amount = value.amount,
                             lender = value.lender,
                             borrower = value.borrower,

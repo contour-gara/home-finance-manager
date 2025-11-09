@@ -4,7 +4,6 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.spring.boot)
-    alias(libs.plugins.serializatio)
     jacoco
     application
 }
@@ -25,7 +24,6 @@ dependencies {
     implementation(project.dependencies.platform(libs.axon.bom))
     implementation(libs.axon.spring.boot.starter)
     implementation(libs.ulid.kotlin)
-    implementation(libs.kotlinx.serialization.json)
     implementation(libs.jackson.module.kotlin)
     runtimeOnly(libs.mysql.connector.j)
     testImplementation(libs.spring.boot.starter.test)
