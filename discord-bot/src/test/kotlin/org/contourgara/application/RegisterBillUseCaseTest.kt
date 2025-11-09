@@ -7,7 +7,6 @@ import io.mockk.every
 import io.mockk.mockkClass
 import io.mockk.verify
 import org.contourgara.domain.Bill
-import org.contourgara.domain.BillOperation
 import org.contourgara.domain.EventSendClient
 import org.contourgara.domain.UlidGenerator
 import org.koin.ksp.generated.org_contourgara_DiscordBotModule
@@ -44,8 +43,8 @@ class RegisterBillUseCaseTest : KoinTest, StringSpec() {
             // assert
             val expected = RegisterBillDto("01K5EZVS4SQ695EMPX61GM7KHW", 1, "yuki", "gara", "memo")
             verify(exactly = 1) {
-                eventSendClient.execute(
-                    BillOperation.REGISTER, Bill.of(ulid, 1, "yuki", "gara", "memo")
+                eventSendClient.registerBill(
+                    Bill.of(ulid, 1, "yuki", "gara", "memo")
                 )
             }
             actual shouldBe expected
@@ -71,8 +70,8 @@ class RegisterBillUseCaseTest : KoinTest, StringSpec() {
             // assert
             val expected = RegisterBillDto("01K5C11Z3TPPZ5H95MMTQV77RP", 1, "yuki", "gara", "memo")
             verify(exactly = 1) {
-                eventSendClient.execute(
-                    BillOperation.REGISTER, Bill.of(ulid, 1, "yuki", "gara", "memo")
+                eventSendClient.registerBill(
+                    Bill.of(ulid, 1, "yuki", "gara", "memo")
                 )
             }
             actual shouldBe expected

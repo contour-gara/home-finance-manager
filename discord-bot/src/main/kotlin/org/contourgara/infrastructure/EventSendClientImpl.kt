@@ -21,7 +21,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 import org.contourgara.DiscordBotConfig
 import org.contourgara.domain.Bill
-import org.contourgara.domain.BillOperation
 import org.contourgara.domain.EventSendClient
 import org.koin.core.annotation.Single
 
@@ -29,7 +28,7 @@ import org.koin.core.annotation.Single
 class EventSendClientImpl(
     private val discordBotConfig: DiscordBotConfig,
 ) : EventSendClient {
-    override fun execute(billOperation: BillOperation, bill: Bill) =
+    override fun registerBill(bill: Bill) {
         runBlocking {
             HttpClient(CIO) {
                 install(Logging) {
@@ -42,9 +41,9 @@ class EventSendClientImpl(
                 }
             }
                 .use { client ->
-                    client.post("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.kafkaTopicName}/records") {
+                    client.post("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.registerBillTopicName}/records") {
                         contentType(ContentType.Application.Json)
-                        setBody(ProduceRecordRequest.from(billOperation, bill))
+                        setBody(RegisterBillRequest.from(bill))
                     }
                 }
                 .also {
@@ -56,51 +55,33 @@ class EventSendClientImpl(
                 }
                 .let { Unit }
         }
+    }
 
     @Serializable
-    data class ProduceRecordRequest(
-        private val headers: List<ProduceRecordHeader>,
-        private val value: ProduceRecordValue,
+    data class RegisterBillRequest(
+        private val value: RegisterBillValue,
     ) {
         companion object {
-            fun from(billOperation: BillOperation, bill: Bill) = ProduceRecordRequest(
-                headers = listOf(
-                    ProduceRecordHeader.from(billOperation),
-                    ProduceRecordHeader.from(bill),
-                ),
-                value = ProduceRecordValue(
-                    data = ProduceRecordValueData.from(bill)
-                )
+            fun from(bill: Bill) = RegisterBillRequest(
+                value = RegisterBillValue.from(bill)
             )
         }
     }
 
     @Serializable
-    data class ProduceRecordHeader(
-        private val name: String,
-        private val value: ByteArray,
-    ) {
-        companion object {
-            fun from(billOperation: BillOperation) = ProduceRecordHeader(
-                name = "billOperation",
-                value = billOperation.name.toByteArray()
-            )
-
-            fun from(bill: Bill) = ProduceRecordHeader(
-                name = "billId",
-                value = bill.billId.toString().toByteArray()
-            )
-        }
-    }
-
-    @Serializable
-    data class ProduceRecordValue(
+    data class RegisterBillValue(
         private val type: String = "JSON",
-        private val data: ProduceRecordValueData,
-    )
+        private val data: RegisterBillValueData,
+    ) {
+        companion object {
+            fun from(bill: Bill) = RegisterBillValue(
+                data = RegisterBillValueData.from(bill)
+            )
+        }
+    }
 
     @Serializable
-    data class ProduceRecordValueData(
+    data class RegisterBillValueData(
         private val billId: String,
         private val amount: Int,
         private val lender: String,
@@ -108,7 +89,7 @@ class EventSendClientImpl(
         private val memo: String,
     ) {
         companion object {
-            fun from(bill: Bill) = ProduceRecordValueData(
+            fun from(bill: Bill) = RegisterBillValueData(
                 billId = bill.billId.toString(),
                 amount = bill.amount,
                 lender = bill.lender.name,

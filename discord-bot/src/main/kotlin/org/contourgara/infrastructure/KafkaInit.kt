@@ -40,17 +40,15 @@ object KafkaInit : KoinComponent {
         }.use { client ->
             client.get("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics")
                 .body<GetAllTopicsResponse>()
-                .takeUnless { it.hasTopic() }
-                ?.let {
+                .toCreatTopics()
+                .forEach {
                     client.post("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics") {
                         contentType(ContentType.Application.Json)
-                        setBody(CreateTopicRequest(discordBotConfig.kafkaTopicName))
+                        setBody(CreateTopicRequest(it.topicName))
+                    }.also {
+                        if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
                     }
                 }
-                ?.also {
-                    if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
-                }
-                ?: println("Topic already exists")
         }
     }
 
@@ -60,7 +58,10 @@ object KafkaInit : KoinComponent {
     data class GetAllTopicsResponse(
         private val data: List<TopicDataResponse>,
     ) {
-        fun hasTopic(): Boolean = data.any { it.hasTopic() }
+        fun toCreatTopics(): List<TopicType> =
+            TopicType.entries.filterNot {
+                data.map { it.toTopicType() }.contains(it)
+            }
     }
 
     @OptIn(ExperimentalSerializationApi::class)
@@ -70,7 +71,19 @@ object KafkaInit : KoinComponent {
         @SerialName("topic_name")
         private val topicName: String,
     ) {
-        fun hasTopic(): Boolean = topicName == discordBotConfig.kafkaTopicName
+        fun toTopicType(): TopicType = TopicType.of(topicName)
+    }
+
+    enum class TopicType(val topicName: String) {
+        REGISTER_BILL(discordBotConfig.registerBillTopicName),
+        DELETE_BILL(discordBotConfig.deleteBillTopicName),
+        ;
+
+        companion object {
+            fun of(topicName: String) =
+                entries.find { it.topicName == topicName }
+                    ?: throw IllegalArgumentException("Unknown topic name: $topicName" )
+        }
     }
 
     @Serializable

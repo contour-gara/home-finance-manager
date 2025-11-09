@@ -18,6 +18,10 @@ data class DiscordBotConfig(
     val kafkaClusterId: String,
     @Property("KAFKA_TOPIC_NAME")
     val kafkaTopicName: String,
+    @Property("REGISTER_BILL_TOPIC_NAME")
+    val registerBillTopicName: String,
+    @Property("DELETE_BILL_TOPIC_NAME")
+    val deleteBillTopicName: String,
 ) {
     companion object {
         @PropertyValue("CHANNEL_ID")
@@ -26,5 +30,9 @@ data class DiscordBotConfig(
         const val KAFKA_CLUSTER_ID = "home-finance-manager-kafka"
         @PropertyValue("KAFKA_TOPIC_NAME")
         const val KAFKA_TOPIC_NAME = "home-finance-manager-topic"
+        @PropertyValue("REGISTER_BILL_TOPIC_NAME")
+        const val REGISTER_BILL_TOPIC_NAME = "register-bill"
+        @PropertyValue("DELETE_BILL_TOPIC_NAME")
+        const val DELETE_BILL_TOPIC_NAME = "delete-bill"
     }
 }

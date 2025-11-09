@@ -37,7 +37,8 @@ class KafkaInitTest : KoinTest, FunSpec() {
             declareMock<DiscordBotConfig> {
                 every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
                 every { kafkaClusterId } returns "home-finance-manager-kafka"
-                every { kafkaTopicName } returns "home-finance-manager-topic"
+                every { registerBillTopicName } returns "register-bill"
+                every { deleteBillTopicName } returns "delete-bill"
             }
 
             wireMockServer.stubFor(
@@ -52,7 +53,18 @@ class KafkaInitTest : KoinTest, FunSpec() {
             wireMockServer.stubFor(
                 post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics"))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
-                    .withRequestBody(equalTo(Json.encodeToString(KafkaInit.CreateTopicRequest("home-finance-manager-topic"))))
+                    .withRequestBody(equalTo(Json.encodeToString(KafkaInit.CreateTopicRequest("register-bill"))))
+                    .willReturn(
+                        aResponse()
+                            .withStatus(201)
+                            .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                    )
+            )
+
+            wireMockServer.stubFor(
+                post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics"))
+                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
+                    .withRequestBody(equalTo(Json.encodeToString(KafkaInit.CreateTopicRequest("delete-bill"))))
                     .willReturn(
                         aResponse()
                             .withStatus(201)
@@ -69,7 +81,8 @@ class KafkaInitTest : KoinTest, FunSpec() {
             declareMock<DiscordBotConfig> {
                 every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
                 every { kafkaClusterId } returns "home-finance-manager-kafka"
-                every { kafkaTopicName } returns "home-finance-manager-topic"
+                every { registerBillTopicName } returns "register-bill"
+                every { deleteBillTopicName } returns "delete-bill"
             }
 
             wireMockServer.stubFor(
@@ -84,7 +97,7 @@ class KafkaInitTest : KoinTest, FunSpec() {
             wireMockServer.stubFor(
                 post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics"))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
-                    .withRequestBody(equalTo(Json.encodeToString(KafkaInit.CreateTopicRequest("home-finance-manager-topic"))))
+                    .withRequestBody(equalTo(Json.encodeToString(KafkaInit.CreateTopicRequest("register-bill"))))
                     .willReturn(
                         aResponse()
                             .withStatus(400)
