@@ -1,9 +1,14 @@
-package org.contourgara
+package org.contourgara.eventlithner
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.axonframework.commandhandling.gateway.CommandGateway
+import org.contourgara.Bill
+import org.contourgara.BillId
+import org.contourgara.DeleteBillCommand
+import org.contourgara.RegisterBillCommand
+import org.contourgara.User
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
 import ulid.ULID
@@ -21,8 +26,8 @@ class Consumer(
                 Bill.of(
                     billId = ULID.parseULID(value.billId),
                     amount = value.amount,
-                    lender = value.lender,
-                    borrower = value.borrower,
+                    lender = User.valueOf(value.lender.name),
+                    borrower = User.valueOf(value.borrower.name),
                     memo = value.memo,
                 )
             )

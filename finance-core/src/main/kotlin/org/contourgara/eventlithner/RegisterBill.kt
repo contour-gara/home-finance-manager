@@ -1,4 +1,4 @@
-package org.contourgara
+package org.contourgara.eventlithner
 
 data class RegisterBill(
     val billId: String,

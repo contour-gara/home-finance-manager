@@ -85,6 +85,12 @@ data class BillId(
     val value: ULID,
 )
 
+enum class User {
+    GARA,
+    YUKI,
+    ;
+}
+
 data class Bill(
     val billId: BillId,
     val amount: Int,
