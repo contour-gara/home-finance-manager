@@ -34,6 +34,7 @@ dependencies {
     testImplementation(libs.kotest.extensions.spring)
     testImplementation(libs.kotest.extensions.testcontainers)
     testImplementation(libs.testcontainers.kafka)
+    testImplementation(libs.testcontainers.mysql)
     testImplementation(libs.awaitility.kotlin)
 }
 

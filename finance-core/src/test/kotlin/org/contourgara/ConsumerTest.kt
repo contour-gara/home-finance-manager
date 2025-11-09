@@ -7,6 +7,7 @@ import org.awaitility.kotlin.atMost
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
 import org.awaitility.kotlin.withPollDelay
+import org.axonframework.commandhandling.gateway.CommandGateway
 import org.mockito.Mockito
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
@@ -19,12 +20,35 @@ import java.time.Duration
 @Import(TestcontainersConfiguration::class)
 class ConsumerTest(
     val kafkaTemplate: KafkaTemplate<String, String>,
-    @MockitoBean val testComponent: TestComponent,
+    @MockitoBean val commandGateway: CommandGateway,
 ) : FunSpec({
-    test("test") {
-        kafkaTemplate.send("home-finance-manager-topic", "test")
+    test("登録イベントのテスト") {
+        kafkaTemplate.send("register-bill", "{\"billId\": \"01K9HSSXN6VYPGG5E10Q1TFAGF\", \"amount\": 1234, \"lender\": \"GARA\", \"borrower\": \"YUKI\", \"memo\": \"asdf\"}")
+
         await withPollDelay(Duration.ofSeconds(1))  atMost(Duration.ofSeconds(10)) untilAsserted {
-            Mockito.verify(testComponent, Mockito.times(1)).execute()
+            Mockito.verify(commandGateway, Mockito.times(1)).sendAndWait(
+                RegisterBillCommand(
+                    Bill.of(
+                        billId = ulid.ULID.parseULID("01K9HSSXN6VYPGG5E10Q1TFAGF"),
+                        amount = 1234,
+                        lender = User.GARA,
+                        borrower = User.YUKI,
+                        memo = "asdf",
+                    )
+                )
+            )
+        }
+    }
+
+    test("削除イベントのテスト") {
+        kafkaTemplate.send("delete-bill", "{\"billId\": \"01K9HSSXN6VYPGG5E10Q1TFAGF\"}")
+
+        await withPollDelay(Duration.ofSeconds(1))  atMost(Duration.ofSeconds(10)) untilAsserted {
+            Mockito.verify(commandGateway, Mockito.times(1)).sendAndWait(
+                DeleteBillCommand(
+                    billId = BillId(ulid.ULID.parseULID("01K9HSSXN6VYPGG5E10Q1TFAGF")),
+                )
+            )
         }
     }
 })

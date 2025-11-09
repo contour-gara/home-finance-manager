@@ -10,45 +10,33 @@ import ulid.ULID
 
 @Component
 class Consumer(
-    private val testComponent: TestComponent,
     private val commandGateway: CommandGateway,
 ) {
-    @KafkaListener(topics = ["\${spring.kafka.template.default-topic}"])
-    fun listen(record: ConsumerRecord<String, String>) {
-//        println("Received headers: ${record.headers()}")
-        val billOperation = String(record.headers().headers("billOperation").first().value())
-        println("billOperation: $billOperation")
-        val billId = String(record.headers().headers("billId").first().value())
-        println("billId: $billId")
-//        println("Received message: ${record.value()}")
-
-//        val value = Json.decodeFromString<RegisterBill>(record.value())
+    @KafkaListener(topics = ["\${application.bill.topic.register}"])
+    fun listenRegisterTopic(record: ConsumerRecord<String, String>) {
         val value = ObjectMapper().registerKotlinModule().readValue(record.value(), RegisterBill::class.java)
-        println(value)
 
-        testComponent.execute()
+        commandGateway.sendAndWait<RegisterBillCommand>(
+            RegisterBillCommand(
+                Bill.of(
+                    billId = ULID.parseULID(value.billId),
+                    amount = value.amount,
+                    lender = value.lender,
+                    borrower = value.borrower,
+                    memo = value.memo,
+                )
+            )
+        )
+    }
 
-        try {
-            when (billOperation) {
-                "REGISTER" -> commandGateway.sendAndWait<RegisterBillCommand>(
-                    RegisterBillCommand(
-                        Bill.of(
-                            billId = ULID.parseULID(value.billId),
-                            amount = value.amount,
-                            lender = value.lender,
-                            borrower = value.borrower,
-                            memo = value.memo,
-                        )
-                    )
-                )
-                "DELETE" -> commandGateway.sendAndWait<DeleteBillCommand>(
-                    DeleteBillCommand(
-                        billId = BillId(ULID.parseULID(billId)),
-                    )
-                )
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+    @KafkaListener(topics = ["\${application.bill.topic.delete}"])
+    fun listenDeleteTopic(record: ConsumerRecord<String, String>) {
+        val value = ObjectMapper().registerKotlinModule().readValue(record.value(), DeleteBill::class.java)
+
+        commandGateway.sendAndWait<DeleteBillCommand>(
+            DeleteBillCommand(
+                billId = BillId(ULID.parseULID(value.billId)),
+            )
+        )
     }
 }

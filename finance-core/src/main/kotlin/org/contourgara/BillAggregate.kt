@@ -21,27 +21,31 @@ class BillAggregate() {
 
     @CommandHandler
     constructor(command: RegisterBillCommand) : this() {
+        println("Start register command")
         AggregateLifecycle.apply(RegisterBillEvent.from(command))
-        println("Execute command")
+        println("End register command")
     }
 
     @EventSourcingHandler
     fun on(event: RegisterBillEvent) {
+        println("Start register event")
         billId = event.bill.billId
         bill = event.bill
-        println("Apply event")
+        println("End register event")
     }
 
     @CommandHandler
     fun handle(command: DeleteBillCommand) {
+        println("Start delete command")
         AggregateLifecycle.apply(DeleteBillEvent.from(command))
-        println("Execute command")
+        println("End delete command")
     }
 
     @EventSourcingHandler
     fun on(event: DeleteBillEvent) {
+        println("Start delete event")
         AggregateLifecycle.markDeleted()
-        println("Apply event")
+        println("End delete event")
     }
 }
 

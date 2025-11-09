@@ -20,3 +20,9 @@ axon:
   serializer:
     general: jackson
     events: jackson
+
+application:
+  bill:
+    topic:
+      register: register-bill
+      delete: delete-bill
