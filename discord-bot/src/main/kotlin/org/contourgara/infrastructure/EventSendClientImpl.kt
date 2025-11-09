@@ -29,32 +29,33 @@ import org.koin.core.annotation.Single
 class EventSendClientImpl(
     private val discordBotConfig: DiscordBotConfig,
 ) : EventSendClient {
-    override fun execute(billOperation: BillOperation, bill: Bill) = runBlocking {
-        HttpClient(CIO) {
-        install(Logging) {
-            logger = Logger.DEFAULT
-            level = LogLevel.ALL
-        }
+    override fun execute(billOperation: BillOperation, bill: Bill) =
+        runBlocking {
+            HttpClient(CIO) {
+                install(Logging) {
+                    logger = Logger.DEFAULT
+                    level = LogLevel.ALL
+                }
 
-        install(ContentNegotiation) {
-            json()
-        }
-    }
-        .use { client ->
-            client.post("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.kafkaTopicName}/records") {
-                contentType(ContentType.Application.Json)
-                setBody(ProduceRecordRequest.from(billOperation, bill))
+                install(ContentNegotiation) {
+                    json()
+                }
             }
+                .use { client ->
+                    client.post("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.kafkaTopicName}/records") {
+                        contentType(ContentType.Application.Json)
+                        setBody(ProduceRecordRequest.from(billOperation, bill))
+                    }
+                }
+                .also {
+                    if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
+                }
+                .body<ProduceRecordResponse>()
+                .also {
+                    if (it.isFailure()) throw RuntimeException("Bad Request")
+                }
+                .let { Unit }
         }
-        .also {
-            if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
-        }
-        .body<ProduceRecordResponse>()
-        .also {
-            if (it.isFailure()) throw RuntimeException("Bad Request")
-        }
-        .let { Unit }
-    }
 
     @Serializable
     data class ProduceRecordRequest(
