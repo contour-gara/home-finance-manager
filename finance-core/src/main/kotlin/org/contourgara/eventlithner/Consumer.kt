@@ -3,7 +3,6 @@ package org.contourgara.eventlithner
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.apache.kafka.clients.consumer.ConsumerRecord
-import org.axonframework.commandhandling.gateway.CommandGateway
 import org.contourgara.application.DeleteBillUseCase
 import org.contourgara.application.RegisterBillUseCase
 import org.springframework.kafka.annotation.KafkaListener
