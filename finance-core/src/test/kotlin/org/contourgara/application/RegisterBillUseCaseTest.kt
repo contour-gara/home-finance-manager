@@ -8,10 +8,10 @@ import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
 import org.awaitility.kotlin.withPollDelay
 import org.axonframework.commandhandling.gateway.CommandGateway
-import org.contourgara.Bill
-import org.contourgara.RegisterBillCommand
+import org.contourgara.aggregate.RegisterBillCommand
 import org.contourgara.TestcontainersConfiguration
-import org.contourgara.User
+import org.contourgara.domain.Bill
+import org.contourgara.domain.User
 import org.mockito.Mockito
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import

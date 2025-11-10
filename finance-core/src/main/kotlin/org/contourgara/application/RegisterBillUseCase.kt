@@ -1,7 +1,7 @@
 package org.contourgara.application
 
 import org.axonframework.commandhandling.gateway.CommandGateway
-import org.contourgara.RegisterBillCommand
+import org.contourgara.aggregate.RegisterBillCommand
 import org.springframework.stereotype.Service
 
 @Service

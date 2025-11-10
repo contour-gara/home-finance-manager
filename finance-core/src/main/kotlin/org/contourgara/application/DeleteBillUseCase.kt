@@ -1,7 +1,7 @@
 package org.contourgara.application
 
 import org.axonframework.commandhandling.gateway.CommandGateway
-import org.contourgara.DeleteBillCommand
+import org.contourgara.aggregate.DeleteBillCommand
 import org.springframework.stereotype.Service
 
 @Service

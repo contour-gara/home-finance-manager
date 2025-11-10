@@ -8,9 +8,9 @@ import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
 import org.awaitility.kotlin.withPollDelay
 import org.axonframework.commandhandling.gateway.CommandGateway
-import org.contourgara.BillId
-import org.contourgara.DeleteBillCommand
+import org.contourgara.aggregate.DeleteBillCommand
 import org.contourgara.TestcontainersConfiguration
+import org.contourgara.domain.BillId
 import org.mockito.Mockito
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import

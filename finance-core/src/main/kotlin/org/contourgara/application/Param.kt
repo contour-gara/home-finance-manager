@@ -1,8 +1,8 @@
 package org.contourgara.application
 
-import org.contourgara.Bill
-import org.contourgara.BillId
-import org.contourgara.User
+import org.contourgara.domain.Bill
+import org.contourgara.domain.BillId
+import org.contourgara.domain.User
 import ulid.ULID
 
 data class RegisterBillParam(
