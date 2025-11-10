@@ -34,12 +34,14 @@ spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-depe
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
+spring-boot-starter-data-jdbc = { module = "org.springframework.boot:spring-boot-starter-data-jdbc" }
 spring-kafka = { module = "org.springframework.kafka:spring-kafka" }
 axon-bom = { module = "org.axonframework:axon-bom", version.ref = "axon" }
 axon-spring-boot-starter = { module = "org.axonframework:axon-spring-boot-starter" }
 exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
 exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
 mysql-connector-j = { module = "com.mysql:mysql-connector-j", version.ref = "mysql" }
+flyway-mysql = { module = "org.flywaydb:flyway-mysql" }
 kotlin-logging = { module = "io.github.microutils:kotlin-logging-jvm", version.ref = "kotlin-logging" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }

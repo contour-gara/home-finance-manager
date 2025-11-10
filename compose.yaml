@@ -20,12 +20,15 @@ services:
         condition: service_healthy
       kafka-broker:
         condition: service_started
+      ulid-sequencer:
+        condition: service_started
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-broker:29092
       SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET: latest
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-finance-core:3306/home_finance_manager_core_db
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
+      FINANCE_CORE_ULID_GENERATOR_BASE_URL: http://ulid-sequencer:8080
 
   ulid-sequencer:
     build:
