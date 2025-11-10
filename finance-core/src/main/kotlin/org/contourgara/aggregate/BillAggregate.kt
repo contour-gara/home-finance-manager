@@ -22,7 +22,7 @@ class BillAggregate() {
     }
 
     @EventSourcingHandler
-    fun on(event: RegisterBillEvent) {
+    fun handle(event: RegisterBillEvent) {
         println("Start register event")
         billId = event.bill.billId
         bill = event.bill
@@ -37,7 +37,7 @@ class BillAggregate() {
     }
 
     @EventSourcingHandler
-    fun on(event: DeleteBillEvent) {
+    fun handle(event: DeleteBillEvent) {
         println("Start delete event")
         AggregateLifecycle.markDeleted()
         println("End delete event")

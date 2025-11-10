@@ -33,7 +33,7 @@ class BillService(
     }
 
     @EventHandler
-    fun on(deleteBillEvent: DeleteBillEvent, @MessageIdentifier id: String) {
+    fun handle(deleteBillEvent: DeleteBillEvent, @MessageIdentifier id: String) {
         println(deleteBillEvent)
         println(id)
     }
