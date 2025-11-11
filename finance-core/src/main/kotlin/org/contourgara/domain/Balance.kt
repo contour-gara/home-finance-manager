@@ -19,7 +19,7 @@ data class Balance(
         )
     }
 
-    fun update(newId: ULID, deltaAmount: Int, eventId: String): Balance =
+    fun register(newId: ULID, deltaAmount: Int, eventId: String): Balance =
         copy(
             balanceId = newId,
             amount = amount + deltaAmount,

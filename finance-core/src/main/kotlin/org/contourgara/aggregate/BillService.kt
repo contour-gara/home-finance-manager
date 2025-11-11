@@ -25,7 +25,7 @@ class BillService(
                         borrower = registerBillEvent.bill.borrower,
                     )
             }
-            .update(
+            .register(
                 newId = ulidGenerator.nextUlid(),
                 deltaAmount = registerBillEvent.bill.amount,
                 eventId = id,
