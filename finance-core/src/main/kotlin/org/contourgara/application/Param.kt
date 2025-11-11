@@ -15,8 +15,8 @@ data class RegisterBillParam(
     fun toModel(): Bill = Bill.of(
         billId = billId,
         amount = amount,
-        lender = User.valueOf(lender.name),
-        borrower = User.valueOf(borrower.name),
+        lender = lender.toModel(),
+        borrower = borrower.toModel(),
         memo = memo,
     )
 }
@@ -27,8 +27,19 @@ data class DeleteBillParam(
     fun toModel(): BillId = BillId(billId)
 }
 
+data class OffsetBalanceParam(
+    val lender: UserParam,
+    val borrower: UserParam,
+) {
+    fun reverse() = OffsetBalanceParam(
+        lender = borrower,
+        borrower = lender,
+    )
+}
+
 enum class UserParam {
     GARA,
     YUKI,
     ;
+    fun toModel(): User = User.valueOf(name)
 }

@@ -24,3 +24,6 @@ application:
     topic:
       register: register-bill
       delete: delete-bill
+  balance:
+    topic:
+      offset: offset-balance

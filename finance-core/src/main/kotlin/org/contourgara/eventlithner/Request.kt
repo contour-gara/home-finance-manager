@@ -1,6 +1,7 @@
 package org.contourgara.eventlithner
 
 import org.contourgara.application.DeleteBillParam
+import org.contourgara.application.OffsetBalanceParam
 import org.contourgara.application.RegisterBillParam
 import org.contourgara.application.UserParam
 import ulid.ULID
@@ -15,8 +16,8 @@ data class RegisterBillRequest(
     fun toParam(): RegisterBillParam = RegisterBillParam(
         billId = ULID.parseULID(billId),
         amount = amount,
-        lender = UserParam.valueOf(lender.name),
-        borrower = UserParam.valueOf(borrower.name),
+        lender = lender.toParam(),
+        borrower = borrower.toParam(),
         memo = memo,
     )
 }
@@ -29,8 +30,19 @@ data class DeleteBillRequest(
     )
 }
 
+data class OffsetBalanceRequest(
+    val lender: UserRequest,
+    val borrower: UserRequest,
+) {
+    fun toParam(): OffsetBalanceParam = OffsetBalanceParam(
+        lender = lender.toParam(),
+        borrower = borrower.toParam(),
+    )
+}
+
 enum class UserRequest {
     GARA,
     YUKI,
     ;
+    fun toParam(): UserParam = UserParam.valueOf(name)
 }

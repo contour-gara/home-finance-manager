@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.contourgara.application.DeleteBillUseCase
+import org.contourgara.application.OffsetBalanceUseCase
 import org.contourgara.application.RegisterBillUseCase
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
@@ -12,18 +13,22 @@ import org.springframework.stereotype.Component
 class Consumer(
     private val registerBillUseCase: RegisterBillUseCase,
     private val deleteBillUseCase: DeleteBillUseCase,
+    private val offsetBalanceUseCase: OffsetBalanceUseCase,
 ) {
-    @KafkaListener(topics = ["\${application.bill.topic.register}"])
-    fun listenRegisterTopic(record: ConsumerRecord<String, String>) {
-        val registerBillRequest = ObjectMapper().registerKotlinModule().readValue(record.value(), RegisterBillRequest::class.java)
+    private val objectMapper: ObjectMapper by lazy { ObjectMapper().registerKotlinModule() }
 
-        registerBillUseCase.execute(registerBillRequest.toParam())
+    @KafkaListener(topics = ["\${application.bill.topic.register}"])
+    fun listenRegisterBillTopic(record: ConsumerRecord<String, String>) {
+        registerBillUseCase.execute(objectMapper.readValue(record.value(), RegisterBillRequest::class.java).toParam())
     }
 
     @KafkaListener(topics = ["\${application.bill.topic.delete}"])
-    fun listenDeleteTopic(record: ConsumerRecord<String, String>) {
-        val deleteBillRequest = ObjectMapper().registerKotlinModule().readValue(record.value(), DeleteBillRequest::class.java)
+    fun listenDeleteBillTopic(record: ConsumerRecord<String, String>) {
+        deleteBillUseCase.execute(objectMapper.readValue(record.value(), DeleteBillRequest::class.java).toParam())
+    }
 
-        deleteBillUseCase.execute(deleteBillRequest.toParam())
+    @KafkaListener(topics = ["\${application.balance.topic.offset}"])
+    fun listenOffsetBalanceTopic(record: ConsumerRecord<String, String>) {
+        offsetBalanceUseCase.execute(objectMapper.readValue(record.value(), OffsetBalanceRequest::class.java).toParam())
     }
 }
