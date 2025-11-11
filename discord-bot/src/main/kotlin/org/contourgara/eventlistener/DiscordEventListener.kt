@@ -1,12 +1,7 @@
 package org.contourgara.eventlistener
 
-import arrow.core.Either
-import dev.kord.common.entity.ButtonStyle
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
-import dev.kord.core.behavior.interaction.response.edit
-import dev.kord.core.behavior.interaction.response.respond
-import dev.kord.core.entity.channel.MessageChannel
 import dev.kord.core.event.interaction.ButtonInteractionCreateEvent
 import dev.kord.core.event.interaction.GuildChatInputCommandInteractionCreateEvent
 import dev.kord.core.event.interaction.ModalSubmitInteractionCreateEvent
@@ -16,9 +11,14 @@ import dev.kord.core.on
 import dev.kord.gateway.Intent
 import dev.kord.gateway.PrivilegedIntent
 import dev.kord.rest.builder.interaction.string
-import dev.kord.rest.builder.message.actionRow
-import dev.kord.rest.builder.message.embed
 import org.contourgara.DiscordBotConfig
+import org.contourgara.eventlistener.DeleteBillFeature.DELETE_BILL_BUTTON_ID
+import org.contourgara.eventlistener.DeleteBillFeature.DELETE_BILL_COMMAND_ARGUMENT
+import org.contourgara.eventlistener.DeleteBillFeature.DELETE_BILL_COMMAND_ARGUMENT_DESCRIPTION
+import org.contourgara.eventlistener.DeleteBillFeature.DELETE_BILL_COMMAND_DESCRIPTION
+import org.contourgara.eventlistener.DeleteBillFeature.DELETE_BILL_COMMAND_NAME
+import org.contourgara.eventlistener.DeleteBillFeature.pushDeleteBillButton
+import org.contourgara.eventlistener.DeleteBillFeature.sendConfirmDeleteMessage
 import org.contourgara.eventlistener.RegisterBillFeature.REGISTER_BILL_COMMAND_DESCRIPTION
 import org.contourgara.eventlistener.RegisterBillFeature.REGISTER_BILL_COMMAND_NAME
 import org.contourgara.eventlistener.RegisterBillFeature.REGISTER_BILL_MODAL_ID
@@ -45,24 +45,7 @@ object DiscordEventListener : KoinComponent {
         createExecuteCommandEvent()
         createSubmitModalEvent()
         createSubmitSelect()
-        kord.on<ButtonInteractionCreateEvent> {
-            when (interaction.componentId) {
-                "delete" -> {
-                    interaction.deferPublicMessageUpdate().edit {
-                        content = "請求情報を削除したっピ"
-                        actionRow {
-                            interactionButton(
-                                style = ButtonStyle.Primary,
-                                customId = "delete",
-                            ) {
-                                label = "削除"
-                                disabled = true
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        createButtonInteractionEvent()
         login()
     }
 
@@ -89,10 +72,10 @@ object DiscordEventListener : KoinComponent {
 
         kord.createGuildChatInputCommand(
             Snowflake(889318150615744523),
-            "delete-bill",
-            "請求を削除するっピ"
+            DELETE_BILL_COMMAND_NAME,
+            DELETE_BILL_COMMAND_DESCRIPTION,
         ) {
-            string("message-id", "登録したメッセージ ID") {
+            string(DELETE_BILL_COMMAND_ARGUMENT, DELETE_BILL_COMMAND_ARGUMENT_DESCRIPTION) {
                 required = true
             }
         }
@@ -103,27 +86,7 @@ object DiscordEventListener : KoinComponent {
             when (interaction.invokedCommandName) {
                 TEST_MODAL_COMMAND_NAME -> openTestModal()
                 REGISTER_BILL_COMMAND_NAME -> sendSelectUserMessage()
-                "delete-bill" -> {
-                    val messageId = interaction.command.strings["message-id"]!!
-                    val message = kord.getChannelOf<MessageChannel>(Snowflake(1402331708459581591))?.getMessage(Snowflake(messageId))!!
-                    when (val validationResult = RegisterBillResponse.from(message.embeds.first().data)) {
-                        is Either.Right -> interaction.deferPublicResponse().respond {
-                            content = "削除内容確認"
-                            embed(validationResult.value.toEmbedBuilder())
-                            actionRow {
-                                interactionButton(
-                                    style = ButtonStyle.Primary,
-                                    customId = "delete",
-                                ) {
-                                    label = "削除"
-                                }
-                            }
-                        }
-                        is Either.Left -> interaction.deferPublicResponse().respond {
-                            content = "請求情報の取得に失敗したっピ"
-                        }
-                    }
-                }
+                DELETE_BILL_COMMAND_NAME -> sendConfirmDeleteMessage()
             }
         }
     }
@@ -141,6 +104,14 @@ object DiscordEventListener : KoinComponent {
             when (interaction.modalId) {
                 TEST_MODAL_MODAL_ID -> submitTestModal()
                 REGISTER_BILL_MODAL_ID -> submitBillMemoModal()
+            }
+        }
+    }
+
+    private fun createButtonInteractionEvent() {
+        kord.on<ButtonInteractionCreateEvent> {
+            when (interaction.componentId) {
+                DELETE_BILL_BUTTON_ID -> pushDeleteBillButton()
             }
         }
     }
