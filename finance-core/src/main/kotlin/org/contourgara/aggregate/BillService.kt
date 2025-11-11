@@ -30,6 +30,7 @@ class BillService(
             )
             .also { balanceRepository.save(it) }
         println(id)
+        // TODO: BillId ~ を、EventId ~ として処理しました的な通知を行う
     }
 
     @EventHandler
