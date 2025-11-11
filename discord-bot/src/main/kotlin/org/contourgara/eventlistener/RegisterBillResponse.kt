@@ -76,7 +76,7 @@ data class RegisterBillResponse private constructor (
     fun toEmbedBuilder(): EmbedBuilder.() -> Unit = {
         title = "入力情報だっピ"
         color = Color(0, 255, 0)
-        field(name = "申請 ID", inline = true, value = { billId })
+        field(name = "請求 ID", inline = true, value = { billId })
         field(name = "請求金額", inline = true, value = { amount.formatAmount() })
         field(name = "請求者", inline = true, value = { lender.name.lowercase() })
         field(name = "請求先", inline = true, value = { borrower.name.lowercase() })

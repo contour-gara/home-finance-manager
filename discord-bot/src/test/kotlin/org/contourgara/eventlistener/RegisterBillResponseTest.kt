@@ -32,7 +32,7 @@ class RegisterBillResponseTest : StringSpec({
             color = OptionalInt.Value(Color(0, 255, 0).rgb),
             fields = Optional.Value(
                 listOf(
-                    EmbedFieldData(name = "申請 ID", inline = OptionalBoolean.Value(true), value = "ID"),
+                    EmbedFieldData(name = "請求 ID", inline = OptionalBoolean.Value(true), value = "ID"),
                     EmbedFieldData(name = "請求金額", inline = OptionalBoolean.Value(true), value = "1 円"),
                     EmbedFieldData(name = "請求者", inline = OptionalBoolean.Value(true), value = "yuki"),
                     EmbedFieldData(name = "請求先", inline = OptionalBoolean.Value(true), value = "gara"),
@@ -59,7 +59,7 @@ class RegisterBillResponseTest : StringSpec({
         val expected = EmbedBuilder().apply {
             title = "入力情報だっピ"
             color = Color(0, 255, 0)
-            field(name = "申請 ID", inline = true, value = { "ID" })
+            field(name = "請求 ID", inline = true, value = { "ID" })
             field(name = "請求金額", inline = true, value = { "1 円" })
             field(name = "請求者", inline = true, value = { "yuki" })
             field(name = "請求先", inline = true, value = { "gara" })

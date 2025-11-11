@@ -205,7 +205,7 @@ class RegisterBillValidationTest : FunSpec({
                 color = OptionalInt.Value(Color(0, 255, 0).rgb),
                 fields = Optional.Value(
                     listOf(
-                        EmbedFieldData(name = "申請 ID", inline = OptionalBoolean.Value(true), value = "ID"),
+                        EmbedFieldData(name = "請求 ID", inline = OptionalBoolean.Value(true), value = "ID"),
                         EmbedFieldData(name = "請求金額", inline = OptionalBoolean.Value(true), value = "1 円"),
                         EmbedFieldData(name = "請求者", inline = OptionalBoolean.Value(true), value = "yuki"),
                         EmbedFieldData(name = "請求先", inline = OptionalBoolean.Value(true), value = "gara"),
@@ -239,7 +239,7 @@ class RegisterBillValidationTest : FunSpec({
                 actual.value shouldBe listOf(
                     EmbedDataTitleError.of("入力情報"),
                     EmbedDataColorError.of(Color(255, 255, 50), "緑色"),
-                    EmbedDataFieldNamesError.of(emptyList(), listOf("申請 ID", "請求金額", "請求者", "請求先", "メモ")),
+                    EmbedDataFieldNamesError.of(emptyList(), listOf("請求 ID", "請求金額", "請求者", "請求先", "メモ")),
                 )
             }
         }
@@ -251,7 +251,7 @@ class RegisterBillValidationTest : FunSpec({
                 color = OptionalInt.Value(Color(0, 255, 0).rgb),
                 fields = Optional.Value(
                     listOf(
-                        EmbedFieldData(name = "申請 ID", inline = OptionalBoolean.Value(true), value = "ID"),
+                        EmbedFieldData(name = "請求 ID", inline = OptionalBoolean.Value(true), value = "ID"),
                         EmbedFieldData(name = "請求金額", inline = OptionalBoolean.Value(true), value = "1円"),
                         EmbedFieldData(name = "請求者", inline = OptionalBoolean.Value(true), value = "yuki"),
                         EmbedFieldData(name = "請求先", inline = OptionalBoolean.Value(true), value = "gara"),
