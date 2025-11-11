@@ -79,6 +79,8 @@ object DiscordEventListener : KoinComponent {
                 required = true
             }
         }
+
+        // TODO: add offset-balance command
     }
 
     private fun createExecuteCommandEvent() {
