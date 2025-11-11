@@ -39,6 +39,7 @@ class KafkaInitTest : KoinTest, FunSpec() {
                 every { kafkaClusterId } returns "home-finance-manager-kafka"
                 every { registerBillTopicName } returns "register-bill"
                 every { deleteBillTopicName } returns "delete-bill"
+                every { offsetBalanceTopicName } returns "offset-balance"
             }
 
             wireMockServer.stubFor(
@@ -72,6 +73,17 @@ class KafkaInitTest : KoinTest, FunSpec() {
                     )
             )
 
+            wireMockServer.stubFor(
+                post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics"))
+                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
+                    .withRequestBody(equalTo(Json.encodeToString(KafkaInit.CreateTopicRequest("offset-balance"))))
+                    .willReturn(
+                        aResponse()
+                            .withStatus(201)
+                            .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                    )
+            )
+
             // execute & assert
             shouldNotThrowAny { KafkaInit.execute() }
         }
@@ -83,6 +95,7 @@ class KafkaInitTest : KoinTest, FunSpec() {
                 every { kafkaClusterId } returns "home-finance-manager-kafka"
                 every { registerBillTopicName } returns "register-bill"
                 every { deleteBillTopicName } returns "delete-bill"
+                every { offsetBalanceTopicName } returns "offset-balance"
             }
 
             wireMockServer.stubFor(
