@@ -3,6 +3,7 @@ package org.contourgara.aggregate
 import org.axonframework.eventhandling.EventHandler
 import org.axonframework.messaging.annotation.MessageIdentifier
 import org.contourgara.domain.BalanceRepository
+import org.contourgara.domain.DeleteBill
 import org.contourgara.domain.DiscordClient
 import org.contourgara.domain.RegisterBill
 import org.contourgara.domain.UlidGenerator
@@ -16,15 +17,11 @@ class BillService(
 ) {
     @EventHandler
     fun handle(registerBillEvent: RegisterBillEvent, @MessageIdentifier id: String) {
-        registerBillEvent
-            .bill
-            .let {
-                balanceRepository
-                    .findLatest(
-                        lender = registerBillEvent.bill.lender,
-                        borrower = registerBillEvent.bill.borrower,
-                    )
-            }
+        balanceRepository
+            .findLatest(
+                lender = registerBillEvent.bill.lender,
+                borrower = registerBillEvent.bill.borrower,
+                )
             .register(
                 newId = ulidGenerator.nextUlid(),
                 deltaAmount = registerBillEvent.bill.amount,
@@ -45,7 +42,26 @@ class BillService(
 
     @EventHandler
     fun handle(deleteBillEvent: DeleteBillEvent, @MessageIdentifier id: String) {
-        println(deleteBillEvent)
-        println(id)
+        balanceRepository
+            .findLatest(
+                lender = deleteBillEvent.bill.lender,
+                borrower = deleteBillEvent.bill.borrower,
+            )
+            .delete(
+                newId = ulidGenerator.nextUlid(),
+                deltaAmount = deleteBillEvent.bill.amount,
+                eventId = id,
+            )
+            .also { balanceRepository.save(it) }
+            .also {
+                discordClient.notifyDeleteBill(
+                    DeleteBill(
+                        billId = deleteBillEvent.bill.billId.value,
+                        eventId = id,
+                        lender = deleteBillEvent.bill.lender,
+                        borrower = deleteBillEvent.bill.borrower,
+                    )
+                )
+            }
     }
 }

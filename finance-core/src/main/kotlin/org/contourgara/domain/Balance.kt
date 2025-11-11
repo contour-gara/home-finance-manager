@@ -25,4 +25,11 @@ data class Balance(
             amount = amount + deltaAmount,
             lastEventId = eventId,
         )
+
+    fun delete(newId: ULID, deltaAmount: Int, eventId: String): Balance =
+        copy(
+            balanceId = newId,
+            amount = amount - deltaAmount,
+            lastEventId = eventId,
+        )
 }

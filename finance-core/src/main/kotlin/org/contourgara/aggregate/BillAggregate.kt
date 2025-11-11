@@ -32,7 +32,7 @@ class BillAggregate() {
     @CommandHandler
     fun handle(command: DeleteBillCommand) {
         println("Start delete command")
-        AggregateLifecycle.apply(DeleteBillEvent.from(command))
+        AggregateLifecycle.apply(DeleteBillEvent(billId, bill))
         println("End delete command")
     }
 
@@ -65,11 +65,5 @@ data class DeleteBillCommand(
 
 data class DeleteBillEvent(
     val billId: BillId,
-) {
-    companion object {
-        fun from(command: DeleteBillCommand): DeleteBillEvent =
-            DeleteBillEvent(
-                billId = command.billId,
-            )
-    }
-}
+    val bill: Bill,
+)

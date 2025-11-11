@@ -2,11 +2,11 @@ package org.contourgara.infrastructure
 
 import dev.kord.common.entity.Snowflake
 import org.contourgara.domain.Debt
+import org.contourgara.domain.DeleteBill
 import org.contourgara.domain.Loan
 import org.contourgara.domain.RegisterBill
 import org.contourgara.domain.User
 import ulid.ULID
-import kotlin.text.trim
 
 data class RegisterBillEntity(
     val billId: ULID,
@@ -21,6 +21,23 @@ data class RegisterBillEntity(
                 eventId = registerBill.eventId,
                 lender = UserEntity.from(registerBill.lender),
                 borrower = UserEntity.from(registerBill.borrower),
+            )
+    }
+}
+
+data class DeleteBillEntity(
+    val billId: ULID,
+    val eventId: String,
+    val lender: UserEntity,
+    val borrower: UserEntity,
+) {
+    companion object {
+        fun from(deleteBill: DeleteBill): DeleteBillEntity =
+            DeleteBillEntity(
+                billId = deleteBill.billId,
+                eventId = deleteBill.eventId,
+                lender = UserEntity.from(deleteBill.lender),
+                borrower = UserEntity.from(deleteBill.borrower),
             )
     }
 }

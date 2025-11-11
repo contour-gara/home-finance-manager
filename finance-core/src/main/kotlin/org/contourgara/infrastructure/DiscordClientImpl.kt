@@ -9,6 +9,7 @@ import dev.kord.rest.service.RestClient
 import kotlinx.coroutines.runBlocking
 import org.contourgara.FinanceCoreConfig
 import org.contourgara.domain.Debt
+import org.contourgara.domain.DeleteBill
 import org.contourgara.domain.DiscordClient
 import org.contourgara.domain.Loan
 import org.contourgara.domain.RegisterBill
@@ -31,10 +32,34 @@ class DiscordClientImpl(
                 .from(registerBill)
                 .also {
                     restClient.channel.createMessage(Snowflake(financeCoreConfig.discordChannelId)) {
-                        content = "${kord.getUser(it.lender.id)?.mention} から ${kord.getUser(it.borrower.id)?.mention} への請求が登録されました！"
+                        content = "${kord.getUser(it.lender.id)?.mention} から ${kord.getUser(it.borrower.id)?.mention} への請求を登録したっピ！"
                         embed {
                             title = "詳細っピ"
                             color = Color(0, 255, 0)
+                            field {
+                                name = "請求 ID"
+                                value = it.billId.toString()
+                            }
+                            field {
+                                name = "イベント ID"
+                                value = it.eventId
+                            }
+                        }
+                    }
+                }
+        }
+    }
+
+    override fun notifyDeleteBill(deleteBill: DeleteBill) {
+        runBlocking {
+            DeleteBillEntity
+                .from(deleteBill)
+                .also {
+                    restClient.channel.createMessage(Snowflake(financeCoreConfig.discordChannelId)) {
+                        content = "${kord.getUser(it.lender.id)?.mention} から ${kord.getUser(it.borrower.id)?.mention} への請求を削除したっピ！"
+                        embed {
+                            title = "詳細っピ"
+                            color = Color(255, 0, 0)
                             field {
                                 name = "請求 ID"
                                 value = it.billId.toString()

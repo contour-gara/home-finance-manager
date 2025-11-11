@@ -8,3 +8,10 @@ data class RegisterBill(
     val lender: User,
     val borrower: User,
 )
+
+data class DeleteBill(
+    val billId: ULID,
+    val eventId: String,
+    val lender: User,
+    val borrower: User,
+)
