@@ -3,6 +3,8 @@ package org.contourgara.aggregate
 import org.axonframework.eventhandling.EventHandler
 import org.axonframework.messaging.annotation.MessageIdentifier
 import org.contourgara.domain.BalanceRepository
+import org.contourgara.domain.DiscordClient
+import org.contourgara.domain.RegisterBill
 import org.contourgara.domain.UlidGenerator
 import org.springframework.stereotype.Service
 
@@ -10,10 +12,10 @@ import org.springframework.stereotype.Service
 class BillService(
     private val ulidGenerator: UlidGenerator,
     private val balanceRepository: BalanceRepository,
+    private val discordClient: DiscordClient,
 ) {
     @EventHandler
     fun handle(registerBillEvent: RegisterBillEvent, @MessageIdentifier id: String) {
-        println(registerBillEvent)
         registerBillEvent
             .bill
             .let {
@@ -29,8 +31,16 @@ class BillService(
                 eventId = id,
             )
             .also { balanceRepository.save(it) }
-        println(id)
-        // TODO: BillId ~ を、EventId ~ として処理しました的な通知を行う
+            .also {
+                discordClient.notifyRegisterBill(
+                    RegisterBill(
+                        billId = registerBillEvent.bill.billId.value,
+                        eventId = id,
+                        lender = registerBillEvent.bill.lender,
+                        borrower = registerBillEvent.bill.borrower,
+                    )
+                )
+            }
     }
 
     @EventHandler

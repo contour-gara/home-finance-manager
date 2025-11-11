@@ -29,6 +29,7 @@ services:
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
       FINANCE_CORE_ULID_GENERATOR_BASE_URL: http://ulid-sequencer:8080
+      FINANCE_CORE_DISCORD_BOT_TOKEN: ${BOT_TOKEN}
 
   ulid-sequencer:
     build:
