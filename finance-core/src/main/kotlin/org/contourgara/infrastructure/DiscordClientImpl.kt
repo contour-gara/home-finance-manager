@@ -8,7 +8,9 @@ import dev.kord.rest.request.KtorRequestHandler
 import dev.kord.rest.service.RestClient
 import kotlinx.coroutines.runBlocking
 import org.contourgara.FinanceCoreConfig
+import org.contourgara.domain.Debt
 import org.contourgara.domain.DiscordClient
+import org.contourgara.domain.Loan
 import org.contourgara.domain.RegisterBill
 import org.springframework.stereotype.Component
 
@@ -40,6 +42,46 @@ class DiscordClientImpl(
                             field {
                                 name = "イベント ID"
                                 value = it.eventId
+                            }
+                        }
+                    }
+                }
+        }
+    }
+
+    override fun notifyOffsetBalance(loan: Loan) {
+        runBlocking {
+            LoanEntity
+                .from(loan)
+                .also {
+                    restClient.channel.createMessage(Snowflake(financeCoreConfig.discordChannelId)) {
+                        content = "${kord.getUser(it.lender.id)?.mention} は ${kord.getUser(it.borrower.id)?.mention} に${it.displayAmount}貸してるっピ"
+                        embed {
+                            title = "詳細っピ"
+                            color = Color(0, 255, 0)
+                            field {
+                                name = "最新イベント ID"
+                                value = it.lastEventId
+                            }
+                        }
+                    }
+                }
+        }
+    }
+
+    override fun notifyOffsetBalance(debt: Debt) {
+        runBlocking {
+            DebtEntity
+                .from(debt)
+                .also {
+                    restClient.channel.createMessage(Snowflake(financeCoreConfig.discordChannelId)) {
+                        content = "${kord.getUser(it.lender.id)?.mention} は ${kord.getUser(it.borrower.id)?.mention} に${it.displayAmount}借りてるっピ"
+                        embed {
+                            title = "詳細っピ"
+                            color = Color(0, 255, 0)
+                            field {
+                                name = "最新イベント ID"
+                                value = it.lastEventId
                             }
                         }
                     }

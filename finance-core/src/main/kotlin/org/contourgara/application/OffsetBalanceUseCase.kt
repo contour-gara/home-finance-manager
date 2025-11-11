@@ -3,6 +3,7 @@ package org.contourgara.application
 import org.axonframework.queryhandling.QueryGateway
 import org.contourgara.domain.Balance
 import org.contourgara.domain.Debt
+import org.contourgara.domain.DiscordClient
 import org.contourgara.domain.Loan
 import org.contourgara.domain.OffsetBalanceService
 import org.springframework.stereotype.Service
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service
 @Service
 class OffsetBalanceUseCase(
     private val queryGateway: QueryGateway,
+    private val discordClient: DiscordClient,
 ) {
     fun execute(param: OffsetBalanceParam) {
         queryGateway.query(param, Balance::class.java)
@@ -26,8 +28,8 @@ class OffsetBalanceUseCase(
             }
             .also {
                 when (it) {
-                    is Loan -> println("貸している通知")
-                    is Debt -> println("借りている通知")
+                    is Loan -> discordClient.notifyOffsetBalance(it)
+                    is Debt -> discordClient.notifyOffsetBalance(it)
                 }
             }
     }
