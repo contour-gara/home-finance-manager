@@ -143,7 +143,7 @@ class EventSendClientImpl(
         ) : RecordData {
             companion object {
                 fun from(bill: Bill) = RegisterBillData(
-                    billId = bill.billId.toString(),
+                    billId = bill.billId.value.toString(),
                     amount = bill.amount,
                     lender = bill.lender.name,
                     borrower = bill.borrower.name,

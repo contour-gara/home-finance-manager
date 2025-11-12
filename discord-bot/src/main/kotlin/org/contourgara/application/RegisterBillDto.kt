@@ -12,7 +12,7 @@ data class RegisterBillDto(
     companion object {
         fun from(bill: Bill): RegisterBillDto =
             RegisterBillDto(
-                billId = bill.billId.toString(),
+                billId = bill.billId.value.toString(),
                 amount = bill.amount,
                 lender = bill.lender.lowercaseName(),
                 borrower = bill.borrower.lowercaseName(),

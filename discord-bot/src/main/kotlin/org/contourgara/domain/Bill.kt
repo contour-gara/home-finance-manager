@@ -4,7 +4,7 @@ import ulid.ULID
 
 @ConsistentCopyVisibility
 data class Bill private constructor(
-    val billId: ULID,  // TODO: to BillId
+    val billId: BillId,
     val amount: Int,
     val lender: User,
     val borrower: User,
@@ -19,7 +19,7 @@ data class Bill private constructor(
     companion object {
         fun of(billId: ULID, amount: Int, lenderName: String, borrowerName: String, memo: String) =
             Bill(
-                billId = billId,
+                billId = BillId(billId),
                 amount = amount,
                 lender = User.of(lenderName),
                 borrower = User.of(borrowerName),
