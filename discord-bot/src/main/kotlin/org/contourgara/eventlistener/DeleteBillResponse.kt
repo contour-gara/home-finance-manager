@@ -10,6 +10,7 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.optional.orEmpty
 import dev.kord.core.cache.data.EmbedData
 import dev.kord.rest.builder.message.EmbedBuilder
+import org.contourgara.application.DeleteBillParam
 
 import org.contourgara.eventlistener.RegisterBillValidation.RegisterBillValidationError
 import org.contourgara.eventlistener.RegisterBillValidation.validateAmount
@@ -18,6 +19,7 @@ import org.contourgara.eventlistener.RegisterBillValidation.validateLender
 import org.contourgara.eventlistener.RegisterBillValidation.validateEmbedData
 import org.contourgara.eventlistener.RegisterBillValidation.validateLenderAndBorrower
 import org.contourgara.eventlistener.RegisterBillValidation.validateMemo
+import ulid.ULID
 import kotlin.collections.first
 import kotlin.collections.last
 
@@ -75,4 +77,6 @@ data class DeleteBillResponse private constructor (
     }
 
     val borrowerId: Snowflake get() = Snowflake(borrower.id)
+
+    fun toParam(): DeleteBillParam = DeleteBillParam(billId = ULID.parseULID(billId))
 }

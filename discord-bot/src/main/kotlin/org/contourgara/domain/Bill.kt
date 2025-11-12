@@ -4,7 +4,7 @@ import ulid.ULID
 
 @ConsistentCopyVisibility
 data class Bill private constructor(
-    val billId: ULID,
+    val billId: ULID,  // TODO: to BillId
     val amount: Int,
     val lender: User,
     val borrower: User,
@@ -27,3 +27,8 @@ data class Bill private constructor(
             )
     }
 }
+
+@JvmInline
+value class BillId(
+    val value: ULID,
+)

@@ -16,6 +16,7 @@ import io.mockk.every
 import io.mockk.mockkClass
 import org.contourgara.DiscordBotConfig
 import org.contourgara.domain.Bill
+import org.contourgara.domain.BillId
 import org.koin.ksp.generated.org_contourgara_DiscordBotModule
 import org.koin.test.KoinTest
 import org.koin.test.inject
@@ -123,6 +124,101 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
             shouldThrowExactly<RuntimeException> {
                 sut.registerBill(
                     Bill.of(ulid, 1, "gara", "yuki", "memo")
+                )
+            }.message shouldBe "Bad Request"
+        }
+
+        test("削除トピックにメッセージを送信できる") {
+            // setup
+            declareMock<DiscordBotConfig> {
+                every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                every { kafkaClusterId } returns "home-finance-manager-kafka"
+                every { deleteBillTopicName } returns "delete-bill"
+            }
+
+            wireMockServer.stubFor(
+                post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics/delete-bill/records"))
+                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
+                    .withRequestBody(equalTo("{\"value\":{\"type\":\"JSON\",\"data\":{\"billId\":\"01K67TC6S09JR3E305K7SQQ06B\"}}}"))
+                    .willReturn(
+                        aResponse()
+                            .withStatus(200)
+                            .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                            .withBody("{\"error_code\":200,\"cluster_id\":\"home_finance_manager_kafka\",\"topic_name\":\"delete-bill\",\"partition_id\":0,\"offset\":0,\"timestamp\":\"2025-09-28T22:54:48.379Z\",\"value\":{\"type\":\"JSON\",\"size\":98}}")
+                    )
+            )
+
+            val ulid = ULID.parseULID("01K67TC6S09JR3E305K7SQQ06B")
+
+            val sut: EventSendClientImpl by inject()
+
+            // execute & assert
+            shouldNotThrowAny {
+                sut.deleteBill(
+                    BillId(ulid)
+                )
+            }
+        }
+
+        test("削除トピックにメッセージを送信でリクエストに失敗した場合、例外を投げる") {
+            // setup
+            declareMock<DiscordBotConfig> {
+                every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                every { kafkaClusterId } returns "home-finance-manager-kafka"
+                every { deleteBillTopicName } returns "delete-bill"
+            }
+
+            wireMockServer.stubFor(
+                post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics/delete-bill/records"))
+                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
+                    .withRequestBody(equalTo("{\"value\":{\"type\":\"JSON\",\"data\":{\"billId\":\"01K67TC6S09JR3E305K7SQQ06B\"}}}"))
+                    .willReturn(
+                        aResponse()
+                            .withStatus(405)
+                            .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                    )
+            )
+
+            val ulid = ULID.parseULID("01K67TC6S09JR3E305K7SQQ06B")
+
+            val sut: EventSendClientImpl by inject()
+
+            // execute & assert
+            shouldThrowExactly<RuntimeException> {
+                sut.deleteBill(
+                    BillId(ulid)
+                )
+            }.message shouldBe "Bad Request"
+        }
+
+        test("削除トピックにメッセージを送信でリクエストに成功したが、200 以外の error_code が返却された場合、例外を投げる") {
+            // setup
+            declareMock<DiscordBotConfig> {
+                every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                every { kafkaClusterId } returns "home-finance-manager-kafka"
+                every { deleteBillTopicName } returns "delete-bill"
+            }
+
+            wireMockServer.stubFor(
+                post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics/delete-bill/records"))
+                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
+                    .withRequestBody(equalTo("{\"value\":{\"type\":\"JSON\",\"data\":{\"billId\":\"01K67TC6S09JR3E305K7SQQ06B\"}}}"))
+                    .willReturn(
+                        aResponse()
+                            .withStatus(200)
+                            .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                            .withBody("{\"error_code\":400,\"message\":\"Cannot deserialize value of type `byte[]` from String \\\"\\\": Unexpected end of base64-encoded String: base64 variant 'MIME-NO-LINEFEEDS' expects padding (one or more '=' characters) at the end. This Base64Variant might have been incorrectly configured\"}")
+                    )
+            )
+
+            val ulid = ULID.parseULID("01K67TC6S09JR3E305K7SQQ06B")
+
+            val sut: EventSendClientImpl by inject()
+
+            // execute & assert
+            shouldThrowExactly<RuntimeException> {
+                sut.deleteBill(
+                    BillId(ulid)
                 )
             }.message shouldBe "Bad Request"
         }

@@ -14,6 +14,7 @@ import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.actionRow
 import dev.kord.rest.builder.message.embed
 import org.contourgara.DiscordBotConfig
+import org.contourgara.application.DeleteBillUseCase
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.getValue
@@ -24,7 +25,7 @@ object DeleteBillFeature : KoinComponent {
     const val DELETE_BILL_COMMAND_ARGUMENT = "message-id"
     const val DELETE_BILL_COMMAND_ARGUMENT_DESCRIPTION = "登録したメッセージ ID"
     const val DELETE_BILL_BUTTON_ID = "delete-bill-button"
-//    private val registerBillUseCase: RegisterBillUseCase by inject()
+    private val deleteBillUseCase: DeleteBillUseCase by inject()
     private val discordBotConfig: DiscordBotConfig by inject()
 
     suspend fun GuildChatInputCommandInteractionCreateEvent.sendConfirmDeleteMessage() =
@@ -81,7 +82,7 @@ object DeleteBillFeature : KoinComponent {
                             }
                         }
                     is Either.Right -> {
-                        // TODO: delete bill logic
+                        deleteBillUseCase.execute(it.value.toParam())
                         interaction.deferPublicMessageUpdate().edit {
                             content = "${kord.getUser(it.value.borrowerId)?.mention} 請求が削除されたっピ"
                             embed(it.value.toEmbedBuilder())

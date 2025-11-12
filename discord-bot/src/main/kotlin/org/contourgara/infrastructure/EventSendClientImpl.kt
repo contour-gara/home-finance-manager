@@ -18,9 +18,12 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.ClassDiscriminatorMode
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 import org.contourgara.DiscordBotConfig
 import org.contourgara.domain.Bill
+import org.contourgara.domain.BillId
 import org.contourgara.domain.EventSendClient
 import org.koin.core.annotation.Single
 
@@ -28,6 +31,7 @@ import org.koin.core.annotation.Single
 class EventSendClientImpl(
     private val discordBotConfig: DiscordBotConfig,
 ) : EventSendClient {
+    @OptIn(ExperimentalSerializationApi::class)
     override fun registerBill(bill: Bill) {
         runBlocking {
             HttpClient(CIO) {
@@ -37,13 +41,18 @@ class EventSendClientImpl(
                 }
 
                 install(ContentNegotiation) {
-                    json()
+                    json(
+                        Json {
+                            classDiscriminatorMode = ClassDiscriminatorMode.NONE
+                            encodeDefaults = true
+                        }
+                    )
                 }
             }
                 .use { client ->
                     client.post("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.registerBillTopicName}/records") {
                         contentType(ContentType.Application.Json)
-                        setBody(RegisterBillRequest.from(bill))
+                        setBody(RecordRequest.from(bill))
                     }
                 }
                 .also {
@@ -57,45 +66,101 @@ class EventSendClientImpl(
         }
     }
 
+    @OptIn(ExperimentalSerializationApi::class)
+    override fun deleteBill(billId: BillId) {
+        runBlocking {
+            HttpClient(CIO) {
+                install(Logging) {
+                    logger = Logger.DEFAULT
+                    level = LogLevel.ALL
+                }
+
+                install(ContentNegotiation) {
+                    json(
+                        Json {
+                            classDiscriminatorMode = ClassDiscriminatorMode.NONE
+                            encodeDefaults = true
+                        }
+                    )
+                }
+            }
+                .use { client ->
+                    client.post("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.deleteBillTopicName}/records") {
+                        contentType(ContentType.Application.Json)
+                        setBody(RecordRequest.from(billId))
+                    }
+                }
+                .also {
+                    if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
+                }
+                .body<ProduceRecordResponse>()
+                .also {
+                    if (it.isFailure()) throw RuntimeException("Bad Request")
+                }
+        }
+    }
+
     @Serializable
-    data class RegisterBillRequest(
-        private val value: RegisterBillValue,
+    data class RecordRequest(
+        private val value: RecordValue,
     ) {
         companion object {
-            fun from(bill: Bill) = RegisterBillRequest(
-                value = RegisterBillValue.from(bill)
+            fun from(bill: Bill) = RecordRequest(
+                value = RecordValue.from(bill)
+            )
+
+            fun from(billId: BillId) = RecordRequest(
+                value = RecordValue.from(billId)
             )
         }
     }
 
     @Serializable
-    data class RegisterBillValue(
+    data class RecordValue(
         private val type: String = "JSON",
-        private val data: RegisterBillValueData,
+        private val data: RecordData,
     ) {
         companion object {
-            fun from(bill: Bill) = RegisterBillValue(
-                data = RegisterBillValueData.from(bill)
+            fun from(bill: Bill) = RecordValue(
+                data = RecordData.RegisterBillData.from(bill)
+            )
+
+            fun from(billId: BillId) = RecordValue(
+                data = RecordData.DeleteBillData.from(billId)
             )
         }
     }
 
     @Serializable
-    data class RegisterBillValueData(
-        private val billId: String,
-        private val amount: Int,
-        private val lender: String,
-        private val borrower: String,
-        private val memo: String,
-    ) {
-        companion object {
-            fun from(bill: Bill) = RegisterBillValueData(
-                billId = bill.billId.toString(),
-                amount = bill.amount,
-                lender = bill.lender.name,
-                borrower = bill.borrower.name,
-                memo = bill.memo,
-            )
+    sealed interface RecordData {
+        @Serializable
+        data class RegisterBillData(
+            private val billId: String,
+            private val amount: Int,
+            private val lender: String,
+            private val borrower: String,
+            private val memo: String,
+        ) : RecordData {
+            companion object {
+                fun from(bill: Bill) = RegisterBillData(
+                    billId = bill.billId.toString(),
+                    amount = bill.amount,
+                    lender = bill.lender.name,
+                    borrower = bill.borrower.name,
+                    memo = bill.memo,
+                )
+            }
+        }
+
+        @Serializable
+        data class DeleteBillData(
+            private val billId: String,
+        ) : RecordData {
+            companion object {
+                fun from(billId: BillId) = DeleteBillData(
+                    billId = billId.value.toString(),
+                )
+            }
         }
     }
 
