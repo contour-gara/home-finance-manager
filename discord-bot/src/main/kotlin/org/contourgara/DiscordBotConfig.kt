@@ -22,8 +22,8 @@ data class DiscordBotConfig(
     val registerBillTopicName: String,
     @Property("DELETE_BILL_TOPIC_NAME")
     val deleteBillTopicName: String,
-    @Property("OFFSET_BALANCE_TOPIC_NAME")
-    val offsetBalanceTopicName: String,
+    @Property("SHOW_BALANCE_TOPIC_NAME")
+    val showBalanceTopicName: String,
 ) {
     companion object {
         @PropertyValue("CHANNEL_ID")
@@ -36,7 +36,7 @@ data class DiscordBotConfig(
         const val REGISTER_BILL_TOPIC_NAME = "register-bill"
         @PropertyValue("DELETE_BILL_TOPIC_NAME")
         const val DELETE_BILL_TOPIC_NAME = "delete-bill"
-        @PropertyValue("OFFSET_BALANCE_TOPIC_NAME")
-        const val OFFSET_BALANCE_TOPIC_NAME = "offset-balance"
+        @PropertyValue("SHOW_BALANCE_TOPIC_NAME")
+        const val SHOW_BALANCE_TOPIC_NAME = "show-balance"
     }
 }

@@ -1,6 +1,6 @@
 package org.contourgara.domain
 
-object OffsetBalanceService {
+object ShowBalanceService {
     fun execute(
         lendBalance: Balance,
         borrowBalance: Balance,

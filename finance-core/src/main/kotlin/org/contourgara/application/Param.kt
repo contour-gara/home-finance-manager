@@ -27,11 +27,11 @@ data class DeleteBillParam(
     fun toModel(): BillId = BillId(billId)
 }
 
-data class OffsetBalanceParam(
+data class ShowBalanceParam(
     val lender: UserParam,
     val borrower: UserParam,
 ) {
-    fun reverse() = OffsetBalanceParam(
+    fun reverse() = ShowBalanceParam(
         lender = borrower,
         borrower = lender,
     )

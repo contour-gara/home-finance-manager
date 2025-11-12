@@ -10,7 +10,7 @@ class BalanceQuery(
     private val balanceRepository: BalanceRepository
 ) {
     @QueryHandler
-    fun handle(param: OffsetBalanceParam): Balance =
+    fun handle(param: ShowBalanceParam): Balance =
         balanceRepository
             .findLatest(
                 lender = param.lender.toModel(),

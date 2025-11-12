@@ -5,15 +5,15 @@ import org.contourgara.domain.Balance
 import org.contourgara.domain.Debt
 import org.contourgara.domain.DiscordClient
 import org.contourgara.domain.Loan
-import org.contourgara.domain.OffsetBalanceService
+import org.contourgara.domain.ShowBalanceService
 import org.springframework.stereotype.Service
 
 @Service
-class OffsetBalanceUseCase(
+class ShowBalanceUseCase(
     private val queryGateway: QueryGateway,
     private val discordClient: DiscordClient,
 ) {
-    fun execute(param: OffsetBalanceParam) {
+    fun execute(param: ShowBalanceParam) {
         queryGateway.query(param, Balance::class.java)
             .thenCombine(queryGateway.query(param.reverse(), Balance::class.java)) {
                 result1, result2 ->
@@ -24,7 +24,7 @@ class OffsetBalanceUseCase(
             }
             .get()
             .let {
-                OffsetBalanceService.execute(it.first, it.second)
+                ShowBalanceService.execute(it.first, it.second)
             }
             .also {
                 when (it) {

@@ -1,7 +1,7 @@
 package org.contourgara.eventlithner
 
 import org.contourgara.application.DeleteBillParam
-import org.contourgara.application.OffsetBalanceParam
+import org.contourgara.application.ShowBalanceParam
 import org.contourgara.application.RegisterBillParam
 import org.contourgara.application.UserParam
 import ulid.ULID
@@ -30,11 +30,11 @@ data class DeleteBillRequest(
     )
 }
 
-data class OffsetBalanceRequest(
+data class ShowBalanceRequest(
     val lender: UserRequest,
     val borrower: UserRequest,
 ) {
-    fun toParam(): OffsetBalanceParam = OffsetBalanceParam(
+    fun toParam(): ShowBalanceParam = ShowBalanceParam(
         lender = lender.toParam(),
         borrower = borrower.toParam(),
     )

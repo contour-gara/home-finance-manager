@@ -77,7 +77,7 @@ object KafkaInit : KoinComponent {
     enum class TopicType(val topicName: String) {
         REGISTER_BILL(discordBotConfig.registerBillTopicName),
         DELETE_BILL(discordBotConfig.deleteBillTopicName),
-        OFFSET_BALANCE(discordBotConfig.offsetBalanceTopicName),
+        OFFSET_BALANCE(discordBotConfig.showBalanceTopicName),
         ;
 
         companion object {

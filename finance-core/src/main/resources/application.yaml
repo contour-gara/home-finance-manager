@@ -26,4 +26,4 @@ application:
       delete: delete-bill
   balance:
     topic:
-      offset: offset-balance
+      show: show-balance
