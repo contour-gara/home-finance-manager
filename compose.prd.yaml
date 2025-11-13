@@ -10,6 +10,21 @@ services:
       ULID_SEQUENCER_BASE_URL: http://ulid-sequencer:8080
       KAFKA_REST_PROXY_BASE_URL: http://kafka-rest-proxy:8082
 
+  finance-core:
+    image: ghcr.io/contour-gara/home-finance-manager-finance-core:latest
+    depends_on:
+      - ulid-sequencer
+      - kafka-broker
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-broker:29092
+      SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET: latest
+      SPRING_DATASOURCE_URL: jdbc:mysql://gateway01.ap-northeast-1.prod.aws.tidbcloud.com:4000/home_finance_manager_core_db?sslMode=VERIFY_IDENTITY
+      SPRING_DATASOURCE_USERNAME: ${DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD}
+      FINANCE_CORE_ULID_GENERATOR_BASE_URL: http://ulid-sequencer:8080
+      FINANCE_CORE_DISCORD_BOT_TOKEN: ${BOT_TOKEN}
+      FINANCE_CORE_DISCORD_CHANNEL_ID: ${CHANNEL_ID}
+
   ulid-sequencer:
     image: ghcr.io/contour-gara/home-finance-manager-ulid-sequencer:latest
     healthcheck:
