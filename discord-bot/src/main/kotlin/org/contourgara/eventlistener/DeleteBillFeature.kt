@@ -34,7 +34,7 @@ object DeleteBillFeature : KoinComponent {
                 Snowflake(discordBotConfig.channelId) -> {
                     interaction.command.strings[DELETE_BILL_COMMAND_ARGUMENT]!!
                         .let {
-                            kord.getChannelOf<MessageChannel>(Snowflake(1402331708459581591))?.getMessage(Snowflake(it))!!
+                            kord.getChannelOf<MessageChannel>(Snowflake(discordBotConfig.channelId))?.getMessage(Snowflake(it))!!
                         }
                         .let { DeleteBillRequest.from(it.embeds.first().data) }
                         .let {
