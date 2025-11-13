@@ -62,6 +62,7 @@ object RegisterBillFeature : KoinComponent {
     suspend fun ModalSubmitInteractionCreateEvent.submitBillMemoModal() = interaction.deferPublicMessageUpdate().edit {
         actionRow {
             userSelect(REGISTER_BILL_SELECT_MENU_ID) {
+                placeholder = "請求先を選択してっピ"
                 disabled = true
             }
         }
