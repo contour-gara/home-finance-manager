@@ -31,23 +31,26 @@ data class DeleteBillResponse private constructor (
     private val lender: User,
     private val borrower: User,
     private val memo: String,
+    val messageId: Snowflake,
 ) {
     companion object {
         fun from(embedData: EmbedData): Either<NonEmptyList<RegisterBillValidationError>, DeleteBillResponse> =
             either {
                 accumulate {
-                    validateEmbedData(embedData).bindNelOrAccumulate()
+                    // FIXME: 削除用のバリデーションが必要
+//                    validateEmbedData(embedData).bindNelOrAccumulate()
                 }
                 of(
                     billId = embedData.fields.orEmpty().first().value,
                     amount = embedData.fields.orEmpty()[1].value.parseAmount(),
                     lender = User.of(embedData.fields.orEmpty()[2].value),
                     borrower = User.of(embedData.fields.orEmpty()[3].value),
-                    memo = embedData.fields.orEmpty().last().value
+                    memo = embedData.fields.orEmpty()[4].value,
+                    messageId = embedData.fields.orEmpty().last().value.toLong(),
                 ).bind()
             }
 
-        private fun of(billId: String, amount: String, lender: User, borrower: User, memo: String): Either<NonEmptyList<RegisterBillValidationError>, DeleteBillResponse> =
+        private fun of(billId: String, amount: String, lender: User, borrower: User, memo: String, messageId: Long): Either<NonEmptyList<RegisterBillValidationError>, DeleteBillResponse> =
             either {
                 accumulate {
                     validateAmount(amount).bindNelOrAccumulate()
@@ -62,6 +65,7 @@ data class DeleteBillResponse private constructor (
                     lender = lender,
                     borrower = borrower,
                     memo = memo,
+                    messageId = Snowflake(messageId),
                 )
             }
     }
@@ -69,6 +73,17 @@ data class DeleteBillResponse private constructor (
     fun toEmbedBuilder(): EmbedBuilder.() -> Unit = {
         title = "入力情報だっピ"
         color = Color(0, 255, 0)
+        field(name = "請求 ID", inline = true, value = { billId })
+        field(name = "請求金額", inline = true, value = { amount.formatAmount() })
+        field(name = "請求者", inline = true, value = { lender.name.lowercase() })
+        field(name = "請求先", inline = true, value = { borrower.name.lowercase() })
+        field(name = "メモ", inline = true, value = { memo })
+        field(name = "メッセージ ID", inline = true, value = { messageId.toString() })
+    }
+
+    fun toEmbedBuilderForEditRegisterMessage(): EmbedBuilder.() -> Unit = {
+        title = "削除済みだっピ"
+        color = Color(255, 0, 0)
         field(name = "請求 ID", inline = true, value = { billId })
         field(name = "請求金額", inline = true, value = { amount.formatAmount() })
         field(name = "請求者", inline = true, value = { lender.name.lowercase() })

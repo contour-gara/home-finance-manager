@@ -6,6 +6,7 @@ import arrow.core.raise.ExperimentalRaiseAccumulateApi
 import arrow.core.raise.accumulate
 import arrow.core.raise.either
 import dev.kord.common.Color
+import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.optional.orEmpty
 import dev.kord.core.cache.data.EmbedData
 import dev.kord.rest.builder.message.EmbedBuilder
@@ -27,9 +28,10 @@ data class DeleteBillRequest private constructor (
     private val lender: User,
     private val borrower: User,
     private val memo: String,
+    private val messageId: Snowflake,
 ) {
     companion object {
-        fun from(embedData: EmbedData): Either<NonEmptyList<RegisterBillValidationError>, DeleteBillRequest> =
+        fun from(embedData: EmbedData, messageId: Snowflake): Either<NonEmptyList<RegisterBillValidationError>, DeleteBillRequest> =
             either {
                 accumulate {
                     validateEmbedData(embedData).bindNelOrAccumulate()
@@ -39,11 +41,12 @@ data class DeleteBillRequest private constructor (
                     amount = embedData.fields.orEmpty()[1].value.parseAmount(),
                     lender = User.of(embedData.fields.orEmpty()[2].value),
                     borrower = User.of(embedData.fields.orEmpty()[3].value),
-                    memo = embedData.fields.orEmpty().last().value
+                    memo = embedData.fields.orEmpty().last().value,
+                    messageId = messageId,
                 ).bind()
             }
 
-        private fun of(billId: String, amount: String, lender: User, borrower: User, memo: String): Either<NonEmptyList<RegisterBillValidationError>, DeleteBillRequest> =
+        private fun of(billId: String, amount: String, lender: User, borrower: User, memo: String, messageId: Snowflake): Either<NonEmptyList<RegisterBillValidationError>, DeleteBillRequest> =
             either {
                 accumulate {
                     validateAmount(amount).bindNelOrAccumulate()
@@ -58,6 +61,7 @@ data class DeleteBillRequest private constructor (
                     lender = lender,
                     borrower = borrower,
                     memo = memo,
+                    messageId = messageId,
                 )
             }
     }
@@ -71,5 +75,6 @@ data class DeleteBillRequest private constructor (
         field(name = "請求者", inline = true, value = { lender.name.lowercase() })
         field(name = "請求先", inline = true, value = { borrower.name.lowercase() })
         field(name = "メモ", inline = true, value = { memo })
+        field(name = "メッセージ ID", inline = true, value = { messageId.toString() })
     }
 }

@@ -5,6 +5,7 @@ import arrow.core.NonEmptyList
 import dev.kord.common.Color
 import dev.kord.common.entity.ButtonStyle
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.behavior.edit
 import dev.kord.core.behavior.interaction.response.edit
 import dev.kord.core.behavior.interaction.response.respond
 import dev.kord.core.entity.channel.MessageChannel
@@ -36,7 +37,7 @@ object DeleteBillFeature : KoinComponent {
                         .let {
                             kord.getChannelOf<MessageChannel>(Snowflake(discordBotConfig.channelId))?.getMessage(Snowflake(it))!!
                         }
-                        .let { DeleteBillRequest.from(it.embeds.first().data) }
+                        .let { DeleteBillRequest.from(embedData = it.embeds.first().data, messageId = it.id) }
                         .let {
                             when (it) {
                                 is Either.Left -> {
@@ -83,6 +84,13 @@ object DeleteBillFeature : KoinComponent {
                         }
                     is Either.Right -> {
                         deleteBillUseCase.execute(it.value.toParam())
+
+                        kord.getChannelOf<MessageChannel>(Snowflake(discordBotConfig.channelId))?.getMessage(it.value.messageId)!!
+                            .edit {
+                                content = "この請求は削除されたっピ"
+                                embed(it.value.toEmbedBuilderForEditRegisterMessage())
+                            }
+
                         interaction.deferPublicMessageUpdate().edit {
                             content = "${kord.getUser(it.value.borrowerId)?.mention} 請求が削除されたっピ"
                             embed(it.value.toEmbedBuilder())
