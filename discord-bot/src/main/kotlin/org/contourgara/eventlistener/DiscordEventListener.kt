@@ -26,6 +26,9 @@ import org.contourgara.eventlistener.RegisterBillFeature.REGISTER_BILL_SELECT_ME
 import org.contourgara.eventlistener.RegisterBillFeature.openBillMemoModal
 import org.contourgara.eventlistener.RegisterBillFeature.sendSelectUserMessage
 import org.contourgara.eventlistener.RegisterBillFeature.submitBillMemoModal
+import org.contourgara.eventlistener.ShowBalanceFeature.SHOW_BALANCE_COMMAND_DESCRIPTION
+import org.contourgara.eventlistener.ShowBalanceFeature.SHOW_BALANCE_COMMAND_NAME
+import org.contourgara.eventlistener.ShowBalanceFeature.requestShowBalance
 import org.contourgara.eventlistener.TestModalFeature.TEST_MODAL_COMMAND_DESCRIPTION
 import org.contourgara.eventlistener.TestModalFeature.TEST_MODAL_COMMAND_NAME
 import org.contourgara.eventlistener.TestModalFeature.TEST_MODAL_MODAL_ID
@@ -80,7 +83,11 @@ object DiscordEventListener : KoinComponent {
             }
         }
 
-        // TODO: add offset-balance command
+        kord.createGuildChatInputCommand(
+            guildId = Snowflake(889318150615744523),
+            name = SHOW_BALANCE_COMMAND_NAME,
+            description = SHOW_BALANCE_COMMAND_DESCRIPTION,
+        )
     }
 
     private fun createExecuteCommandEvent() {
@@ -89,6 +96,7 @@ object DiscordEventListener : KoinComponent {
                 TEST_MODAL_COMMAND_NAME -> openTestModal()
                 REGISTER_BILL_COMMAND_NAME -> sendSelectUserMessage()
                 DELETE_BILL_COMMAND_NAME -> sendConfirmDeleteMessage()
+                SHOW_BALANCE_COMMAND_NAME -> requestShowBalance()
             }
         }
     }
