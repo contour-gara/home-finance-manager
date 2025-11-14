@@ -29,31 +29,27 @@ import org.contourgara.domain.User
 import org.koin.core.annotation.Single
 
 @Single
+@OptIn(ExperimentalSerializationApi::class)
 class EventSendClientImpl(
     private val discordBotConfig: DiscordBotConfig,
 ) : EventSendClient {
-    @OptIn(ExperimentalSerializationApi::class)
-    private val httpClient by lazy {
-        HttpClient(CIO) {
-            install(Logging) {
-                logger = Logger.DEFAULT
-                level = LogLevel.ALL
-            }
-
-            install(ContentNegotiation) {
-                json(
-                    Json {
-                        classDiscriminatorMode = ClassDiscriminatorMode.NONE
-                        encodeDefaults = true
-                    }
-                )
-            }
-        }
-    }
-
     override fun registerBill(bill: Bill) {
         runBlocking {
-            httpClient
+            HttpClient(CIO) {
+                install(Logging) {
+                    logger = Logger.DEFAULT
+                    level = LogLevel.ALL
+                }
+
+                install(ContentNegotiation) {
+                    json(
+                        Json {
+                            classDiscriminatorMode = ClassDiscriminatorMode.NONE
+                            encodeDefaults = true
+                        }
+                    )
+                }
+            }
                 .use { client ->
                     client.post("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.registerBillTopicName}/records") {
                         contentType(ContentType.Application.Json)
@@ -73,7 +69,21 @@ class EventSendClientImpl(
 
     override fun deleteBill(billId: BillId) {
         runBlocking {
-            httpClient
+            HttpClient(CIO) {
+                install(Logging) {
+                    logger = Logger.DEFAULT
+                    level = LogLevel.ALL
+                }
+
+                install(ContentNegotiation) {
+                    json(
+                        Json {
+                            classDiscriminatorMode = ClassDiscriminatorMode.NONE
+                            encodeDefaults = true
+                        }
+                    )
+                }
+            }
                 .use { client ->
                     client.post("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.deleteBillTopicName}/records") {
                         contentType(ContentType.Application.Json)
@@ -92,7 +102,21 @@ class EventSendClientImpl(
 
     override fun showBalance(lender: User, borrower: User) {
         runBlocking {
-            httpClient
+            HttpClient(CIO) {
+                install(Logging) {
+                    logger = Logger.DEFAULT
+                    level = LogLevel.ALL
+                }
+
+                install(ContentNegotiation) {
+                    json(
+                        Json {
+                            classDiscriminatorMode = ClassDiscriminatorMode.NONE
+                            encodeDefaults = true
+                        }
+                    )
+                }
+            }
                 .use { client ->
                     client.post("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.showBalanceTopicName}/records") {
                         contentType(ContentType.Application.Json)
