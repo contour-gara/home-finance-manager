@@ -25,6 +25,7 @@ import org.contourgara.DiscordBotConfig
 import org.contourgara.domain.Bill
 import org.contourgara.domain.BillId
 import org.contourgara.domain.EventSendClient
+import org.contourgara.domain.User
 import org.koin.core.annotation.Single
 
 @Single
@@ -32,23 +33,27 @@ class EventSendClientImpl(
     private val discordBotConfig: DiscordBotConfig,
 ) : EventSendClient {
     @OptIn(ExperimentalSerializationApi::class)
+    private val httpClient by lazy {
+        HttpClient(CIO) {
+            install(Logging) {
+                logger = Logger.DEFAULT
+                level = LogLevel.ALL
+            }
+
+            install(ContentNegotiation) {
+                json(
+                    Json {
+                        classDiscriminatorMode = ClassDiscriminatorMode.NONE
+                        encodeDefaults = true
+                    }
+                )
+            }
+        }
+    }
+
     override fun registerBill(bill: Bill) {
         runBlocking {
-            HttpClient(CIO) {
-                install(Logging) {
-                    logger = Logger.DEFAULT
-                    level = LogLevel.ALL
-                }
-
-                install(ContentNegotiation) {
-                    json(
-                        Json {
-                            classDiscriminatorMode = ClassDiscriminatorMode.NONE
-                            encodeDefaults = true
-                        }
-                    )
-                }
-            }
+            httpClient
                 .use { client ->
                     client.post("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.registerBillTopicName}/records") {
                         contentType(ContentType.Application.Json)
@@ -66,28 +71,32 @@ class EventSendClientImpl(
         }
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
     override fun deleteBill(billId: BillId) {
         runBlocking {
-            HttpClient(CIO) {
-                install(Logging) {
-                    logger = Logger.DEFAULT
-                    level = LogLevel.ALL
-                }
-
-                install(ContentNegotiation) {
-                    json(
-                        Json {
-                            classDiscriminatorMode = ClassDiscriminatorMode.NONE
-                            encodeDefaults = true
-                        }
-                    )
-                }
-            }
+            httpClient
                 .use { client ->
                     client.post("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.deleteBillTopicName}/records") {
                         contentType(ContentType.Application.Json)
                         setBody(RecordRequest.from(billId))
+                    }
+                }
+                .also {
+                    if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
+                }
+                .body<ProduceRecordResponse>()
+                .also {
+                    if (it.isFailure()) throw RuntimeException("Bad Request")
+                }
+        }
+    }
+
+    override fun showBalance(lender: User, borrower: User) {
+        runBlocking {
+            httpClient
+                .use { client ->
+                    client.post("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.showBalanceTopicName}/records") {
+                        contentType(ContentType.Application.Json)
+                        setBody(RecordRequest.from(lender, borrower))
                     }
                 }
                 .also {
@@ -112,6 +121,10 @@ class EventSendClientImpl(
             fun from(billId: BillId) = RecordRequest(
                 value = RecordValue.from(billId)
             )
+
+            fun from(lender: User, borrower: User) = RecordRequest(
+                value = RecordValue.from(lender, borrower)
+            )
         }
     }
 
@@ -127,6 +140,10 @@ class EventSendClientImpl(
 
             fun from(billId: BillId) = RecordValue(
                 data = RecordData.DeleteBillData.from(billId)
+            )
+
+            fun from(lender: User, borrower: User) = RecordValue(
+                data = RecordData.ShowBalanceData.from(lender, borrower)
             )
         }
     }
@@ -160,6 +177,20 @@ class EventSendClientImpl(
                 fun from(billId: BillId) = DeleteBillData(
                     billId = billId.value.toString(),
                 )
+            }
+        }
+
+        @Serializable
+        data class ShowBalanceData(
+            private val lender: String,
+            private val borrower: String,
+        ) : RecordData {
+            companion object {
+                fun from(lender: User, borrower: User) =
+                    ShowBalanceData(
+                        lender = lender.name,
+                        borrower = borrower.name,
+                    )
             }
         }
     }

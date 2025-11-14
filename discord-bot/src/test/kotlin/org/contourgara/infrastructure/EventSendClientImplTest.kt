@@ -17,6 +17,7 @@ import io.mockk.mockkClass
 import org.contourgara.DiscordBotConfig
 import org.contourgara.domain.Bill
 import org.contourgara.domain.BillId
+import org.contourgara.domain.User
 import org.koin.ksp.generated.org_contourgara_DiscordBotModule
 import org.koin.test.KoinTest
 import org.koin.test.inject
@@ -220,6 +221,89 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
                 sut.deleteBill(
                     BillId(ulid)
                 )
+            }.message shouldBe "Bad Request"
+        }
+
+        test("残高参照トピックにメッセージを送信できる") {
+            // setup
+            declareMock<DiscordBotConfig> {
+                every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                every { kafkaClusterId } returns "home-finance-manager-kafka"
+                every { showBalanceTopicName } returns "show-balance"
+            }
+
+            wireMockServer.stubFor(
+                post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics/show-balance/records"))
+                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
+                    .withRequestBody(equalTo("{\"value\":{\"type\":\"JSON\",\"data\":{\"lender\":\"GARA\",\"borrower\":\"YUKI\"}}}"))
+                    .willReturn(
+                        aResponse()
+                            .withStatus(200)
+                            .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                            .withBody("{\"error_code\":200,\"cluster_id\":\"home_finance_manager_kafka\",\"topic_name\":\"delete-bill\",\"partition_id\":0,\"offset\":0,\"timestamp\":\"2025-09-28T22:54:48.379Z\",\"value\":{\"type\":\"JSON\",\"size\":98}}")
+                    )
+            )
+
+            val sut: EventSendClientImpl by inject()
+
+            // execute & assert
+            shouldNotThrowAny {
+                sut.showBalance(User.GARA, User.YUKI)
+            }
+        }
+
+        test("残高参照トピックにメッセージを送信でリクエストに失敗した場合、例外を投げる") {
+            // setup
+            declareMock<DiscordBotConfig> {
+                every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                every { kafkaClusterId } returns "home-finance-manager-kafka"
+                every { showBalanceTopicName } returns "show-balance"
+            }
+
+            wireMockServer.stubFor(
+                post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics/show-balance/records"))
+                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
+                    .withRequestBody(equalTo("{\"value\":{\"type\":\"JSON\",\"data\":{\"lender\":\"GARA\",\"borrower\":\"YUKI\"}}}"))
+                    .willReturn(
+                        aResponse()
+                            .withStatus(405)
+                            .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                    )
+            )
+
+            val sut: EventSendClientImpl by inject()
+
+            // execute & assert
+            shouldThrowExactly<RuntimeException> {
+                sut.showBalance(User.GARA, User.YUKI)
+            }.message shouldBe "Bad Request"
+        }
+
+        test("残高参照トピックにメッセージを送信でリクエストに成功したが、200 以外の error_code が返却された場合、例外を投げる") {
+            // setup
+            declareMock<DiscordBotConfig> {
+                every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                every { kafkaClusterId } returns "home-finance-manager-kafka"
+                every { showBalanceTopicName } returns "show-balance"
+            }
+
+            wireMockServer.stubFor(
+                post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics/show-balance/records"))
+                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
+                    .withRequestBody(equalTo("{\"value\":{\"type\":\"JSON\",\"data\":{\"lender\":\"GARA\",\"borrower\":\"YUKI\"}}}"))
+                    .willReturn(
+                        aResponse()
+                            .withStatus(200)
+                            .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                            .withBody("{\"error_code\":400,\"message\":\"Cannot deserialize value of type `byte[]` from String \\\"\\\": Unexpected end of base64-encoded String: base64 variant 'MIME-NO-LINEFEEDS' expects padding (one or more '=' characters) at the end. This Base64Variant might have been incorrectly configured\"}")
+                    )
+            )
+
+            val sut: EventSendClientImpl by inject()
+
+            // execute & assert
+            shouldThrowExactly<RuntimeException> {
+                sut.showBalance(User.GARA, User.YUKI)
             }.message shouldBe "Bad Request"
         }
     }
