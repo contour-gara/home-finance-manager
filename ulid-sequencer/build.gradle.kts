@@ -54,6 +54,7 @@ tasks.test {
     useJUnitPlatform()
     finalizedBy(tasks.jacocoTestReport)
     jvmArgs("--add-opens=java.base/java.util=ALL-UNNAMED")
+    systemProperty("kotest.framework.config.fqn", "org.contourgara.UlidSequencerTestConfig")
 
     testLogging {
         events = setOf(
