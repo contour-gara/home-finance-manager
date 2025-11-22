@@ -1,6 +1,6 @@
 [versions]
-kotlin = "2.2.10"
-ksp = "2.2.10-2.0.2"
+kotlin = "2.2.21"
+ksp = "2.2.21-2.0.4"
 
 ktor = "3.3.0"
 spring-boot = "3.5.5"
