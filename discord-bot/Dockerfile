@@ -9,13 +9,11 @@ RUN jlink \
     --add-modules java.base,java.desktop,java.instrument,java.logging,java.management,jdk.unsupported,jdk.crypto.ec \
     --output jre-min
 
-FROM debian:bookworm-20250113-slim
+FROM gcr.io/distroless/java-base-debian12:nonroot
 WORKDIR /deployments
-RUN apt-get update -y && apt-get install -y curl
-COPY --from=build /jlink/jre-min /opt/jre-min
+COPY --from=build --chown=nonroot:nonroot /jlink/jre-min /opt/jre-min
 ENV JAVA_HOME=/opt/jre-min
 ENV PATH=$JAVA_HOME/bin:$PATH
-ENV LANG=C.UTF-8
 ARG JAR_FILE=build/libs/*.jar
 COPY ${JAR_FILE} app.jar
 
