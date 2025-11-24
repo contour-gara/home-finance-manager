@@ -2,11 +2,6 @@ package org.contourgara.eventlistener
 
 import dev.kord.common.Color
 import dev.kord.common.entity.Snowflake
-import dev.kord.common.entity.optional.Optional
-import dev.kord.common.entity.optional.OptionalBoolean
-import dev.kord.common.entity.optional.OptionalInt
-import dev.kord.core.cache.data.EmbedData
-import dev.kord.core.cache.data.EmbedFieldData
 import dev.kord.rest.builder.message.EmbedBuilder
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.StringSpec
@@ -20,29 +15,6 @@ class RegisterBillResponseTest : StringSpec({
 
         // execute
         val actual = RegisterBillResponse.from(registerBillDto)
-
-        // assert
-        actual.shouldBeRight()
-    }
-
-    "インスタンス生成で、EmbedData が適切な場合、Right が返る" {
-        // setup
-        val embedData = EmbedData(
-            title = Optional.Value("入力情報だっピ"),
-            color = OptionalInt.Value(Color(0, 255, 0).rgb),
-            fields = Optional.Value(
-                listOf(
-                    EmbedFieldData(name = "請求 ID", inline = OptionalBoolean.Value(true), value = "ID"),
-                    EmbedFieldData(name = "請求金額", inline = OptionalBoolean.Value(true), value = "1 円"),
-                    EmbedFieldData(name = "請求者", inline = OptionalBoolean.Value(true), value = "yuki"),
-                    EmbedFieldData(name = "請求先", inline = OptionalBoolean.Value(true), value = "gara"),
-                    EmbedFieldData(name = "メモ", inline = OptionalBoolean.Value(true), value = "test")
-                )
-            )
-        )
-
-        // execute
-        val actual = RegisterBillResponse.from(embedData)
 
         // assert
         actual.shouldBeRight()

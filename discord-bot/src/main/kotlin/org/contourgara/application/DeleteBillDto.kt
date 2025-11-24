@@ -1,15 +1,12 @@
 package org.contourgara.application
 
-import org.contourgara.domain.BillId
 import ulid.ULID
 
-data class DeleteBillParam(
-    private val billId: ULID,
+data class DeleteBillDto(
+    val billId: ULID,
     val amount: Int,
     val lender: String,
     val borrower: String,
     val memo: String,
     val registerBillMessageId: String,
-    ) {
-    fun toModel() = BillId(billId)
-}
+)
