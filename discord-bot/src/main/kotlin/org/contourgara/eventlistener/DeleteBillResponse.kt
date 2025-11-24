@@ -10,8 +10,7 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.optional.orEmpty
 import dev.kord.core.cache.data.EmbedData
 import dev.kord.rest.builder.message.EmbedBuilder
-import org.contourgara.application.DeleteBillParam
-
+import org.contourgara.application.DeleteBillDto
 import org.contourgara.eventlistener.RegisterBillValidation.RegisterBillValidationError
 import org.contourgara.eventlistener.RegisterBillValidation.validateAmount
 import org.contourgara.eventlistener.RegisterBillValidation.validateBorrower
@@ -19,7 +18,6 @@ import org.contourgara.eventlistener.RegisterBillValidation.validateLender
 import org.contourgara.eventlistener.RegisterBillValidation.validateEmbedData
 import org.contourgara.eventlistener.RegisterBillValidation.validateLenderAndBorrower
 import org.contourgara.eventlistener.RegisterBillValidation.validateMemo
-import ulid.ULID
 import kotlin.collections.first
 import kotlin.collections.last
 
@@ -46,11 +44,21 @@ data class DeleteBillResponse private constructor (
                     lender = User.of(embedData.fields.orEmpty()[2].value),
                     borrower = User.of(embedData.fields.orEmpty()[3].value),
                     memo = embedData.fields.orEmpty()[4].value,
-                    messageId = embedData.fields.orEmpty().last().value.toLong(),
+                    messageId = embedData.fields.orEmpty().last().value,
                 ).bind()
             }
 
-        private fun of(billId: String, amount: String, lender: User, borrower: User, memo: String, messageId: Long): Either<NonEmptyList<RegisterBillValidationError>, DeleteBillResponse> =
+        fun from(dto: DeleteBillDto): Either<NonEmptyList<RegisterBillValidationError>, DeleteBillResponse> =
+            of(
+                billId = dto.billId.toString(),
+                amount = dto.amount.toString(),
+                lender = User.valueOf(dto.lender),
+                borrower = User.valueOf(dto.borrower),
+                memo = dto.memo,
+                messageId = dto.registerBillMessageId
+            )
+
+        private fun of(billId: String, amount: String, lender: User, borrower: User, memo: String, messageId: String): Either<NonEmptyList<RegisterBillValidationError>, DeleteBillResponse> =
             either {
                 accumulate {
                     validateAmount(amount).bindNelOrAccumulate()
@@ -92,6 +100,4 @@ data class DeleteBillResponse private constructor (
     }
 
     val borrowerId: Snowflake get() = Snowflake(borrower.id)
-
-    fun toParam(): DeleteBillParam = DeleteBillParam(billId = ULID.parseULID(billId))
 }

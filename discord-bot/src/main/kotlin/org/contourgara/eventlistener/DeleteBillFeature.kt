@@ -2,6 +2,7 @@ package org.contourgara.eventlistener
 
 import arrow.core.Either
 import arrow.core.NonEmptyList
+import arrow.core.flatMap
 import dev.kord.common.Color
 import dev.kord.common.entity.ButtonStyle
 import dev.kord.common.entity.Snowflake
@@ -37,7 +38,7 @@ object DeleteBillFeature : KoinComponent {
                         .let {
                             kord.getChannelOf<MessageChannel>(Snowflake(discordBotConfig.channelId))?.getMessage(Snowflake(it))!!
                         }
-                        .let { DeleteBillRequest.from(embedData = it.embeds.first().data, messageId = it.id) }
+                        .let { DeleteBillRequest.fromEnbedDataAndMessageId(embedData = it.embeds.first().data, messageId = it.id) }
                         .let {
                             when (it) {
                                 is Either.Left -> {
@@ -65,7 +66,9 @@ object DeleteBillFeature : KoinComponent {
 
     suspend fun ButtonInteractionCreateEvent.pushDeleteBillButton() =
         interaction.message.embeds.first().data
-            .let { DeleteBillResponse.from(it) }
+            .let { DeleteBillRequest.fromEnbedData(it) }
+            .map { deleteBillUseCase.execute(it.toParam()) }
+            .flatMap { DeleteBillResponse.from(it) }
             .let {
                 when (it) {
                     is Either.Left ->
@@ -83,8 +86,6 @@ object DeleteBillFeature : KoinComponent {
                             }
                         }
                     is Either.Right -> {
-                        deleteBillUseCase.execute(it.value.toParam())
-
                         kord.getChannelOf<MessageChannel>(Snowflake(discordBotConfig.channelId))?.getMessage(it.value.messageId)!!
                             .edit {
                                 content = "この請求は削除されたっピ"

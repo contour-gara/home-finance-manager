@@ -10,6 +10,7 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.optional.orEmpty
 import dev.kord.core.cache.data.EmbedData
 import dev.kord.rest.builder.message.EmbedBuilder
+import org.contourgara.application.DeleteBillParam
 import org.contourgara.eventlistener.RegisterBillValidation.RegisterBillValidationError
 import org.contourgara.eventlistener.RegisterBillValidation.validateAmount
 import org.contourgara.eventlistener.RegisterBillValidation.validateBorrower
@@ -17,6 +18,7 @@ import org.contourgara.eventlistener.RegisterBillValidation.validateLender
 import org.contourgara.eventlistener.RegisterBillValidation.validateEmbedData
 import org.contourgara.eventlistener.RegisterBillValidation.validateLenderAndBorrower
 import org.contourgara.eventlistener.RegisterBillValidation.validateMemo
+import ulid.ULID
 import kotlin.collections.first
 import kotlin.collections.last
 
@@ -28,10 +30,10 @@ data class DeleteBillRequest private constructor (
     private val lender: User,
     private val borrower: User,
     private val memo: String,
-    private val messageId: Snowflake,
+    private val registerBillMessageId: Snowflake,
 ) {
     companion object {
-        fun from(embedData: EmbedData, messageId: Snowflake): Either<NonEmptyList<RegisterBillValidationError>, DeleteBillRequest> =
+        fun fromEnbedDataAndMessageId(embedData: EmbedData, messageId: Snowflake): Either<NonEmptyList<RegisterBillValidationError>, DeleteBillRequest> =
             either {
                 accumulate {
                     validateEmbedData(embedData).bindNelOrAccumulate()
@@ -43,6 +45,22 @@ data class DeleteBillRequest private constructor (
                     borrower = User.of(embedData.fields.orEmpty()[3].value),
                     memo = embedData.fields.orEmpty().last().value,
                     messageId = messageId,
+                ).bind()
+            }
+
+        fun fromEnbedData(embedData: EmbedData): Either<NonEmptyList<RegisterBillValidationError>, DeleteBillRequest> =
+            either {
+                accumulate {
+                    // FIXME: 削除用のバリデーションが必要
+//                    validateEmbedData(embedData).bindNelOrAccumulate()
+                }
+                of(
+                    billId = embedData.fields.orEmpty().first().value,
+                    amount = embedData.fields.orEmpty()[1].value.parseAmount(),
+                    lender = User.of(embedData.fields.orEmpty()[2].value),
+                    borrower = User.of(embedData.fields.orEmpty()[3].value),
+                    memo = embedData.fields.orEmpty()[4].value,
+                    messageId = Snowflake(embedData.fields.orEmpty().last().value),
                 ).bind()
             }
 
@@ -61,7 +79,7 @@ data class DeleteBillRequest private constructor (
                     lender = lender,
                     borrower = borrower,
                     memo = memo,
-                    messageId = messageId,
+                    registerBillMessageId = messageId,
                 )
             }
     }
@@ -75,6 +93,16 @@ data class DeleteBillRequest private constructor (
         field(name = "請求者", inline = true, value = { lender.name.lowercase() })
         field(name = "請求先", inline = true, value = { borrower.name.lowercase() })
         field(name = "メモ", inline = true, value = { memo })
-        field(name = "メッセージ ID", inline = true, value = { messageId.toString() })
+        field(name = "メッセージ ID", inline = true, value = { registerBillMessageId.toString() })
     }
+
+    fun toParam(): DeleteBillParam =
+        DeleteBillParam(
+            billId = ULID.parseULID(billId),
+            amount = amount,
+            lender = lender.name,
+            borrower = borrower.name,
+            memo = memo,
+            registerBillMessageId = registerBillMessageId.toString(),
+        )
 }
