@@ -6,9 +6,9 @@ fun migration() {
     Flyway
         .configure()
         .dataSource(
-            System.getenv("EXPENSES_API_DATASOURCE_URL"),
-            System.getenv("DATASOURCE_USERNAME"),
-            System.getenv("DATASOURCE_PASSWORD"),
+            AppConfig.datasourceUrl,
+            AppConfig.datasourceUser,
+            AppConfig.datasourcePassword,
         )
         .driver("com.mysql.cj.jdbc.Driver")
         .load()
