@@ -15,7 +15,6 @@ import org.contourgara.eventlistener.RegisterBillValidation.RegisterBillValidati
 import org.contourgara.eventlistener.RegisterBillValidation.validateAmount
 import org.contourgara.eventlistener.RegisterBillValidation.validateBorrower
 import org.contourgara.eventlistener.RegisterBillValidation.validateLender
-import org.contourgara.eventlistener.RegisterBillValidation.validateEmbedData
 import org.contourgara.eventlistener.RegisterBillValidation.validateLenderAndBorrower
 import org.contourgara.eventlistener.RegisterBillValidation.validateMemo
 import kotlin.collections.first
@@ -25,11 +24,7 @@ import kotlin.collections.last
 @ConsistentCopyVisibility
 data class DeleteBillResponse private constructor (
     private val billId: String,
-    private val amount: Int,
-    private val lender: User,
-    private val borrower: User,
-    private val memo: String,
-    val messageId: Snowflake,
+    val registerBillMessageId: Snowflake,
 ) {
     companion object {
         fun from(embedData: EmbedData): Either<NonEmptyList<RegisterBillValidationError>, DeleteBillResponse> =
@@ -40,40 +35,23 @@ data class DeleteBillResponse private constructor (
                 }
                 of(
                     billId = embedData.fields.orEmpty().first().value,
-                    amount = embedData.fields.orEmpty()[1].value.parseAmount(),
-                    lender = User.of(embedData.fields.orEmpty()[2].value),
-                    borrower = User.of(embedData.fields.orEmpty()[3].value),
-                    memo = embedData.fields.orEmpty()[4].value,
-                    messageId = embedData.fields.orEmpty().last().value,
+                    registerBillMessageId = embedData.fields.orEmpty().last().value,
                 ).bind()
             }
 
         fun from(dto: DeleteBillDto): Either<NonEmptyList<RegisterBillValidationError>, DeleteBillResponse> =
             of(
                 billId = dto.billId.toString(),
-                amount = dto.amount.toString(),
-                lender = User.valueOf(dto.lender),
-                borrower = User.valueOf(dto.borrower),
-                memo = dto.memo,
-                messageId = dto.registerBillMessageId
+                registerBillMessageId = dto.registerBillMessageId,
             )
 
-        private fun of(billId: String, amount: String, lender: User, borrower: User, memo: String, messageId: String): Either<NonEmptyList<RegisterBillValidationError>, DeleteBillResponse> =
+        private fun of(billId: String, registerBillMessageId: String): Either<NonEmptyList<RegisterBillValidationError>, DeleteBillResponse> =
             either {
                 accumulate {
-                    validateAmount(amount).bindNelOrAccumulate()
-                    validateLender(lender).bindNelOrAccumulate()
-                    validateBorrower(borrower).bindNelOrAccumulate()
-                    validateLenderAndBorrower(lender, borrower).bindNelOrAccumulate()
-                    validateMemo(memo).bindNelOrAccumulate()
                 }
                 DeleteBillResponse(
                     billId = billId,
-                    amount = amount.toInt(),
-                    lender = lender,
-                    borrower = borrower,
-                    memo = memo,
-                    messageId = Snowflake(messageId),
+                    registerBillMessageId = Snowflake(registerBillMessageId),
                 )
             }
     }
@@ -82,22 +60,6 @@ data class DeleteBillResponse private constructor (
         title = "入力情報だっピ"
         color = Color(0, 255, 0)
         field(name = "請求 ID", inline = true, value = { billId })
-        field(name = "請求金額", inline = true, value = { amount.formatAmount() })
-        field(name = "請求者", inline = true, value = { lender.name.lowercase() })
-        field(name = "請求先", inline = true, value = { borrower.name.lowercase() })
-        field(name = "メモ", inline = true, value = { memo })
-        field(name = "メッセージ ID", inline = true, value = { messageId.toString() })
+        field(name = "請求登録メッセージ ID", inline = true, value = { registerBillMessageId.toString() })
     }
-
-    fun toEmbedBuilderForEditRegisterMessage(): EmbedBuilder.() -> Unit = {
-        title = "削除済みだっピ"
-        color = Color(255, 0, 0)
-        field(name = "請求 ID", inline = true, value = { billId })
-        field(name = "請求金額", inline = true, value = { amount.formatAmount() })
-        field(name = "請求者", inline = true, value = { lender.name.lowercase() })
-        field(name = "請求先", inline = true, value = { borrower.name.lowercase() })
-        field(name = "メモ", inline = true, value = { memo })
-    }
-
-    val borrowerId: Snowflake get() = Snowflake(borrower.id)
 }

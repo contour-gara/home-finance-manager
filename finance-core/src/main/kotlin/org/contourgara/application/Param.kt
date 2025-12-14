@@ -23,9 +23,8 @@ data class RegisterBillParam(
 
 data class DeleteBillParam(
     val billId: ULID,
-) {
-    fun toModel(): BillId = BillId(billId)
-}
+    val registerNotificationId: String,
+)
 
 data class ShowBalanceParam(
     val lender: UserParam,

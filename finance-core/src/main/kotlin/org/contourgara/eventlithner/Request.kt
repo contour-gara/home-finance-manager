@@ -24,9 +24,11 @@ data class RegisterBillRequest(
 
 data class DeleteBillRequest(
     val billId: String,
+    val registerNotificationId: String,
 ) {
     fun toParam(): DeleteBillParam = DeleteBillParam(
         billId = ULID.parseULID(billId),
+        registerNotificationId = registerNotificationId,
     )
 }
 
@@ -44,5 +46,6 @@ enum class UserRequest {
     GARA,
     YUKI,
     ;
+
     fun toParam(): UserParam = UserParam.valueOf(name)
 }

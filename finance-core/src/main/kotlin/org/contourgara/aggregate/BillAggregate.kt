@@ -32,7 +32,7 @@ class BillAggregate() {
     @CommandHandler
     fun handle(command: DeleteBillCommand) {
         println("Start delete command")
-        AggregateLifecycle.apply(DeleteBillEvent(billId, bill))
+        AggregateLifecycle.apply(DeleteBillEvent(billId, bill, command.registerNotificationId))
         println("End delete command")
     }
 
@@ -61,9 +61,11 @@ data class RegisterBillEvent(
 
 data class DeleteBillCommand(
     @TargetAggregateIdentifier val billId: BillId,
+    val registerNotificationId: String,
 )
 
 data class DeleteBillEvent(
     val billId: BillId,
     val bill: Bill,
+    val registerNotificationId: String,
 )

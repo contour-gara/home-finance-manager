@@ -29,7 +29,7 @@ class DeleteBillUseCaseTest :  KoinTest, FunSpec() {
 
             val sut: DeleteBillUseCase by inject()
 
-            val param = DeleteBillParam(ulid, 5000, "GARA", "YUKI", "test", "123456789012345678")
+            val param = DeleteBillParam(ulid, "123456789012345678")
 
             // execute
             sut.execute(param)

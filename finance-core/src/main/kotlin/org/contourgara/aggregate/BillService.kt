@@ -63,5 +63,6 @@ class BillService(
                     )
                 )
             }
+            .also { println(deleteBillEvent.registerNotificationId) }
     }
 }
