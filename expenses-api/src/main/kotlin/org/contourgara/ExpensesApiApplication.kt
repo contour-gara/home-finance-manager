@@ -23,4 +23,6 @@ fun Application.module() {
             call.respondText { "Expenses API is running!" }
         }
     }
+
+    migration()
 }

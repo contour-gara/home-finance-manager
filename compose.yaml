@@ -47,7 +47,7 @@ services:
     ports:
       - "28080:8080"
     environment:
-      ULID_SEQUENCER_DATASOURCE_URL: jdbc:mysql://mysql-expenses-api:3306/home_finance_manager_expenses_api_db
+      EXPENSES_API_DATASOURCE_URL: jdbc:mysql://mysql-expenses-api:3306/home_finance_manager_expenses_api_db
       DATASOURCE_USERNAME: user
       DATASOURCE_PASSWORD: password
 

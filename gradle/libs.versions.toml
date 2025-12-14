@@ -7,6 +7,7 @@ spring-boot = "3.5.8"
 axon = "4.12.2"
 exposed = "1.0.0-rc-3"
 mysql = "9.5.0"
+flyway = "11.19.0"
 kotlin-logging = "3.0.5"
 logback = "1.5.21"
 slf4j = "2.0.17"
@@ -42,7 +43,8 @@ axon-spring-boot-starter = { module = "org.axonframework:axon-spring-boot-starte
 exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
 exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
 mysql-connector-j = { module = "com.mysql:mysql-connector-j", version.ref = "mysql" }
-flyway-mysql = { module = "org.flywaydb:flyway-mysql" }
+flyway-mysql-spring = { module = "org.flywaydb:flyway-mysql" }
+flyway-mysql = { module = "org.flywaydb:flyway-mysql", version.ref = "flyway" }
 kotlin-logging = { module = "io.github.microutils:kotlin-logging-jvm", version.ref = "kotlin-logging" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }

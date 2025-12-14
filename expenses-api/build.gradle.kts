@@ -24,6 +24,7 @@ dependencies {
     implementation(libs.ulid.kotlin)
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
+    implementation(libs.flyway.mysql)
     runtimeOnly(libs.mysql.connector.j)
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.extensions.ktor)
@@ -49,6 +50,13 @@ ktor {
 
 tasks.jar {
     archiveFileName.set("${project.name}-plain.jar")
+}
+
+tasks.shadowJar {
+    mergeServiceFiles {
+        include("META-INF/services/**")
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
 }
 
 tasks.test {
