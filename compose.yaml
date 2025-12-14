@@ -31,6 +31,26 @@ services:
       FINANCE_CORE_ULID_GENERATOR_BASE_URL: http://ulid-sequencer:8080
       FINANCE_CORE_DISCORD_BOT_TOKEN: ${BOT_TOKEN}
 
+  expenses-api:
+    build:
+      context: ./expenses-api
+      dockerfile: Dockerfile
+    healthcheck:
+      test: "curl -f http://localhost:8080 || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      mysql-expenses-api:
+        condition: service_healthy
+    ports:
+      - "28080:8080"
+    environment:
+      ULID_SEQUENCER_DATASOURCE_URL: jdbc:mysql://mysql-expenses-api:3306/home_finance_manager_expenses_api_db
+      DATASOURCE_USERNAME: user
+      DATASOURCE_PASSWORD: password
+
   ulid-sequencer:
     build:
       context: ./ulid-sequencer
@@ -65,6 +85,22 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
       MYSQL_DATABASE: home_finance_manager_core_db
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+
+  mysql-expenses-api:
+    image: mysql:8.0.43-oraclelinux9
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: home_finance_manager_expenses_api_db
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
 
   mysql-ulid-sequencer:

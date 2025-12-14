@@ -19,6 +19,7 @@ jobs:
           - discord-bot
           - finance-core
           - ulid-sequencer
+          - expenses-api
       fail-fast: false
     steps:
       - name: Checkout

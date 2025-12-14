@@ -18,6 +18,11 @@ on:
         type: boolean
         required: true
         default: false
+      expenses-api:
+        description: 'expenses-api を push する場合は選択'
+        type: boolean
+        required: true
+        default: false
 
 permissions:
   packages: write
@@ -43,6 +48,9 @@ jobs:
             }
             if (${{ inputs.ulid-sequencer }}) {
               modules[modules.length] = "ulid-sequencer"
+            }
+            if (${{ inputs.expenses-api }}) {
+              modules[modules.length] = "expenses-api"
             }
             return modules
 
