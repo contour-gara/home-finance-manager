@@ -14,5 +14,6 @@ INSERT INTO category
         ('DAILY_NEEDS'),
         ('HEALTHCARE'),
         ('ENTERTAINMENT'),
+        ('TRANSPORTATION'),
         ('TRAVEL'),
         ('OTHER');
