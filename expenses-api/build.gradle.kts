@@ -66,7 +66,6 @@ tasks.test {
 tasks.test {
     useJUnitPlatform()
     finalizedBy(tasks.jacocoTestReport)
-    jvmArgs("--add-opens=java.base/java.util=ALL-UNNAMED")
 
     testLogging {
         events = setOf(

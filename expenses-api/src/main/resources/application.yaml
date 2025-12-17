@@ -4,3 +4,9 @@ ktor:
       - org.contourgara.ExpensesApiApplicationKt.module
   deployment:
     port: 8080
+
+application:
+  datasource:
+    url: ${EXPENSES_API_DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}

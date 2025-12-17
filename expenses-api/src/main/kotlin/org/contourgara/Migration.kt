@@ -2,13 +2,13 @@ package org.contourgara
 
 import org.flywaydb.core.Flyway
 
-fun migration() {
+fun migration(appConfig: AppConfig) {
     Flyway
         .configure()
         .dataSource(
-            AppConfig.datasourceUrl,
-            AppConfig.datasourceUser,
-            AppConfig.datasourcePassword,
+            appConfig.datasourceUrl,
+            appConfig.datasourceUser,
+            appConfig.datasourcePassword,
         )
         .driver("com.mysql.cj.jdbc.Driver")
         .load()
