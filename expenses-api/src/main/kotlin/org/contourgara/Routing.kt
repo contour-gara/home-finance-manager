@@ -19,15 +19,15 @@ fun Application.configureRouting() {
             }
         }
 
-        route("/expense") {
-            post {
-                try {
-                    val expense = call.receive<Expense>()
-                    call.respond(HttpStatusCode.Created, "イベント ID")
-                } catch (e: SerializationException) {
-                    call.respond(HttpStatusCode.BadRequest, e.message.toString())
-                }
-            }
-        }
+//        route("/expense") {
+//            post {
+//                try {
+//                    val expense = call.receive<Expense>()
+//                    call.respond(HttpStatusCode.Created, "イベント ID")
+//                } catch (e: SerializationException) {
+//                    call.respond(HttpStatusCode.BadRequest, e.message.toString())
+//                }
+//            }
+//        }
     }
 }
