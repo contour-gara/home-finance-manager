@@ -5,6 +5,7 @@ import com.github.database.rider.core.configuration.DBUnitConfig
 import com.github.database.rider.core.configuration.DataSetConfig
 import com.github.database.rider.core.dsl.RiderDSL
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import org.contourgara.AppConfig
@@ -40,7 +41,7 @@ class ExpenseRepositoryImplTest : FunSpec({
         )
     }
 
-    test("支出情報保存メソッドが、支出 ID、金額、支払い者、支出カテゴリー、メモを保存する") {
+    test("支出情報保存メソッドが、支出 ID、金額、支払い者、支出カテゴリー、メモを保存し、支出 ID を返す") {
         // setup
         RiderDSL.withConnection(
             DriverManager.getConnection(mysql.jdbcUrl, mysql.username, mysql.password)
@@ -54,7 +55,7 @@ class ExpenseRepositoryImplTest : FunSpec({
             .createDataSet()
 
         val expenses = Expense(
-            id = ULID.Companion.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"),
+            id = ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"),
             amount = 1000,
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
@@ -64,9 +65,12 @@ class ExpenseRepositoryImplTest : FunSpec({
         val sut = ExpenseRepositoryImpl()
 
         // execute
-        transaction { sut.create(expenses) }
+        val actual = transaction { sut.create(expenses) }
 
         // assert
+        val expected = ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79")
+        actual shouldBe expected
+
         RiderDSL.DataSetConfigDSL
             .withDataSetConfig(DataSetConfig("expense_1.yaml"))
         RiderDSL.DBUnitConfigDSL.expectDataSet()
