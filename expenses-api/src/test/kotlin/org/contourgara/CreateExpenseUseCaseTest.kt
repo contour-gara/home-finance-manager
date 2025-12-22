@@ -21,7 +21,7 @@ class CreateExpenseUseCaseTest : FunSpec({
         )
     }
 
-    test("支出作成メソッドが、支出保存メソッドを呼ぶ") {
+    test("支出作成メソッドが、支出保存メソッドと ID 取得メソッドを呼ぶ") {
         // setup
         val expense = Expense(
             id = ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"),
@@ -34,8 +34,12 @@ class CreateExpenseUseCaseTest : FunSpec({
         val expenseRepository = mockk<ExpenseRepository>()
         every { expenseRepository.create(expense) } returns Unit
 
+        val ulidClient = mockk<UlidClient>()
+        every { ulidClient.nextUlid() } returns ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")
+
         val sut = CreateExpenseUseCase(
             expenseRepository = expenseRepository,
+            ulidClient = ulidClient,
         )
 
         // execute
@@ -43,5 +47,6 @@ class CreateExpenseUseCaseTest : FunSpec({
 
         // assert
         verify(exactly = 1) { expenseRepository.create(expense) }
+        verify(exactly = 1) { ulidClient.nextUlid() }
     }
 })
