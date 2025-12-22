@@ -32,7 +32,7 @@ class ExpenseRepositoryImplTest : FunSpec({
         every { appConfig.datasourcePassword } returns mysql.password
         migration(appConfig)
 
-        Database.Companion.connect(
+        Database.connect(
             url = mysql.jdbcUrl,
             driver = "com.mysql.cj.jdbc.Driver",
             user = mysql.username,

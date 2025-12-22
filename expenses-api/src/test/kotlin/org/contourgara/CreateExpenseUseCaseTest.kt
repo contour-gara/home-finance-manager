@@ -8,9 +8,19 @@ import org.contourgara.domain.Category
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseRepository
 import org.contourgara.domain.Payer
+import org.jetbrains.exposed.v1.jdbc.Database
 import ulid.ULID
 
 class CreateExpenseUseCaseTest : FunSpec({
+    beforeSpec {
+        Database.connect(
+            url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1",
+            driver = "org.h2.Driver",
+            user = "sa",
+            password = "",
+        )
+    }
+
     test("支出作成メソッドが、支出保存メソッドを呼ぶ") {
         // setup
         val expense = Expense(

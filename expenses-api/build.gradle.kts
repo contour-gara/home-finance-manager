@@ -34,6 +34,7 @@ dependencies {
     testImplementation(libs.kotest.extensions.ktor)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.testcontainers.mysql)
+    testImplementation(libs.h2)
     testImplementation(libs.database.rider.core)
     testImplementation(libs.mockk)
 }
