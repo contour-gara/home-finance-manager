@@ -9,11 +9,11 @@ import org.contourgara.domain.EventCategory
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseEvent
 import org.contourgara.domain.ExpenseEventID
-import org.contourgara.domain.ExpenseEventRepository
+import org.contourgara.domain.infrastructure.ExpenseEventRepository
 import org.contourgara.domain.ExpenseId
-import org.contourgara.domain.ExpenseRepository
+import org.contourgara.domain.infrastructure.ExpenseRepository
 import org.contourgara.domain.Payer
-import org.contourgara.domain.UlidClient
+import org.contourgara.domain.infrastructure.UlidClient
 import org.jetbrains.exposed.v1.jdbc.Database
 import ulid.ULID
 

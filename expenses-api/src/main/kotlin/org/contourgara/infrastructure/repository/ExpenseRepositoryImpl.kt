@@ -2,7 +2,7 @@ package org.contourgara.infrastructure.repository
 
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseId
-import org.contourgara.domain.ExpenseRepository
+import org.contourgara.domain.infrastructure.ExpenseRepository
 import org.jetbrains.exposed.v1.jdbc.insert
 
 class ExpenseRepositoryImpl : ExpenseRepository {
