@@ -6,6 +6,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.contourgara.domain.Category
 import org.contourgara.domain.Expense
+import org.contourgara.domain.ExpenseRepository
 import org.contourgara.domain.Payer
 import ulid.ULID
 

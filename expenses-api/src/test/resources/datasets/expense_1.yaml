@@ -1,0 +1,18 @@
+expense_id:
+  - expense_id: 01K4MXEKC0PMTJ8FA055N4SH79
+
+expense_amount:
+  - expense_id: 01K4MXEKC0PMTJ8FA055N4SH79
+    amount: 1000
+
+expense_payer:
+  - expense_id: 01K4MXEKC0PMTJ8FA055N4SH79
+    payer: DIRECT_DEBIT
+
+expense_category:
+  - expense_id: 01K4MXEKC0PMTJ8FA055N4SH79
+    category: RENT
+
+expense_memo:
+  - expense_id: 01K4MXEKC0PMTJ8FA055N4SH79
+    memo: test

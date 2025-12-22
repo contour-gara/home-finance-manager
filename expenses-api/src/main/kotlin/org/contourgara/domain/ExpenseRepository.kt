@@ -1,6 +1,4 @@
-package org.contourgara
-
-import org.contourgara.domain.Expense
+package org.contourgara.domain
 
 interface ExpenseRepository {
     fun create(expense: Expense): Unit
