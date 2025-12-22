@@ -16,10 +16,10 @@ class CreateExpenseUseCase(
     fun execute(expense: Expense): Unit =
         transaction {
             val expenseId = expenseRepository.create(expense)
-            val eventId = ulidClient.nextUlid()
+            val expenseEventID = ulidClient.nextUlid()
             expenseEventRepository.save(
                 ExpenseEvent(
-                    eventId = eventId,
+                    expenseEventID = expenseEventID,
                     expenseId = expenseId,
                     eventCategory = EventCategory.CREATED,
                 )

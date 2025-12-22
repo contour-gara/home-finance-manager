@@ -12,6 +12,6 @@ class UlidClientImplTest : FunSpec({
         val actual = sut.nextUlid()
 
         // assert
-        actual.toString() shouldHaveLength 26
+        actual.id.toString() shouldHaveLength 26
     }
 })
