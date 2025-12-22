@@ -15,14 +15,18 @@ class CreateExpenseUseCase(
 ) {
     fun execute(expense: Expense): Unit =
         transaction {
-            val expenseId = expenseRepository.create(expense)
-            val expenseEventID = ulidClient.nextUlid()
-            expenseEventRepository.save(
-                ExpenseEvent(
-                    expenseEventID = expenseEventID,
-                    expenseId = expenseId,
-                    eventCategory = EventCategory.CREATED,
-                )
+            Pair(
+                first = expenseRepository.create(expense),
+                second = ulidClient.nextUlid(),
             )
+                .let { (expenseId, expenseEventID) ->
+                    expenseEventRepository.save(
+                        ExpenseEvent(
+                            expenseEventID = expenseEventID,
+                            expenseId = expenseId,
+                            eventCategory = EventCategory.CREATED,
+                        )
+                    )
+                }
         }
 }
