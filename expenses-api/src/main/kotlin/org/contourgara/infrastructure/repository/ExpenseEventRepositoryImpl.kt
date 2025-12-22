@@ -12,5 +12,10 @@ object ExpenseEventRepositoryImpl : ExpenseEventRepository {
                     .insert {
                         it[expenseEventId] = expenseEvent.expenseEventID.id.toString()
                     }
+                ExpenseEventTable
+                    .insert {
+                        it[expenseEventId] = expenseEvent.expenseEventID.id.toString()
+                        it[expenseId] = expenseEvent.expenseId.id.toString()
+                    }
             }
 }

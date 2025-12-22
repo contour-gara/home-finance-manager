@@ -10,24 +10,29 @@ class ExpenseRepositoryImpl : ExpenseRepository {
         expense
             .expenseId
             .also {
-                ExpenseIdTable.insert {
-                    it[expenseId] = expense.expenseId.id.toString()
-                }
-                ExpenseAmountTable.insert {
-                    it[expenseId] = expense.expenseId.id.toString()
-                    it[amount] = expense.amount
-                }
-                ExpensePayerTable.insert {
-                    it[expenseId] = expense.expenseId.id.toString()
-                    it[payer] = expense.payer.name
-                }
-                ExpenseCategoryTable.insert {
-                    it[expenseId] = expense.expenseId.id.toString()
-                    it[category] = expense.category.name
-                }
-                ExpenseMemoTable.insert {
-                    it[expenseId] = expense.expenseId.id.toString()
-                    it[memo] = expense.memo
-                }
+                ExpenseIdTable
+                    .insert {
+                        it[expenseId] = expense.expenseId.id.toString()
+                    }
+                ExpenseAmountTable
+                    .insert {
+                        it[expenseId] = expense.expenseId.id.toString()
+                        it[amount] = expense.amount
+                    }
+                ExpensePayerTable
+                    .insert {
+                        it[expenseId] = expense.expenseId.id.toString()
+                        it[payer] = expense.payer.name
+                    }
+                ExpenseCategoryTable
+                    .insert {
+                        it[expenseId] = expense.expenseId.id.toString()
+                        it[category] = expense.category.name
+                    }
+                ExpenseMemoTable
+                    .insert {
+                        it[expenseId] = expense.expenseId.id.toString()
+                        it[memo] = expense.memo
+                    }
             }
 }
