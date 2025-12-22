@@ -57,7 +57,7 @@ class ExpenseEventRepositoryImplTest : FunSpec({
         val expenseEvent = ExpenseEvent(
             expenseEventID = ExpenseEventID(ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
             expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79")),
-            eventCategory = EventCategory.CREATED,
+            eventCategory = EventCategory.CREATE,
         )
 
         val sut = ExpenseEventRepositoryImpl

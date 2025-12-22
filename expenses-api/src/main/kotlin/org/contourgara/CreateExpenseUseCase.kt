@@ -24,7 +24,7 @@ class CreateExpenseUseCase(
                         ExpenseEvent(
                             expenseEventID = expenseEventID,
                             expenseId = expenseId,
-                            eventCategory = EventCategory.CREATED,
+                            eventCategory = EventCategory.CREATE,
                         )
                     )
                 }
