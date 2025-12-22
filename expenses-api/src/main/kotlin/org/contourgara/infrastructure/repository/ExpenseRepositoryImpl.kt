@@ -1,30 +1,32 @@
 package org.contourgara.infrastructure.repository
 
 import org.contourgara.domain.Expense
+import org.contourgara.domain.ExpenseId
 import org.contourgara.domain.ExpenseRepository
 import org.jetbrains.exposed.v1.jdbc.insert
-import ulid.ULID
 
 class ExpenseRepositoryImpl : ExpenseRepository {
-    override fun create(expense: Expense): ULID =
+    override fun create(expense: Expense): ExpenseId =
         expense
-            .id
+            .expenseId
             .also {
-                ExpenseId.insert { it[expenseId] = expense.id.toString() }
-                ExpenseAmount.insert {
-                    it[expenseId] = expense.id.toString()
+                ExpenseIdTable.insert {
+                    it[expenseId] = expense.expenseId.id.toString()
+                }
+                ExpenseAmountTable.insert {
+                    it[expenseId] = expense.expenseId.id.toString()
                     it[amount] = expense.amount
                 }
-                ExpensePayer.insert {
-                    it[expenseId] = expense.id.toString()
+                ExpensePayerTable.insert {
+                    it[expenseId] = expense.expenseId.id.toString()
                     it[payer] = expense.payer.name
                 }
-                ExpenseCategory.insert {
-                    it[expenseId] = expense.id.toString()
+                ExpenseCategoryTable.insert {
+                    it[expenseId] = expense.expenseId.id.toString()
                     it[category] = expense.category.name
                 }
-                ExpenseMemo.insert {
-                    it[expenseId] = expense.id.toString()
+                ExpenseMemoTable.insert {
+                    it[expenseId] = expense.expenseId.id.toString()
                     it[memo] = expense.memo
                 }
             }

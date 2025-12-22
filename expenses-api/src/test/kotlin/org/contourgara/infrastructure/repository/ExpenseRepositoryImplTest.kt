@@ -11,6 +11,7 @@ import io.mockk.mockk
 import org.contourgara.AppConfig
 import org.contourgara.domain.Category
 import org.contourgara.domain.Expense
+import org.contourgara.domain.ExpenseId
 import org.contourgara.domain.Payer
 import org.contourgara.migration
 import org.jetbrains.exposed.v1.jdbc.Database
@@ -55,7 +56,7 @@ class ExpenseRepositoryImplTest : FunSpec({
             .createDataSet()
 
         val expenses = Expense(
-            id = ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"),
+            expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79")),
             amount = 1000,
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
@@ -68,7 +69,7 @@ class ExpenseRepositoryImplTest : FunSpec({
         val actual = transaction { sut.create(expenses) }
 
         // assert
-        val expected = ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79")
+        val expected = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"))
         actual shouldBe expected
 
         RiderDSL.DataSetConfigDSL

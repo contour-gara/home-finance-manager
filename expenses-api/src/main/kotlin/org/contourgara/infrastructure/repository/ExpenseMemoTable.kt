@@ -2,6 +2,7 @@ package org.contourgara.infrastructure.repository
 
 import org.jetbrains.exposed.v1.core.Table
 
-object ExpenseId : Table("expense_id") {
+object ExpenseMemoTable : Table("expense_memo") {
     val expenseId = varchar("expense_id", 26)
+    val memo = varchar("memo", 100)
 }

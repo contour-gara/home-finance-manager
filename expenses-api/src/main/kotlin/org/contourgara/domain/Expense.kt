@@ -1,9 +1,7 @@
 package org.contourgara.domain
 
-import ulid.ULID
-
 data class Expense(
-    val id: ULID,
+    val expenseId: ExpenseId,
     val amount: Int,
     val payer: Payer,
     val category: Category,

@@ -9,6 +9,7 @@ import org.contourgara.domain.EventCategory
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseEvent
 import org.contourgara.domain.ExpenseEventRepository
+import org.contourgara.domain.ExpenseId
 import org.contourgara.domain.ExpenseRepository
 import org.contourgara.domain.Payer
 import org.contourgara.domain.UlidClient
@@ -28,7 +29,7 @@ class CreateExpenseUseCaseTest : FunSpec({
     test("支出作成メソッドが、支出保存メソッドと ID 取得メソッドとイベント保存メソッドを呼ぶ") {
         // setup
         val expense = Expense(
-            id = ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"),
+            expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79")),
             amount = 1000,
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
@@ -37,12 +38,12 @@ class CreateExpenseUseCaseTest : FunSpec({
 
         val expenseEvent = ExpenseEvent(
             eventId = ULID.parseULID("01KD27JEZQQY88RG18034YZHBV"),
-            expenseId = ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"),
+            expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79")),
             eventCategory = EventCategory.CREATED,
         )
 
         val expenseRepository = mockk<ExpenseRepository>()
-        every { expenseRepository.create(expense) } returns ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79")
+        every { expenseRepository.create(expense) } returns ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"))
 
         val ulidClient = mockk<UlidClient>()
         every { ulidClient.nextUlid() } returns ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")
