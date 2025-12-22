@@ -2,6 +2,7 @@ package org.contourgara
 
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseRepository
+import org.contourgara.domain.UlidClient
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 class CreateExpenseUseCase(

@@ -8,6 +8,7 @@ import org.contourgara.domain.Category
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseRepository
 import org.contourgara.domain.Payer
+import org.contourgara.domain.UlidClient
 import org.jetbrains.exposed.v1.jdbc.Database
 import ulid.ULID
 

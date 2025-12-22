@@ -1,4 +1,4 @@
-package org.contourgara
+package org.contourgara.domain
 
 import ulid.ULID
 
