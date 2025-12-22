@@ -1,4 +1,4 @@
-package org.contourgara.infrastructure
+package org.contourgara.infrastructure.repository
 
 import com.github.database.rider.core.api.configuration.Orthography
 import com.github.database.rider.core.configuration.DBUnitConfig
@@ -32,7 +32,7 @@ class ExpenseRepositoryImplTest : FunSpec({
         every { appConfig.datasourcePassword } returns mysql.password
         migration(appConfig)
 
-        Database.connect(
+        Database.Companion.connect(
             url = mysql.jdbcUrl,
             driver = "com.mysql.cj.jdbc.Driver",
             user = mysql.username,

@@ -1,4 +1,4 @@
-package org.contourgara.infrastructure
+package org.contourgara.infrastructure.repository
 
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseRepository

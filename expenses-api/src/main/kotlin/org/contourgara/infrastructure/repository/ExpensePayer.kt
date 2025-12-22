@@ -1,4 +1,4 @@
-package org.contourgara.infrastructure
+package org.contourgara.infrastructure.repository
 
 import org.jetbrains.exposed.v1.core.Table
 
