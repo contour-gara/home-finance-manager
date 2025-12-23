@@ -1,14 +1,12 @@
 package org.contourgara.infrastructure.repository
 
 import org.contourgara.domain.ExpenseEvent
-import org.contourgara.domain.ExpenseEventID
 import org.contourgara.domain.infrastructure.ExpenseEventRepository
 import org.jetbrains.exposed.v1.jdbc.insert
 
 object ExpenseEventRepositoryImpl : ExpenseEventRepository {
-    override fun save(expenseEvent: ExpenseEvent): ExpenseEventID =
-        expenseEvent
-            .expenseEventID
+    override fun save(expenseEvent: ExpenseEvent): Unit =
+        Unit
             .also {
                 ExpenseEventIdTable
                     .insert {

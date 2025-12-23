@@ -42,7 +42,7 @@ class ExpenseEventRepositoryImplTest : FunSpec({
         )
     }
 
-    test("支出イベント保存メソッドが、イベント ID を保存し、イベント ID を返す") {
+    test("支出イベント保存メソッドが、イベント ID を保存し、Unit を返す") {
         // setup
         RiderDSL.withConnection(
             DriverManager.getConnection(mysql.jdbcUrl, mysql.username, mysql.password)
@@ -67,7 +67,7 @@ class ExpenseEventRepositoryImplTest : FunSpec({
         val actual = transaction { sut.save(expenseEvent) }
 
         // assert
-        val expected = ExpenseEventID(ULID.parseULID("01KD27JEZQQY88RG18034YZHBV"))
+        val expected = Unit
         actual shouldBe expected
 
         RiderDSL.DataSetConfigDSL

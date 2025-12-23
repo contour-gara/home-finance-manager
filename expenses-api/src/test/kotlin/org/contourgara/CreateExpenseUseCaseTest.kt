@@ -50,7 +50,7 @@ class CreateExpenseUseCaseTest : FunSpec({
         every { ulidClient.nextUlid() } returns ExpenseEventID(ULID.parseULID("01KD27JEZQQY88RG18034YZHBV"))
 
         val expenseEventRepository = mockk<ExpenseEventRepository>()
-        every { expenseEventRepository.save(expenseEvent) } returns ExpenseEventID(ULID.parseULID("01KD27JEZQQY88RG18034YZHBV"))
+        every { expenseEventRepository.save(expenseEvent) } returns Unit
 
         val sut = CreateExpenseUseCase(
             expenseRepository = expenseRepository,
