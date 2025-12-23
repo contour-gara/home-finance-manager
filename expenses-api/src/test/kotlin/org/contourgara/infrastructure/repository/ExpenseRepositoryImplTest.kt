@@ -8,6 +8,8 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
+import org.assertj.db.api.Assertions.assertThat
+import org.assertj.db.type.AssertDbConnectionFactory
 import org.contourgara.AppConfig
 import org.contourgara.domain.Category
 import org.contourgara.domain.Expense
@@ -55,6 +57,13 @@ class ExpenseRepositoryImplTest : FunSpec({
             )
             .createDataSet()
 
+        val assertDbConnection = AssertDbConnectionFactory.of(mysql.jdbcUrl, mysql.username, mysql.password).create()
+        val expenseIdTable = assertDbConnection.table("expense_id").build()
+        val expenseAmountTable = assertDbConnection.table("expense_amount").build()
+        val expensePayerTable = assertDbConnection.table("expense_payer").build()
+        val expenseCategoryTable = assertDbConnection.table("expense_category").build()
+        val expenseMemoTable = assertDbConnection.table("expense_memo").build()
+
         val expenses = Expense(
             expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79")),
             amount = 1000,
@@ -72,8 +81,29 @@ class ExpenseRepositoryImplTest : FunSpec({
         val expected = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"))
         actual shouldBe expected
 
-        RiderDSL.DataSetConfigDSL
-            .withDataSetConfig(DataSetConfig("expense_1.yaml"))
-        RiderDSL.DBUnitConfigDSL.expectDataSet()
+        assertThat(expenseIdTable)
+            .hasNumberOfRows(1)
+            .row(0)
+            .value("expense_id").isEqualTo("01K4MXEKC0PMTJ8FA055N4SH79")
+        assertThat(expenseAmountTable)
+            .hasNumberOfRows(1)
+            .row(0)
+            .value("expense_id").isEqualTo("01K4MXEKC0PMTJ8FA055N4SH79")
+            .value("amount").isEqualTo(1000)
+        assertThat(expensePayerTable)
+            .hasNumberOfRows(1)
+            .row(0)
+            .value("expense_id").isEqualTo("01K4MXEKC0PMTJ8FA055N4SH79")
+            .value("payer").isEqualTo("DIRECT_DEBIT")
+        assertThat(expenseCategoryTable)
+            .hasNumberOfRows(1)
+            .row(0)
+            .value("expense_id").isEqualTo("01K4MXEKC0PMTJ8FA055N4SH79")
+            .value("category").isEqualTo("RENT")
+        assertThat(expenseMemoTable)
+            .hasNumberOfRows(1)
+            .row(0)
+            .value("expense_id").isEqualTo("01K4MXEKC0PMTJ8FA055N4SH79")
+            .value("memo").isEqualTo("test")
     }
 })

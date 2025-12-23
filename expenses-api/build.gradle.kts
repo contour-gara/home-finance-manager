@@ -36,6 +36,7 @@ dependencies {
     testImplementation(libs.testcontainers.mysql)
     testImplementation(libs.h2)
     testImplementation(libs.database.rider.core)
+    testImplementation(libs.assertj.db)
     testImplementation(libs.mockk)
 }
 

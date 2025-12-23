@@ -8,6 +8,8 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
+import org.assertj.db.api.Assertions.assertThat
+import org.assertj.db.type.AssertDbConnectionFactory
 import org.contourgara.AppConfig
 import org.contourgara.domain.EventCategory
 import org.contourgara.domain.ExpenseEvent
@@ -55,6 +57,12 @@ class ExpenseEventRepositoryImplTest : FunSpec({
             )
             .createDataSet()
 
+        val assertDbConnection = AssertDbConnectionFactory.of(mysql.jdbcUrl, mysql.username, mysql.password).create()
+        val expenseIdTable = assertDbConnection.table("expense_id").build()
+        val expenseEventIdTable = assertDbConnection.table("expense_event_id").build()
+        val expenseEventTable = assertDbConnection.table("expense_event").build()
+        val expenseEventCategoryTable = assertDbConnection.table("expense_event_category").build()
+
         val expenseEvent = ExpenseEvent(
             expenseEventID = ExpenseEventID(ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
             expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79")),
@@ -70,8 +78,23 @@ class ExpenseEventRepositoryImplTest : FunSpec({
         val expected = Unit
         actual shouldBe expected
 
-        RiderDSL.DataSetConfigDSL
-            .withDataSetConfig(DataSetConfig("expense_event_1.yaml"))
-        RiderDSL.DBUnitConfigDSL.expectDataSet()
+        assertThat(expenseIdTable)
+            .hasNumberOfRows(1)
+            .row(0)
+            .value("expense_id").isEqualTo("01K4MXEKC0PMTJ8FA055N4SH79")
+        assertThat(expenseEventIdTable)
+            .hasNumberOfRows(1)
+            .row(0)
+            .value("expense_event_id").isEqualTo("01KD27JEZQQY88RG18034YZHBV")
+        assertThat(expenseEventTable)
+            .hasNumberOfRows(1)
+            .row(0)
+            .value("expense_event_id").isEqualTo("01KD27JEZQQY88RG18034YZHBV")
+            .value("expense_id").isEqualTo("01K4MXEKC0PMTJ8FA055N4SH79")
+        assertThat(expenseEventCategoryTable)
+            .hasNumberOfRows(1)
+            .row(0)
+            .value("expense_event_id").isEqualTo("01KD27JEZQQY88RG18034YZHBV")
+            .value("event_category").isEqualTo("CREATE")
     }
 })
