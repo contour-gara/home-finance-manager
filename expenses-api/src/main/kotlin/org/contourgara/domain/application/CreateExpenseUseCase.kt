@@ -1,4 +1,4 @@
-package org.contourgara
+package org.contourgara.domain.application
 
 import org.contourgara.domain.EventCategory
 import org.contourgara.domain.Expense
