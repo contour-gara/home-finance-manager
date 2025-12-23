@@ -31,8 +31,11 @@ class CreateExpenseUseCaseTest : FunSpec({
 
     test("支出作成メソッドが、支出保存メソッドと ID 取得メソッドとイベント保存メソッドを呼び、支出 ID とイベント ID を返す") {
         // setup
+        val expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"))
+        val expenseEventId = ExpenseEventId(ULID.parseULID("01KD27JEZQQY88RG18034YZHBV"))
+
         val expense = Expense(
-            expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79")),
+            expenseId = expenseId,
             amount = 1000,
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
@@ -40,16 +43,16 @@ class CreateExpenseUseCaseTest : FunSpec({
         )
 
         val expenseEvent = ExpenseEvent(
-            expenseEventID = ExpenseEventId(ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
-            expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79")),
+            expenseEventID = expenseEventId,
+            expenseId = expenseId,
             eventCategory = EventCategory.CREATE,
         )
 
         val expenseRepository = mockk<ExpenseRepository>()
-        every { expenseRepository.create(expense) } returns ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"))
+        every { expenseRepository.create(expense) } returns expenseId
 
         val ulidClient = mockk<UlidClient>()
-        every { ulidClient.nextUlid() } returns ExpenseEventId(ULID.parseULID("01KD27JEZQQY88RG18034YZHBV"))
+        every { ulidClient.nextUlid() } returns expenseEventId
 
         val expenseEventRepository = mockk<ExpenseEventRepository>()
         every { expenseEventRepository.save(expenseEvent) } returns Unit
@@ -65,8 +68,8 @@ class CreateExpenseUseCaseTest : FunSpec({
 
         // assert
         val expected = Pair(
-            first = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79")),
-            second = ExpenseEventId(ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
+            first = expenseId,
+            second = expenseEventId,
         )
         actual shouldBe expected
 
