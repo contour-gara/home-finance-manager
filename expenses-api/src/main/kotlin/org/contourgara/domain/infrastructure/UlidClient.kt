@@ -1,7 +1,7 @@
 package org.contourgara.domain.infrastructure
 
-import org.contourgara.domain.ExpenseEventID
+import org.contourgara.domain.ExpenseEventId
 
 interface UlidClient {
-    fun nextUlid(): ExpenseEventID
+    fun nextUlid(): ExpenseEventId
 }

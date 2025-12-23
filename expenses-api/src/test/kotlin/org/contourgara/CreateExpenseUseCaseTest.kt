@@ -8,7 +8,7 @@ import org.contourgara.domain.Category
 import org.contourgara.domain.EventCategory
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseEvent
-import org.contourgara.domain.ExpenseEventID
+import org.contourgara.domain.ExpenseEventId
 import org.contourgara.domain.infrastructure.ExpenseEventRepository
 import org.contourgara.domain.ExpenseId
 import org.contourgara.domain.infrastructure.ExpenseRepository
@@ -38,7 +38,7 @@ class CreateExpenseUseCaseTest : FunSpec({
         )
 
         val expenseEvent = ExpenseEvent(
-            expenseEventID = ExpenseEventID(ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
+            expenseEventID = ExpenseEventId(ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
             expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79")),
             eventCategory = EventCategory.CREATE,
         )
@@ -47,7 +47,7 @@ class CreateExpenseUseCaseTest : FunSpec({
         every { expenseRepository.create(expense) } returns ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"))
 
         val ulidClient = mockk<UlidClient>()
-        every { ulidClient.nextUlid() } returns ExpenseEventID(ULID.parseULID("01KD27JEZQQY88RG18034YZHBV"))
+        every { ulidClient.nextUlid() } returns ExpenseEventId(ULID.parseULID("01KD27JEZQQY88RG18034YZHBV"))
 
         val expenseEventRepository = mockk<ExpenseEventRepository>()
         every { expenseEventRepository.save(expenseEvent) } returns Unit
