@@ -11,3 +11,12 @@ expense_event:
 expense_event_category:
   - expense_event_id: 01KD27JEZQQY88RG18034YZHBV
     event_category: CREATE
+
+
+expense_amount:
+
+expense_payer:
+
+expense_category:
+
+expense_memo:

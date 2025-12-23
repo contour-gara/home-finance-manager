@@ -5,6 +5,7 @@ import com.github.database.rider.core.configuration.DBUnitConfig
 import com.github.database.rider.core.configuration.DataSetConfig
 import com.github.database.rider.core.dsl.RiderDSL
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import org.contourgara.AppConfig
@@ -41,7 +42,7 @@ class ExpenseEventRepositoryImplTest : FunSpec({
         )
     }
 
-    test("支出イベント保存メソッドが、イベント ID を保存する") {
+    test("支出イベント保存メソッドが、イベント ID を保存し、イベント ID を返す") {
         // setup
         RiderDSL.withConnection(
             DriverManager.getConnection(mysql.jdbcUrl, mysql.username, mysql.password)
@@ -63,9 +64,12 @@ class ExpenseEventRepositoryImplTest : FunSpec({
         val sut = ExpenseEventRepositoryImpl
 
         // execute
-        transaction { sut.save(expenseEvent) }
+        val actual = transaction { sut.save(expenseEvent) }
 
         // assert
+        val expected = ExpenseEventID(ULID.parseULID("01KD27JEZQQY88RG18034YZHBV"))
+        actual shouldBe expected
+
         RiderDSL.DataSetConfigDSL
             .withDataSetConfig(DataSetConfig("expense_event_1.yaml"))
         RiderDSL.DBUnitConfigDSL.expectDataSet()
