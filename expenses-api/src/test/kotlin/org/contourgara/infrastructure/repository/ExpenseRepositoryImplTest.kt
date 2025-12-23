@@ -63,7 +63,7 @@ class ExpenseRepositoryImplTest : FunSpec({
             memo = "test",
         )
 
-        val sut = ExpenseRepositoryImpl()
+        val sut = ExpenseRepositoryImpl
 
         // execute
         val actual = transaction { sut.create(expenses) }
