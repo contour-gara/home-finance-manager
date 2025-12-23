@@ -22,6 +22,7 @@ kotlinx-serialization = "1.9.0"
 kotest = "6.0.4"
 kotest-assertions-arrow = "2.0.0"
 database-rider = "1.44.0"
+db-setup-kotlin = "2.1.0"
 assertj-db = "3.0.1"
 mockk = "1.14.6"
 testcontainers = "1.21.3"
@@ -77,6 +78,7 @@ spring-boot-testcontainers = { module = "org.springframework.boot:spring-boot-te
 spring-kafka-test = { module = "org.springframework.kafka:spring-kafka-test" }
 koin-test = { module = "io.insert-koin:koin-test" }
 database-rider-core = { module = "com.github.database-rider:rider-core", version.ref = "database-rider" }
+db-setup-kotlin = { module = "com.ninja-squad:DbSetup-kotlin", version.ref = "db-setup-kotlin" }
 assertj-db = { module = "org.assertj:assertj-db", version.ref = "assertj-db" }
 testcontainers-mysql = { module = "org.testcontainers:mysql", version.ref = "testcontainers" }
 testcontainers-kafka = { module = "org.testcontainers:kafka" }

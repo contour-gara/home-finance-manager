@@ -1,9 +1,7 @@
 package org.contourgara.infrastructure.repository
 
-import com.github.database.rider.core.api.configuration.Orthography
-import com.github.database.rider.core.configuration.DBUnitConfig
-import com.github.database.rider.core.configuration.DataSetConfig
-import com.github.database.rider.core.dsl.RiderDSL
+import com.ninja_squad.dbsetup.destination.DriverManagerDestination
+import com.ninja_squad.dbsetup_kotlin.dbSetup
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
@@ -20,7 +18,6 @@ import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.testcontainers.containers.MySQLContainer
 import ulid.ULID
-import java.sql.DriverManager
 
 class ExpenseEventRepositoryImplTest : FunSpec({
     val mysql = MySQLContainer("mysql:8.0.43-oraclelinux9").apply {
@@ -44,18 +41,35 @@ class ExpenseEventRepositoryImplTest : FunSpec({
         )
     }
 
+    beforeTest {
+        dbSetup(
+            to = DriverManagerDestination(mysql.jdbcUrl, mysql.username, mysql.password),
+        ) {
+            deleteAllFrom(
+                "expense_id",
+                "expense_amount",
+                "expense_payer",
+                "expense_category",
+                "expense_memo",
+                "expense_event_id",
+                "expense_event",
+                "expense_event_category",
+            )
+        }
+            .launch()
+    }
+
     test("支出イベント保存メソッドが、イベント ID を保存し、Unit を返す") {
         // setup
-        RiderDSL.withConnection(
-            DriverManager.getConnection(mysql.jdbcUrl, mysql.username, mysql.password)
-        )
-        RiderDSL.DataSetConfigDSL
-            .withDataSetConfig(DataSetConfig("expense_event_0.yaml"))
-        RiderDSL.DBUnitConfigDSL
-            .withDBUnitConfig(
-                DBUnitConfig().caseInsensitiveStrategy(Orthography.LOWERCASE)
-            )
-            .createDataSet()
+        dbSetup(
+            to = DriverManagerDestination(mysql.jdbcUrl, mysql.username, mysql.password),
+        ) {
+            insertInto("expense_id") {
+                columns("expense_id")
+                values("01K4MXEKC0PMTJ8FA055N4SH79")
+            }
+        }
+            .launch()
 
         val assertDbConnection = AssertDbConnectionFactory.of(mysql.jdbcUrl, mysql.username, mysql.password).create()
         val expenseIdTable = assertDbConnection.table("expense_id").build()
