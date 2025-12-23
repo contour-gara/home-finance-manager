@@ -20,7 +20,7 @@ fun Application.module() {
     }
 
     val appConfig = AppConfig.from(environment.config)
-    migration(appConfig)
+    setUpDatabase(appConfig)
 
     configureRouting()
 }
