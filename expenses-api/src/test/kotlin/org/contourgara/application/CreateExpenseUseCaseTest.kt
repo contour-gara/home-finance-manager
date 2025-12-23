@@ -1,6 +1,7 @@
 package org.contourgara.application
 
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -28,7 +29,7 @@ class CreateExpenseUseCaseTest : FunSpec({
         )
     }
 
-    test("支出作成メソッドが、支出保存メソッドと ID 取得メソッドとイベント保存メソッドを呼ぶ") {
+    test("支出作成メソッドが、支出保存メソッドと ID 取得メソッドとイベント保存メソッドを呼び、支出 ID とイベント ID を返す") {
         // setup
         val expense = Expense(
             expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79")),
@@ -60,9 +61,15 @@ class CreateExpenseUseCaseTest : FunSpec({
         )
 
         // execute
-        sut.execute(expense)
+        val actual = sut.execute(expense)
 
         // assert
+        val expected = Pair(
+            first = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79")),
+            second = ExpenseEventId(ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
+        )
+        actual shouldBe expected
+
         verify(exactly = 1) { expenseRepository.create(expense) }
         verify(exactly = 1) { ulidClient.nextUlid() }
         verify(exactly = 1) { expenseEventRepository.save(expenseEvent) }
