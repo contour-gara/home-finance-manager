@@ -44,7 +44,7 @@ class ExpensesApiApplicationTest : FunSpec({
         }
     }
 
-    test("支出登録で、支出情報を受け取り、支出 ID と支出イベント ID を返す￥") {
+    test("支出登録で、支出情報を受け取り、支出 ID と支出イベント ID を返す") {
         testApplication {
             // setup
             application {
