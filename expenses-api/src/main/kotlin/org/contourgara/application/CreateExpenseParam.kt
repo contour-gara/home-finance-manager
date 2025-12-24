@@ -3,7 +3,9 @@ package org.contourgara.application
 import org.contourgara.domain.Category
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseId
+import org.contourgara.domain.Month
 import org.contourgara.domain.Payer
+import org.contourgara.domain.Year
 import ulid.ULID
 
 data class CreateExpenseParam(
@@ -19,8 +21,10 @@ data class CreateExpenseParam(
         Expense(
             expenseId = ExpenseId(expenseId),
             amount = amount,
-            payer = Payer.valueOf(payer),
-            category = Category.valueOf(category),
+            payer = Payer.valueOf(value = payer),
+            category = Category.valueOf(value = category),
+            year = Year.of(intYear = year),
+            month = Month.of(intMonth = month),
             memo = memo,
         )
 }

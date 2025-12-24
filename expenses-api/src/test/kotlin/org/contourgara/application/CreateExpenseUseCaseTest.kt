@@ -11,7 +11,9 @@ import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseEvent
 import org.contourgara.domain.ExpenseEventId
 import org.contourgara.domain.ExpenseId
+import org.contourgara.domain.Month
 import org.contourgara.domain.Payer
+import org.contourgara.domain.Year
 import org.contourgara.domain.infrastructure.ExpenseEventRepository
 import org.contourgara.domain.infrastructure.ExpenseRepository
 import org.contourgara.domain.infrastructure.UlidClient
@@ -48,6 +50,8 @@ class CreateExpenseUseCaseTest : FunSpec({
             amount = 1000,
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
+            year = Year._2026,
+            month = Month.JANUARY,
             memo = "test",
         )
 

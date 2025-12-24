@@ -9,7 +9,9 @@ import org.assertj.db.type.AssertDbConnectionFactory
 import org.contourgara.domain.Category
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseId
+import org.contourgara.domain.Month
 import org.contourgara.domain.Payer
+import org.contourgara.domain.Year
 import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
@@ -75,6 +77,8 @@ class ExpenseRepositoryImplTest : FunSpec({
             amount = 1000,
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
+            year = Year._2026,
+            month = Month.JANUARY,
             memo = "test",
         )
 

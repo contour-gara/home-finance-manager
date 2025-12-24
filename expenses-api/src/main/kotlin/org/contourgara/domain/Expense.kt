@@ -5,5 +5,7 @@ data class Expense(
     val amount: Int,
     val payer: Payer,
     val category: Category,
+    val year: Year,
+    val month: Month,
     val memo: String,
 )
