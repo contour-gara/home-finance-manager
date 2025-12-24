@@ -18,7 +18,7 @@ fun Application.configureExpenseRouting(
             post {
                 try {
                     val createExpenseRequest = call.receive<CreateExpenseRequest>()
-                    val result = createExpenseUseCase.execute(createExpenseRequest.toModel())
+                    val result = createExpenseUseCase.execute(createExpenseRequest.toParam())
                     call.respond(
                         status = HttpStatusCode.Created,
                         message = CreateExpenseResponse(

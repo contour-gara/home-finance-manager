@@ -1,7 +1,6 @@
 package org.contourgara.application
 
 import org.contourgara.domain.EventCategory
-import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseEvent
 import org.contourgara.domain.ExpenseEventId
 import org.contourgara.domain.ExpenseId
@@ -15,12 +14,16 @@ class CreateExpenseUseCase(
     private val ulidClient: UlidClient,
     private val expenseEventRepository: ExpenseEventRepository,
 ) {
-    fun execute(expense: Expense): Pair<ExpenseId, ExpenseEventId> =
+    fun execute(param: CreateExpenseParam): Pair<ExpenseId, ExpenseEventId> =
         transaction {
-            Pair(
-                first = expenseRepository.create(expense),
-                second = ulidClient.nextUlid(),
-            )
+            param
+                .toModel()
+                .let {
+                    Pair(
+                        first = expenseRepository.create(it),
+                        second = ulidClient.nextUlid(),
+                    )
+                }
                 .also { (expenseId, expenseEventID) ->
                     expenseEventRepository.save(
                         ExpenseEvent(

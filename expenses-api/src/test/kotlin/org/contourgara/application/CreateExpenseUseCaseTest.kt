@@ -30,6 +30,14 @@ class CreateExpenseUseCaseTest : FunSpec({
 
     test("支出作成メソッドが、支出保存メソッドと ID 取得メソッドとイベント保存メソッドを呼び、支出 ID とイベント ID を返す") {
         // setup
+        val param = CreateExpenseParam(
+            expenseId = ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"),
+            amount = 1000,
+            payer = "DIRECT_DEBIT",
+            category = "RENT",
+            memo = "test",
+        )
+
         val expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"))
         val expenseEventId = ExpenseEventId(ULID.parseULID("01KD27JEZQQY88RG18034YZHBV"))
 
@@ -63,7 +71,7 @@ class CreateExpenseUseCaseTest : FunSpec({
         )
 
         // execute
-        val actual = sut.execute(expense)
+        val actual = sut.execute(param)
 
         // assert
         val expected = Pair(
