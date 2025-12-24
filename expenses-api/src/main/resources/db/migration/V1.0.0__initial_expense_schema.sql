@@ -36,6 +36,16 @@ CREATE TABLE IF NOT EXISTS expense_category (
     FOREIGN KEY(category) REFERENCES category(category)
 );
 
+CREATE TABLE IF NOT EXISTS year (
+    year INTEGER NOT NULL,
+    PRIMARY KEY(year)
+);
+
+CREATE TABLE IF NOT EXISTS month (
+    month INTEGER NOT NULL,
+    PRIMARY KEY(month)
+);
+
 CREATE TABLE IF NOT EXISTS expense_memo (
     expense_id VARCHAR(26) NOT NULL,
     memo VARCHAR(100) NOT NULL,
