@@ -14,7 +14,7 @@ class CreateExpenseUseCase(
     private val ulidClient: UlidClient,
     private val expenseEventRepository: ExpenseEventRepository,
 ) {
-    fun execute(param: CreateExpenseParam): Pair<ExpenseId, ExpenseEventId> =
+    fun execute(param: CreateExpenseParam): CreateExpenseDto =
         transaction {
             param
                 .toModel()
@@ -32,6 +32,9 @@ class CreateExpenseUseCase(
                             eventCategory = EventCategory.CREATE,
                         )
                     )
+                }
+                .let { (expenseId, expenseEventID) ->
+                    CreateExpenseDto.of(expenseId, expenseEventID)
                 }
         }
 }

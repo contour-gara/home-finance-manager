@@ -24,13 +24,10 @@ fun Application.configureExpenseRouting(
                                 .execute(
                                     param = it,
                                 )
-                        }.also { (expenseId, expenseEventId) ->
+                        }.also {
                             call.respond(
                                 status = HttpStatusCode.Created,
-                                message = CreateExpenseResponse(
-                                    expenseId = expenseId.id,
-                                    expenseEventId = expenseEventId.id,
-                                ),
+                                message = CreateExpenseResponse.from(createExpenseDto = it),
                             )
                         }
                 } catch (e: SerializationException) {

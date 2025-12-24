@@ -74,9 +74,9 @@ class CreateExpenseUseCaseTest : FunSpec({
         val actual = sut.execute(param)
 
         // assert
-        val expected = Pair(
-            first = expenseId,
-            second = expenseEventId,
+        val expected = CreateExpenseDto(
+            expenseId = expenseId.id,
+            expenseEventId = expenseEventId.id,
         )
         actual shouldBe expected
 
