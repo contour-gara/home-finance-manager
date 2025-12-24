@@ -17,15 +17,22 @@ fun Application.configureExpenseRouting(
         route("/expense") {
             post {
                 try {
-                    val createExpenseRequest = call.receive<CreateExpenseRequest>()
-                    val result = createExpenseUseCase.execute(createExpenseRequest.toParam())
-                    call.respond(
-                        status = HttpStatusCode.Created,
-                        message = CreateExpenseResponse(
-                            expenseId = result.first.id,
-                            expenseEventId = result.second.id,
-                        ),
-                    )
+                    call
+                        .receive<CreateExpenseRequest>()
+                        .toParam().let {
+                            createExpenseUseCase
+                                .execute(
+                                    param = it,
+                                )
+                        }.also { (expenseId, expenseEventId) ->
+                            call.respond(
+                                status = HttpStatusCode.Created,
+                                message = CreateExpenseResponse(
+                                    expenseId = expenseId.id,
+                                    expenseEventId = expenseEventId.id,
+                                ),
+                            )
+                        }
                 } catch (e: SerializationException) {
                     call.respond(HttpStatusCode.BadRequest, e.message.toString())
                 }
