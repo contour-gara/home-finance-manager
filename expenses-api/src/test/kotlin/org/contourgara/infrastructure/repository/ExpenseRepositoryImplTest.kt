@@ -54,6 +54,8 @@ class ExpenseRepositoryImplTest : FunSpec({
                 "expense_amount",
                 "expense_payer",
                 "expense_category",
+                "expense_year",
+                "expense_month",
                 "expense_memo",
                 "expense_event_id",
                 "expense_event",
@@ -63,13 +65,15 @@ class ExpenseRepositoryImplTest : FunSpec({
             .launch()
     }
 
-    test("支出情報保存メソッドが、支出 ID、金額、支払い者、支出カテゴリー、メモを保存し、支出 ID を返す") {
+    test("支出情報保存メソッドが、支出 ID、金額、支払い者、支出カテゴリー、年、月、メモを保存し、支出 ID を返す") {
         // setup
         val assertDbConnection = AssertDbConnectionFactory.of(mysql.jdbcUrl, mysql.username, mysql.password).create()
         val expenseIdTable = assertDbConnection.table("expense_id").build()
         val expenseAmountTable = assertDbConnection.table("expense_amount").build()
         val expensePayerTable = assertDbConnection.table("expense_payer").build()
         val expenseCategoryTable = assertDbConnection.table("expense_category").build()
+        val expenseYearTable = assertDbConnection.table("expense_year").build()
+        val expenseMonthTable = assertDbConnection.table("expense_month").build()
         val expenseMemoTable = assertDbConnection.table("expense_memo").build()
 
         val expenses = Expense(
@@ -110,6 +114,16 @@ class ExpenseRepositoryImplTest : FunSpec({
             .row(0)
             .value("expense_id").isEqualTo("01K4MXEKC0PMTJ8FA055N4SH79")
             .value("category").isEqualTo("RENT")
+        assertThat(expenseYearTable)
+            .hasNumberOfRows(1)
+            .row(0)
+            .value("expense_id").isEqualTo("01K4MXEKC0PMTJ8FA055N4SH79")
+            .value("year").isEqualTo(2026)
+        assertThat(expenseMonthTable)
+            .hasNumberOfRows(1)
+            .row(0)
+            .value("expense_id").isEqualTo("01K4MXEKC0PMTJ8FA055N4SH79")
+            .value("month").isEqualTo(1)
         assertThat(expenseMemoTable)
             .hasNumberOfRows(1)
             .row(0)

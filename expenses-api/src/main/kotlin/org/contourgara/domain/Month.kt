@@ -1,6 +1,6 @@
 package org.contourgara.domain
 
-enum class Month(private val intMonth: Int) {
+enum class Month(val intMonth: Int) {
     JANUARY(intMonth = 1),
     FEBRUARY(intMonth = 2),
     MARCH(intMonth = 3),

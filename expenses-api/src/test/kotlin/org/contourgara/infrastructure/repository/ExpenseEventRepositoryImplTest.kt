@@ -52,6 +52,8 @@ class ExpenseEventRepositoryImplTest : FunSpec({
                 "expense_amount",
                 "expense_payer",
                 "expense_category",
+                "expense_year",
+                "expense_month",
                 "expense_memo",
                 "expense_event_id",
                 "expense_event",

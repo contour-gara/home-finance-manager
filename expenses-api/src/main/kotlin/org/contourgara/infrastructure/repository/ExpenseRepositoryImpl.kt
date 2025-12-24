@@ -29,6 +29,16 @@ object ExpenseRepositoryImpl : ExpenseRepository {
                         it[expenseId] = expense.expenseId.id.toString()
                         it[category] = expense.category.name
                     }
+                ExpenseYearTable
+                    .insert {
+                        it[expenseId] = expense.expenseId.id.toString()
+                        it[year] = expense.year.intYear
+                    }
+                ExpenseMonthTable
+                    .insert {
+                        it[expenseId] = expense.expenseId.id.toString()
+                        it[month] = expense.month.intMonth
+                    }
                 ExpenseMemoTable
                     .insert {
                         it[expenseId] = expense.expenseId.id.toString()

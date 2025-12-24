@@ -1,6 +1,6 @@
 package org.contourgara.domain
 
-enum class Year(private val intYear: Int) {
+enum class Year(val intYear: Int) {
     _2026(intYear = 2026),
     ;
 
