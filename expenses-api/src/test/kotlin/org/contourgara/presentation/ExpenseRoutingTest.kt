@@ -50,6 +50,8 @@ class ExpenseRoutingTest : FunSpec({
                       "amount": 1000,
                       "payer":"DIRECT_DEBIT",
                       "category":"RENT",
+                      "year":"2026",
+                      "month":"1",
                       "memo":"test"
                     }
                 """.trimIndent())

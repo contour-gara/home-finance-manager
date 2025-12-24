@@ -10,6 +10,8 @@ data class CreateExpenseRequest(
     private val amount: Int,
     private val payer: String,
     private val category: String,
+    private val year: Int,
+    private val month: Int,
     private val memo: String,
 ) {
     fun toParam(): CreateExpenseParam =
