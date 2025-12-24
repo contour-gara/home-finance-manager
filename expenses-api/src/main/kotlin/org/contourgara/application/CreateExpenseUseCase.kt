@@ -2,8 +2,6 @@ package org.contourgara.application
 
 import org.contourgara.domain.EventCategory
 import org.contourgara.domain.ExpenseEvent
-import org.contourgara.domain.ExpenseEventId
-import org.contourgara.domain.ExpenseId
 import org.contourgara.domain.infrastructure.ExpenseEventRepository
 import org.contourgara.domain.infrastructure.ExpenseRepository
 import org.contourgara.domain.infrastructure.UlidClient
@@ -17,14 +15,12 @@ class CreateExpenseUseCase(
     fun execute(param: CreateExpenseParam): CreateExpenseDto =
         transaction {
             param
-                .toModel()
-                .let {
+                .toModel().let {
                     Pair(
                         first = expenseRepository.create(it),
                         second = ulidClient.nextUlid(),
                     )
-                }
-                .also { (expenseId, expenseEventID) ->
+                }.also { (expenseId, expenseEventID) ->
                     expenseEventRepository.save(
                         ExpenseEvent(
                             expenseEventID = expenseEventID,
@@ -32,8 +28,7 @@ class CreateExpenseUseCase(
                             eventCategory = EventCategory.CREATE,
                         )
                     )
-                }
-                .let { (expenseId, expenseEventID) ->
+                }.let { (expenseId, expenseEventID) ->
                     CreateExpenseDto.of(expenseId, expenseEventID)
                 }
         }
