@@ -20,6 +20,8 @@ data class CreateExpenseRequest(
             amount = amount,
             payer = payer,
             category = category,
+            year = year,
+            month = month,
             memo = memo,
     )
 }
