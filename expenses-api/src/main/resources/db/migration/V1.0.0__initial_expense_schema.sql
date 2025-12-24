@@ -41,9 +41,25 @@ CREATE TABLE IF NOT EXISTS year (
     PRIMARY KEY(year)
 );
 
+CREATE TABLE IF NOT EXISTS expense_year (
+    expense_id VARCHAR(26) NOT NULL,
+    year INTEGER NOT NULL,
+    PRIMARY KEY(expense_id),
+    FOREIGN KEY(expense_id) REFERENCES expense_id(expense_id),
+    FOREIGN KEY(year) REFERENCES year(year)
+);
+
 CREATE TABLE IF NOT EXISTS month (
     month INTEGER NOT NULL,
     PRIMARY KEY(month)
+);
+
+CREATE TABLE IF NOT EXISTS expense_month (
+    expense_id VARCHAR(26) NOT NULL,
+    month INTEGER NOT NULL,
+    PRIMARY KEY(expense_id),
+    FOREIGN KEY(expense_id) REFERENCES expense_id(expense_id),
+    FOREIGN KEY(month) REFERENCES month(month)
 );
 
 CREATE TABLE IF NOT EXISTS expense_memo (
