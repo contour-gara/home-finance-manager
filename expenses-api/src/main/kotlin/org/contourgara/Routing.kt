@@ -10,8 +10,11 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import kotlinx.serialization.SerializationException
+import org.contourgara.application.CreateExpenseUseCase
 
-fun Application.configureRouting() {
+fun Application.configureRouting(
+    createExpenseUseCase: CreateExpenseUseCase,
+) {
     routing {
         route("/") {
             get {
@@ -19,15 +22,22 @@ fun Application.configureRouting() {
             }
         }
 
-//        route("/expense") {
-//            post {
-//                try {
-//                    val expense = call.receive<Expense>()
-//                    call.respond(HttpStatusCode.Created, "イベント ID")
-//                } catch (e: SerializationException) {
-//                    call.respond(HttpStatusCode.BadRequest, e.message.toString())
-//                }
-//            }
-//        }
+        route("/expense") {
+            post {
+                try {
+                    val createExpenseRequest = call.receive<CreateExpenseRequest>()
+                    val result = createExpenseUseCase.execute(createExpenseRequest.toModel())
+                    call.respond(
+                        status = HttpStatusCode.Created,
+                        message = CreateExpenseResponse(
+                            expenseId = result.first.id,
+                            expenseEventId = result.second.id,
+                        ),
+                    )
+                } catch (e: SerializationException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message.toString())
+                }
+            }
+        }
     }
 }
