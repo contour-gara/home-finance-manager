@@ -1,4 +1,4 @@
-package org.contourgara
+package org.contourgara.presentation
 
 import kotlinx.serialization.Serializable
 import ulid.ULID
