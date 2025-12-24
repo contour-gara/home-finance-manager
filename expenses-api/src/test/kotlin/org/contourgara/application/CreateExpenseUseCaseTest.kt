@@ -12,7 +12,6 @@ import org.contourgara.domain.ExpenseEvent
 import org.contourgara.domain.ExpenseEventId
 import org.contourgara.domain.ExpenseId
 import org.contourgara.domain.Payer
-import org.contourgara.domain.application.CreateExpenseUseCase
 import org.contourgara.domain.infrastructure.ExpenseEventRepository
 import org.contourgara.domain.infrastructure.ExpenseRepository
 import org.contourgara.domain.infrastructure.UlidClient
