@@ -1,6 +1,8 @@
 [versions]
 kotlin = "2.2.21"
 ksp = "2.2.21-2.0.4"
+kover = "0.9.4"
+
 
 ktor = "3.3.2"
 spring-boot = "3.5.8"
@@ -91,3 +93,4 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }

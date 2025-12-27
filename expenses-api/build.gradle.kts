@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
     alias(libs.plugins.serialization)
-    jacoco
+    alias(libs.plugins.kover)
     application
 }
 
@@ -71,7 +71,8 @@ tasks.test {
 
 tasks.test {
     useJUnitPlatform()
-    finalizedBy(tasks.jacocoTestReport)
+
+    finalizedBy(tasks.koverHtmlReport)
 
     testLogging {
         events = setOf(
@@ -86,14 +87,5 @@ tasks.test {
         showExceptions = true
         showCauses = true
         showStackTraces = true
-    }
-}
-
-tasks.jacocoTestReport {
-    dependsOn(tasks.test)
-    reports {
-        xml.required.set(false)
-        csv.required.set(false)
-        html.required.set(true)
     }
 }
