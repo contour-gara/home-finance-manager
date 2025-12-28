@@ -32,7 +32,7 @@ class CreateExpenseUseCaseTest : FunSpec({
         )
     }
 
-    test("支出作成メソッドが、イベント保存メソッドと合計支出検索メソッドを呼び、支出に該当する合計支出が存在しなかった場合は合計支出を保存し、支出 ID とイベント ID を返す") {
+    test("支出作成メソッドが、支出とイベントを保存し、支出に該当する合計支出が存在しなかった場合は合計支出を作成して保存し、支出 ID とイベント ID を返す") {
         // setup
         val param = CreateExpenseParam(
             expenseId = ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"),
@@ -103,7 +103,89 @@ class CreateExpenseUseCaseTest : FunSpec({
         actual shouldBe expected
 
         verify(exactly = 1) { expenseEventRepository.save(expenseEvent) }
-        verify(exactly = 1) { expensesRepository.findLatestExpenses(expense.year, expense.month, expense.payer, expense.category) }
-        verify(exactly = 1) { expensesRepository.save(Expenses(expenseEventId, expense.year, expense.month, expense.payer, expense.category, 1000)) }
+        verify(exactly = 1) { expensesRepository.save(expenses) }
+    }
+
+    test("支出作成メソッドが、支出とイベントを保存し、その支出に該当する合計支出が存在した場合は合計支出を更新して保存し、支出 ID とイベント ID を返す") {
+        // setup
+        val param = CreateExpenseParam(
+            expenseId = ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"),
+            amount = 1000,
+            payer = "DIRECT_DEBIT",
+            category = "RENT",
+            year = 2026,
+            month = 1,
+            memo = "test",
+        )
+
+        val expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"))
+        val expenseEventId = ExpenseEventId(ULID.parseULID("01KD27JEZQQY88RG18034YZHBV"))
+
+        val expense = Expense(
+            expenseId = expenseId,
+            amount = 1000,
+            payer = Payer.DIRECT_DEBIT,
+            category = Category.RENT,
+            year = Year._2026,
+            month = Month.JANUARY,
+            memo = "test",
+        )
+
+        val expenseEvent = ExpenseEvent(
+            expenseEventId = expenseEventId,
+            expenseId = expenseId,
+            eventCategory = EventCategory.CREATE,
+        )
+
+        val oldExpenses = Expenses(
+            lastEventId = ExpenseEventId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH78")),
+            year = Year._2026,
+            month = Month.JANUARY,
+            payer = Payer.DIRECT_DEBIT,
+            category = Category.RENT,
+            amount = 500,
+        )
+
+        val newExpenses = Expenses(
+            lastEventId = expenseEventId,
+            year = Year._2026,
+            month = Month.JANUARY,
+            payer = Payer.DIRECT_DEBIT,
+            category = Category.RENT,
+            amount = 1500,
+        )
+
+        val expenseRepository = mockk<ExpenseRepository>()
+        every { expenseRepository.create(expense) } returns expense
+
+        val ulidClient = mockk<UlidClient>()
+        every { ulidClient.nextUlid() } returns expenseEventId
+
+        val expenseEventRepository = mockk<ExpenseEventRepository>()
+        every { expenseEventRepository.save(expenseEvent) } returns expenseEvent
+
+        val expensesRepository = mockk<ExpensesRepository>()
+        every { expensesRepository.findLatestExpenses(expense.year, expense.month, expense.payer, expense.category) } returns oldExpenses
+        every { expensesRepository.save(newExpenses) } returns newExpenses
+
+        val sut = CreateExpenseUseCase(
+            expenseRepository = expenseRepository,
+            ulidClient = ulidClient,
+            expenseEventRepository = expenseEventRepository,
+            expensesRepository = expensesRepository,
+        )
+
+        // execute
+        val actual = sut.execute(param)
+
+        // assert
+        val expected = CreateExpenseDto(
+            expenseId = expenseId.id,
+            expenseEventId = expenseEventId.id,
+        )
+        actual shouldBe expected
+
+        verify(exactly = 1) { expenseEventRepository.save(expenseEvent) }
+        verify(exactly = 1) { expensesRepository.save(newExpenses) }
     }
 })

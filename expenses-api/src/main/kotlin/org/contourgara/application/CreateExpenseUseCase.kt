@@ -30,9 +30,19 @@ class CreateExpenseUseCase(
                         ),
                     )
                 }.also { (expense, expenseEvent) ->
-                    expensesRepository.findLatestExpenses(expense.year, expense.month, expense.payer, expense.category)
-                    val expenses = Expenses(expenseEvent.expenseEventId, expense.year, expense.month, expense.payer, expense.category, expense.amount)
-                    expensesRepository.save(expenses)
+                    expensesRepository.findLatestExpenses(
+                        year = expense.year,
+                        month = expense.month,
+                        payer = expense.payer,
+                        category = expense.category,
+                    ).let {
+                        Expenses
+                            .from(
+                                expenses = it,
+                                expense = expense,
+                                expenseEventId = expenseEvent.expenseEventId,
+                            )
+                    }.let { expensesRepository.save(expenses = it) }
                 }.let { (expense, expenseEvent) ->
                     CreateExpenseDto.of(expense.expenseId, expenseEvent.expenseEventId)
                 }
