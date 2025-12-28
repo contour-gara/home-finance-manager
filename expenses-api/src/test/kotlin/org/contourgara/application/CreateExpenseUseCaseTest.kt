@@ -16,6 +16,7 @@ import org.contourgara.domain.Payer
 import org.contourgara.domain.Year
 import org.contourgara.domain.infrastructure.ExpenseEventRepository
 import org.contourgara.domain.infrastructure.ExpenseRepository
+import org.contourgara.domain.infrastructure.ExpensesRepository
 import org.contourgara.domain.infrastructure.UlidClient
 import org.jetbrains.exposed.v1.jdbc.Database
 import ulid.ULID
@@ -30,7 +31,7 @@ class CreateExpenseUseCaseTest : FunSpec({
         )
     }
 
-    test("支出作成メソッドが、支出保存メソッドと ID 取得メソッドとイベント保存メソッドを呼び、支出 ID とイベント ID を返す") {
+    test("支出作成メソッドが、支出保存メソッドと ID 取得メソッドとイベント保存メソッドと合計支出検索メソッドを呼び、支出 ID とイベント ID を返す") {
         // setup
         val param = CreateExpenseParam(
             expenseId = ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"),
@@ -70,10 +71,14 @@ class CreateExpenseUseCaseTest : FunSpec({
         val expenseEventRepository = mockk<ExpenseEventRepository>()
         every { expenseEventRepository.save(expenseEvent) } returns Unit
 
+        val expensesRepository = mockk<ExpensesRepository>()
+        every { expensesRepository.findLatestExpenses(expense.year, expense.month, expense.payer, expense.category) } returns null
+
         val sut = CreateExpenseUseCase(
             expenseRepository = expenseRepository,
             ulidClient = ulidClient,
             expenseEventRepository = expenseEventRepository,
+            expensesRepository = expensesRepository,
         )
 
         // execute
@@ -89,5 +94,6 @@ class CreateExpenseUseCaseTest : FunSpec({
         verify(exactly = 1) { expenseRepository.create(expense) }
         verify(exactly = 1) { ulidClient.nextUlid() }
         verify(exactly = 1) { expenseEventRepository.save(expenseEvent) }
+        verify(exactly = 1) { expensesRepository.findLatestExpenses(expense.year, expense.month, expense.payer, expense.category) }
     }
 })

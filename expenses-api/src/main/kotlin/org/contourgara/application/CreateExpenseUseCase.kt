@@ -4,6 +4,7 @@ import org.contourgara.domain.EventCategory
 import org.contourgara.domain.ExpenseEvent
 import org.contourgara.domain.infrastructure.ExpenseEventRepository
 import org.contourgara.domain.infrastructure.ExpenseRepository
+import org.contourgara.domain.infrastructure.ExpensesRepository
 import org.contourgara.domain.infrastructure.UlidClient
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
@@ -11,6 +12,7 @@ class CreateExpenseUseCase(
     private val expenseRepository: ExpenseRepository,
     private val ulidClient: UlidClient,
     private val expenseEventRepository: ExpenseEventRepository,
+    private val expensesRepository: ExpensesRepository,
 ) {
     fun execute(param: CreateExpenseParam): CreateExpenseDto =
         transaction {
@@ -28,6 +30,9 @@ class CreateExpenseUseCase(
                             eventCategory = EventCategory.CREATE,
                         )
                     )
+                }.also {
+                    val expense = param.toModel()
+                    expensesRepository.findLatestExpenses(expense.year, expense.month, expense.payer, expense.category)
                 }.let { (expenseId, expenseEventID) ->
                     CreateExpenseDto.of(expenseId, expenseEventID)
                 }

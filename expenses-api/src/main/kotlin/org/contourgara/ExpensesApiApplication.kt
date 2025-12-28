@@ -12,6 +12,7 @@ import org.contourgara.application.CreateExpenseUseCase
 import org.contourgara.infrastructure.client.UlidClientImpl
 import org.contourgara.infrastructure.repository.ExpenseEventRepositoryImpl
 import org.contourgara.infrastructure.repository.ExpenseRepositoryImpl
+import org.contourgara.infrastructure.repository.ExpensesRepositoryImpl
 import org.contourgara.presentation.configureExpenseRouting
 import org.slf4j.event.Level
 
@@ -30,6 +31,7 @@ fun Application.module() {
             expenseRepository = ExpenseRepositoryImpl,
             ulidClient = UlidClientImpl(),
             expenseEventRepository = ExpenseEventRepositoryImpl,
+            expensesRepository = ExpensesRepositoryImpl,
         )
     )
 
