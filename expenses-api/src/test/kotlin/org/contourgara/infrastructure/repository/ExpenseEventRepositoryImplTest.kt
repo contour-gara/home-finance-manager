@@ -72,7 +72,7 @@ class ExpenseEventRepositoryImplTest : FunSpec({
         val expenseEventCategoryTable = assertDbConnection.table("expense_event_category").build()
 
         val expenseEvent = ExpenseEvent(
-            expenseEventID = ExpenseEventId(ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
+            expenseEventId = ExpenseEventId(ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
             expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79")),
             eventCategory = EventCategory.CREATE,
         )

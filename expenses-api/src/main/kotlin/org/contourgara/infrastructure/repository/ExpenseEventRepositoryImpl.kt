@@ -11,16 +11,16 @@ object ExpenseEventRepositoryImpl : ExpenseEventRepository {
             .also {
                 ExpenseEventIdTable
                     .insert {
-                        it[expenseEventId] = expenseEvent.expenseEventID.id.toString()
+                        it[expenseEventId] = expenseEvent.expenseEventId.id.toString()
                     }
                 ExpenseEventTable
                     .insert {
-                        it[expenseEventId] = expenseEvent.expenseEventID.id.toString()
+                        it[expenseEventId] = expenseEvent.expenseEventId.id.toString()
                         it[expenseId] = expenseEvent.expenseId.id.toString()
                     }
                 ExpenseEventCategoryTable
                     .insert {
-                        it[expenseEventId] = expenseEvent.expenseEventID.id.toString()
+                        it[expenseEventId] = expenseEvent.expenseEventId.id.toString()
                         it[eventCategory] = expenseEvent.eventCategory.name
                     }
             }

@@ -1,7 +1,7 @@
 package org.contourgara.domain
 
 data class ExpenseEvent(
-    val expenseEventID: ExpenseEventId,
+    val expenseEventId: ExpenseEventId,
     val expenseId: ExpenseId,
     val eventCategory: EventCategory,
 )

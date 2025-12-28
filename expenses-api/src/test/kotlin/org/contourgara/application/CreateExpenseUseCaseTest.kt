@@ -58,7 +58,7 @@ class CreateExpenseUseCaseTest : FunSpec({
         )
 
         val expenseEvent = ExpenseEvent(
-            expenseEventID = expenseEventId,
+            expenseEventId = expenseEventId,
             expenseId = expenseId,
             eventCategory = EventCategory.CREATE,
         )

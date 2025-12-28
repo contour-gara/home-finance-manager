@@ -23,7 +23,7 @@ class CreateExpenseUseCase(
                         first = expenseRepository.create(it),
                         second = expenseEventRepository.save(
                             ExpenseEvent(
-                                expenseEventID = ulidClient.nextUlid(),
+                                expenseEventId = ulidClient.nextUlid(),
                                 expenseId = it.expenseId,
                                 eventCategory = EventCategory.CREATE,
                             ),
@@ -31,10 +31,10 @@ class CreateExpenseUseCase(
                     )
                 }.also { (expense, expenseEvent) ->
                     expensesRepository.findLatestExpenses(expense.year, expense.month, expense.payer, expense.category)
-                    val expenses = Expenses(expenseEvent.expenseEventID, expense.year, expense.month, expense.payer, expense.category, expense.amount)
+                    val expenses = Expenses(expenseEvent.expenseEventId, expense.year, expense.month, expense.payer, expense.category, expense.amount)
                     expensesRepository.save(expenses)
                 }.let { (expense, expenseEvent) ->
-                    CreateExpenseDto.of(expense.expenseId, expenseEvent.expenseEventID)
+                    CreateExpenseDto.of(expense.expenseId, expenseEvent.expenseEventId)
                 }
         }
 }
