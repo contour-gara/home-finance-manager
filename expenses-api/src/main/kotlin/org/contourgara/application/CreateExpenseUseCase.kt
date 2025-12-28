@@ -1,6 +1,7 @@
 package org.contourgara.application
 
 import org.contourgara.domain.EventCategory
+import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseEvent
 import org.contourgara.domain.Expenses
 import org.contourgara.domain.infrastructure.ExpenseEventRepository
@@ -18,7 +19,8 @@ class CreateExpenseUseCase(
     fun execute(param: CreateExpenseParam): CreateExpenseDto =
         transaction {
             param
-                .toModel().let {
+                .toModel()
+                .let {
                     Pair(
                         first = expenseRepository.create(it),
                         second = expenseEventRepository.save(
@@ -30,21 +32,27 @@ class CreateExpenseUseCase(
                         ),
                     )
                 }.also { (expense, expenseEvent) ->
-                    expensesRepository.findLatestExpenses(
-                        year = expense.year,
-                        month = expense.month,
-                        payer = expense.payer,
-                        category = expense.category,
-                    ).let {
-                        Expenses
-                            .from(
-                                expenses = it,
-                                expense = expense,
-                                expenseEventId = expenseEvent.expenseEventId,
-                            )
-                    }.let { expensesRepository.save(expenses = it) }
+                    findAndUpdateExpenses(expense = expense, expenseEvent = expenseEvent)
                 }.let { (expense, expenseEvent) ->
-                    CreateExpenseDto.of(expense.expenseId, expenseEvent.expenseEventId)
+                    CreateExpenseDto.of(
+                        expenseId = expense.expenseId,
+                        expenseEventId = expenseEvent.expenseEventId,
+                    )
                 }
         }
+
+    private fun findAndUpdateExpenses(expense: Expense, expenseEvent: ExpenseEvent): Expenses =
+        expensesRepository.findLatestExpenses(
+            year = expense.year,
+            month = expense.month,
+            payer = expense.payer,
+            category = expense.category,
+        ).let {
+            Expenses
+                .from(
+                    expenses = it,
+                    expense = expense,
+                    expenseEventId = expenseEvent.expenseEventId,
+                )
+        }.let { expensesRepository.save(expenses = it) }
 }
