@@ -5,6 +5,7 @@ import com.ninja_squad.dbsetup_kotlin.dbSetup
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import org.assertj.db.api.Assertions.assertThat
+import org.assertj.db.type.AssertDbConnection
 import org.assertj.db.type.AssertDbConnectionFactory
 import org.contourgara.domain.EventCategory
 import org.contourgara.domain.ExpenseEvent
@@ -17,9 +18,13 @@ import org.testcontainers.containers.MySQLContainer
 import ulid.ULID
 
 class ExpenseEventRepositoryImplTest : FunSpec({
+    lateinit var assertDbConnection: AssertDbConnection
+
     val mysql = MySQLContainer("mysql:8.0.43-oraclelinux9").apply {
         startupAttempts = 1
     }
+
+    val sut = ExpenseEventRepositoryImpl
 
     beforeSpec {
         mysql.start()
@@ -41,6 +46,8 @@ class ExpenseEventRepositoryImplTest : FunSpec({
             user = mysql.username,
             password = mysql.password,
         )
+
+        assertDbConnection = AssertDbConnectionFactory.of(mysql.jdbcUrl, mysql.username, mysql.password).create()
     }
 
     beforeTest {
@@ -59,7 +66,6 @@ class ExpenseEventRepositoryImplTest : FunSpec({
         }
             .launch()
 
-        val assertDbConnection = AssertDbConnectionFactory.of(mysql.jdbcUrl, mysql.username, mysql.password).create()
         val expenseIdTable = assertDbConnection.table("expense_id").build()
         val expenseEventIdTable = assertDbConnection.table("expense_event_id").build()
         val expenseEventTable = assertDbConnection.table("expense_event").build()
@@ -70,8 +76,6 @@ class ExpenseEventRepositoryImplTest : FunSpec({
             expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79")),
             eventCategory = EventCategory.CREATE,
         )
-
-        val sut = ExpenseEventRepositoryImpl
 
         // execute
         val actual = transaction { sut.save(expenseEvent) }

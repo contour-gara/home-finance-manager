@@ -1,10 +1,9 @@
 package org.contourgara.infrastructure.repository
 
-import com.ninja_squad.dbsetup.destination.DriverManagerDestination
-import com.ninja_squad.dbsetup_kotlin.dbSetup
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import org.assertj.db.api.Assertions.assertThat
+import org.assertj.db.type.AssertDbConnection
 import org.assertj.db.type.AssertDbConnectionFactory
 import org.contourgara.domain.Category
 import org.contourgara.domain.Expense
@@ -19,9 +18,13 @@ import org.testcontainers.containers.MySQLContainer
 import ulid.ULID
 
 class ExpenseRepositoryImplTest : FunSpec({
+    lateinit var assertDbConnection: AssertDbConnection
+
     val mysql = MySQLContainer("mysql:8.0.43-oraclelinux9").apply {
         startupAttempts = 1
     }
+
+    val sut = ExpenseRepositoryImpl
 
     beforeSpec {
         mysql.start()
@@ -43,6 +46,8 @@ class ExpenseRepositoryImplTest : FunSpec({
             user = mysql.username,
             password = mysql.password,
         )
+
+        assertDbConnection = AssertDbConnectionFactory.of(mysql.jdbcUrl, mysql.username, mysql.password).create()
     }
 
     beforeTest {
@@ -51,7 +56,6 @@ class ExpenseRepositoryImplTest : FunSpec({
 
     test("支出情報保存メソッドが、支出 ID、金額、支払い者、支出カテゴリー、年、月、メモを保存し、支出 ID を返す") {
         // setup
-        val assertDbConnection = AssertDbConnectionFactory.of(mysql.jdbcUrl, mysql.username, mysql.password).create()
         val expenseIdTable = assertDbConnection.table("expense_id").build()
         val expenseAmountTable = assertDbConnection.table("expense_amount").build()
         val expensePayerTable = assertDbConnection.table("expense_payer").build()
@@ -69,8 +73,6 @@ class ExpenseRepositoryImplTest : FunSpec({
             month = Month.JANUARY,
             memo = "test",
         )
-
-        val sut = ExpenseRepositoryImpl
 
         // execute
         val actual = transaction { sut.create(expenses) }
