@@ -78,31 +78,55 @@ class ExpensesRepositoryImplTest : FunSpec({
                 columns("expense_event_id")
                 values("01KD27JEZQQY88RG18034YZHBV")
                 values("01KDHVD5XTTR9XR4ZAFSSETGXS")
+                values("01KDJN6R1CRJNRCCS0DMAMTTFZ")
+                values("01KDJN90ABDQNYYY300153QFE9")
+                values("01KDJN9CGGE9G24AZTQHQKP97T")
+                values("01KDJNKH74MRSVZJGVBG1PJA4V")
             }
             insertInto("expenses_year") {
                 columns("last_event_id", "year")
                 values("01KD27JEZQQY88RG18034YZHBV", 2026)
                 values("01KDHVD5XTTR9XR4ZAFSSETGXS", 2026)
+                values("01KDJN6R1CRJNRCCS0DMAMTTFZ", 2027)
+                values("01KDJN90ABDQNYYY300153QFE9", 2026)
+                values("01KDJN9CGGE9G24AZTQHQKP97T", 2026)
+                values("01KDJNKH74MRSVZJGVBG1PJA4V", 2026)
             }
             insertInto("expenses_month") {
                 columns("last_event_id", "month")
                 values("01KD27JEZQQY88RG18034YZHBV", 1)
                 values("01KDHVD5XTTR9XR4ZAFSSETGXS", 1)
+                values("01KDJN6R1CRJNRCCS0DMAMTTFZ", 1)
+                values("01KDJN90ABDQNYYY300153QFE9", 2)
+                values("01KDJN9CGGE9G24AZTQHQKP97T", 1)
+                values("01KDJNKH74MRSVZJGVBG1PJA4V", 1)
             }
             insertInto("expenses_payer") {
                 columns("last_event_id", "payer")
                 values("01KD27JEZQQY88RG18034YZHBV", "DIRECT_DEBIT")
                 values("01KDHVD5XTTR9XR4ZAFSSETGXS", "DIRECT_DEBIT")
+                values("01KDJN6R1CRJNRCCS0DMAMTTFZ", "DIRECT_DEBIT")
+                values("01KDJN90ABDQNYYY300153QFE9", "DIRECT_DEBIT")
+                values("01KDJN9CGGE9G24AZTQHQKP97T", "GARA")
+                values("01KDJNKH74MRSVZJGVBG1PJA4V", "DIRECT_DEBIT")
             }
             insertInto("expenses_category") {
                 columns("last_event_id", "category")
                 values("01KD27JEZQQY88RG18034YZHBV", "RENT")
                 values("01KDHVD5XTTR9XR4ZAFSSETGXS", "RENT")
+                values("01KDJN6R1CRJNRCCS0DMAMTTFZ", "RENT")
+                values("01KDJN90ABDQNYYY300153QFE9", "RENT")
+                values("01KDJN9CGGE9G24AZTQHQKP97T", "RENT")
+                values("01KDJNKH74MRSVZJGVBG1PJA4V", "UTILITIES")
             }
             insertInto("expenses_amount") {
                 columns("last_event_id", "amount")
                 values("01KD27JEZQQY88RG18034YZHBV", 1000)
                 values("01KDHVD5XTTR9XR4ZAFSSETGXS", 1500)
+                values("01KDJN6R1CRJNRCCS0DMAMTTFZ", 1000)
+                values("01KDJN90ABDQNYYY300153QFE9", 1000)
+                values("01KDJN9CGGE9G24AZTQHQKP97T", 1000)
+                values("01KDJNKH74MRSVZJGVBG1PJA4V", 1000)
             }
         }.launch()
 
@@ -114,14 +138,14 @@ class ExpensesRepositoryImplTest : FunSpec({
         actual shouldBe expected
 
         assertThat(expensesYearTable)
-            .hasNumberOfRows(2)
+            .hasNumberOfRows(6)
         assertThat(expensesMonthTable)
-            .hasNumberOfRows(2)
+            .hasNumberOfRows(6)
         assertThat(expensesPayerTable)
-            .hasNumberOfRows(2)
+            .hasNumberOfRows(6)
         assertThat(expensesCategoryTable)
-            .hasNumberOfRows(2)
+            .hasNumberOfRows(6)
         assertThat(expensesAmountTable)
-            .hasNumberOfRows(2)
+            .hasNumberOfRows(6)
     }
 })

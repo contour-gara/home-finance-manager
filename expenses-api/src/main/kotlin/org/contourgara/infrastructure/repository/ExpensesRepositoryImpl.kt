@@ -9,6 +9,8 @@ import org.contourgara.domain.Year
 import org.contourgara.domain.infrastructure.ExpensesRepository
 import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.Table
+import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.innerJoin
 import org.jetbrains.exposed.v1.jdbc.select
 import ulid.ULID
@@ -33,6 +35,12 @@ object ExpensesRepositoryImpl : ExpensesRepository {
                 ExpensesCategoryTable.category,
                 ExpensesAmountTable.amount,
             )
+            .where {
+                (ExpensesYearTable.year eq year.intYear)
+                    .and(ExpensesMonthTable.month eq month.intMonth)
+                    .and(ExpensesPayerTable.payer eq payer.name)
+                    .and(ExpensesCategoryTable.category eq category.name)
+            }
             .orderBy(ExpensesYearTable.lastEventId, SortOrder.DESC)
             .limit(1)
             .singleOrNull()

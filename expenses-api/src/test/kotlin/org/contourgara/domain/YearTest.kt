@@ -17,7 +17,7 @@ class YearTest : FunSpec({
     test("Int から Year 取得で不適切な値の場合は例外が投げられる") {
         // execute & assert
         shouldThrowExactly<IllegalArgumentException> {
-            Year.of(intYear = 2027)
-        }.message shouldBe "Not found: 2027"
+            Year.of(intYear = 2025)
+        }.message shouldBe "Not found: 2025"
     }
 })
