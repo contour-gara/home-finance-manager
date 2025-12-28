@@ -8,4 +8,5 @@ import org.contourgara.domain.Year
 
 interface ExpensesRepository {
     fun findLatestExpenses(year: Year, month: Month, payer: Payer, category: Category): Expenses?
+    fun save(expenses: Expenses): Expenses
 }

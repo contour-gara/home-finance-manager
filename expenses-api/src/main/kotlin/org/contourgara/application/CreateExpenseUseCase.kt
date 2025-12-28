@@ -2,6 +2,7 @@ package org.contourgara.application
 
 import org.contourgara.domain.EventCategory
 import org.contourgara.domain.ExpenseEvent
+import org.contourgara.domain.Expenses
 import org.contourgara.domain.infrastructure.ExpenseEventRepository
 import org.contourgara.domain.infrastructure.ExpenseRepository
 import org.contourgara.domain.infrastructure.ExpensesRepository
@@ -30,6 +31,8 @@ class CreateExpenseUseCase(
                     )
                 }.also { (expense, expenseEvent) ->
                     expensesRepository.findLatestExpenses(expense.year, expense.month, expense.payer, expense.category)
+                    val expenses = Expenses(expenseEvent.expenseEventID, expense.year, expense.month, expense.payer, expense.category, expense.amount)
+                    expensesRepository.save(expenses)
                 }.let { (expense, expenseEvent) ->
                     CreateExpenseDto.of(expense.expenseId, expenseEvent.expenseEventID)
                 }

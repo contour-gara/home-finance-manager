@@ -11,6 +11,7 @@ import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseEvent
 import org.contourgara.domain.ExpenseEventId
 import org.contourgara.domain.ExpenseId
+import org.contourgara.domain.Expenses
 import org.contourgara.domain.Month
 import org.contourgara.domain.Payer
 import org.contourgara.domain.Year
@@ -31,7 +32,7 @@ class CreateExpenseUseCaseTest : FunSpec({
         )
     }
 
-    test("支出作成メソッドが、支出保存メソッドと ID 取得メソッドとイベント保存メソッドと合計支出検索メソッドを呼び、支出 ID とイベント ID を返す") {
+    test("支出作成メソッドが、イベント保存メソッドと合計支出検索メソッドを呼び、支出に該当する合計支出が存在しなかった場合は合計支出を保存し、支出 ID とイベント ID を返す") {
         // setup
         val param = CreateExpenseParam(
             expenseId = ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"),
@@ -62,6 +63,15 @@ class CreateExpenseUseCaseTest : FunSpec({
             eventCategory = EventCategory.CREATE,
         )
 
+        val expenses = Expenses(
+            lastEventId = expenseEventId,
+            year = Year._2026,
+            month = Month.JANUARY,
+            payer = Payer.DIRECT_DEBIT,
+            category = Category.RENT,
+            amount = 1000,
+        )
+
         val expenseRepository = mockk<ExpenseRepository>()
         every { expenseRepository.create(expense) } returns expense
 
@@ -73,6 +83,7 @@ class CreateExpenseUseCaseTest : FunSpec({
 
         val expensesRepository = mockk<ExpensesRepository>()
         every { expensesRepository.findLatestExpenses(expense.year, expense.month, expense.payer, expense.category) } returns null
+        every { expensesRepository.save(expenses) } returns expenses
 
         val sut = CreateExpenseUseCase(
             expenseRepository = expenseRepository,
@@ -91,9 +102,8 @@ class CreateExpenseUseCaseTest : FunSpec({
         )
         actual shouldBe expected
 
-        verify(exactly = 1) { expenseRepository.create(expense) }
-        verify(exactly = 1) { ulidClient.nextUlid() }
         verify(exactly = 1) { expenseEventRepository.save(expenseEvent) }
         verify(exactly = 1) { expensesRepository.findLatestExpenses(expense.year, expense.month, expense.payer, expense.category) }
+        verify(exactly = 1) { expensesRepository.save(Expenses(expenseEventId, expense.year, expense.month, expense.payer, expense.category, 1000)) }
     }
 })

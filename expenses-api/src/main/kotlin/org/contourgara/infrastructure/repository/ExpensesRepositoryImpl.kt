@@ -46,6 +46,8 @@ object ExpensesRepositoryImpl : ExpensesRepository {
                     amount = it[ExpensesAmountTable.amount],
                 )
             }
+
+    override fun save(expenses: Expenses): Expenses = expenses
 }
 
 private object ExpensesYearTable : Table("expenses_year") {
