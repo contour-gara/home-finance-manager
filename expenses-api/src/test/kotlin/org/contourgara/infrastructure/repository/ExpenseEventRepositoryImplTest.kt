@@ -44,23 +44,7 @@ class ExpenseEventRepositoryImplTest : FunSpec({
     }
 
     beforeTest {
-        dbSetup(
-            to = DriverManagerDestination(mysql.jdbcUrl, mysql.username, mysql.password),
-        ) {
-            deleteAllFrom(
-                "expense_id",
-                "expense_amount",
-                "expense_payer",
-                "expense_category",
-                "expense_year",
-                "expense_month",
-                "expense_memo",
-                "expense_event_id",
-                "expense_event",
-                "expense_event_category",
-            )
-        }
-            .launch()
+        DbTestHelper.deleteAllData(mysql.jdbcUrl, mysql.username, mysql.password)
     }
 
     test("支出イベント保存メソッドが、イベント ID を保存し、Unit を返す") {

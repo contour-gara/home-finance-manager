@@ -46,23 +46,7 @@ class ExpenseRepositoryImplTest : FunSpec({
     }
 
     beforeTest {
-        dbSetup(
-            to = DriverManagerDestination(mysql.jdbcUrl, mysql.username, mysql.password),
-        ) {
-            deleteAllFrom(
-                "expense_id",
-                "expense_amount",
-                "expense_payer",
-                "expense_category",
-                "expense_year",
-                "expense_month",
-                "expense_memo",
-                "expense_event_id",
-                "expense_event",
-                "expense_event_category",
-            )
-        }
-            .launch()
+        DbTestHelper.deleteAllData(mysql.jdbcUrl, mysql.username, mysql.password)
     }
 
     test("支出情報保存メソッドが、支出 ID、金額、支払い者、支出カテゴリー、年、月、メモを保存し、支出 ID を返す") {
