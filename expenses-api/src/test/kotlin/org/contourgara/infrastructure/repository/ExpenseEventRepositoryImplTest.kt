@@ -11,8 +11,6 @@ import org.contourgara.domain.EventCategory
 import org.contourgara.domain.ExpenseEvent
 import org.contourgara.domain.ExpenseEventId
 import org.contourgara.domain.ExpenseId
-import org.flywaydb.core.Flyway
-import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.testcontainers.containers.MySQLContainer
 import ulid.ULID
@@ -28,25 +26,7 @@ class ExpenseEventRepositoryImplTest : FunSpec({
 
     beforeSpec {
         mysql.start()
-
-        Flyway
-            .configure()
-            .dataSource(
-                mysql.jdbcUrl,
-                mysql.username,
-                mysql.password,
-            )
-            .driver("com.mysql.cj.jdbc.Driver")
-            .load()
-            .migrate()
-
-        Database.connect(
-            url = mysql.jdbcUrl,
-            driver = "com.mysql.cj.jdbc.Driver",
-            user = mysql.username,
-            password = mysql.password,
-        )
-
+        DbTestHelper.migrateAndConnect(mysql)
         assertDbConnection = AssertDbConnectionFactory.of(mysql.jdbcUrl, mysql.username, mysql.password).create()
     }
 
