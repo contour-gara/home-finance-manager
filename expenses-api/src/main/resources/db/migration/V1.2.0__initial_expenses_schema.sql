@@ -36,33 +36,3 @@ CREATE TABLE IF NOT EXISTS expenses_amount (
     PRIMARY KEY(last_event_id),
     FOREIGN KEY(last_event_id) REFERENCES expense_event_id(expense_event_id)
 );
-
--- INSERT INTO expense_event_id
---     (expense_event_id)
--- VALUES
---     ('01KD27JEZQQY88RG18034YZHBV');
---
--- INSERT INTO expenses_year
---     (last_event_id, year)
--- VALUES
---     ('01KD27JEZQQY88RG18034YZHBV', 2026);
---
--- INSERT INTO expenses_month
---     (last_event_id, month)
--- VALUES
---     ('01KD27JEZQQY88RG18034YZHBV', 1);
---
--- INSERT INTO expenses_payer
---     (last_event_id, payer)
--- VALUES
---     ('01KD27JEZQQY88RG18034YZHBV', 'GARA');
---
--- INSERT INTO expenses_category
---     (last_event_id, category)
--- VALUES
---     ('01KD27JEZQQY88RG18034YZHBV', 'RENT');
---
--- INSERT INTO expenses_amount
---     (last_event_id, amount)
--- VALUES
---     ('01KD27JEZQQY88RG18034YZHBV', 1000);
