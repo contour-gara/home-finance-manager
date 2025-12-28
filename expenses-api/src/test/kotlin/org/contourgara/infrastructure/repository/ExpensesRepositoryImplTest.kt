@@ -4,16 +4,21 @@ import com.ninja_squad.dbsetup.destination.DriverManagerDestination
 import com.ninja_squad.dbsetup_kotlin.dbSetup
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.shouldBe
 import org.assertj.db.api.Assertions.assertThat
 import org.assertj.db.type.AssertDbConnection
 import org.assertj.db.type.AssertDbConnectionFactory
 import org.contourgara.domain.Category
+import org.contourgara.domain.ExpenseEventId
+import org.contourgara.domain.Expenses
 import org.contourgara.domain.Month
 import org.contourgara.domain.Payer
 import org.contourgara.domain.Year
 import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.v1.jdbc.Database
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.testcontainers.containers.MySQLContainer
+import ulid.ULID
 
 class ExpensesRepositoryImplTest : FunSpec({
     lateinit var assertDbConnection: AssertDbConnection
@@ -61,7 +66,7 @@ class ExpensesRepositoryImplTest : FunSpec({
         val expensesAmountTable = assertDbConnection.table("expenses_amount").build()
 
         // execute
-        val actual = sut.findLatestExpenses(Year._2026, Month.JANUARY, Payer.DIRECT_DEBIT, Category.RENT)
+        val actual = transaction { sut.findLatestExpenses(Year._2026, Month.JANUARY, Payer.DIRECT_DEBIT, Category.RENT) }
 
         // assert
         actual.shouldBeNull()
@@ -121,7 +126,13 @@ class ExpensesRepositoryImplTest : FunSpec({
             }
         }.launch()
 
+        // execute
+        val actual = transaction { sut.findLatestExpenses(Year._2026, Month.JANUARY, Payer.DIRECT_DEBIT, Category.RENT) }
+
         // assert
+        val expected = Expenses(ExpenseEventId(ULID.parseULID("01KDHVD5XTTR9XR4ZAFSSETGXS")), Year._2026, Month.JANUARY, Payer.DIRECT_DEBIT, Category.RENT, 1500)
+        actual shouldBe expected
+
         assertThat(expensesYearTable)
             .hasNumberOfRows(2)
         assertThat(expensesMonthTable)
