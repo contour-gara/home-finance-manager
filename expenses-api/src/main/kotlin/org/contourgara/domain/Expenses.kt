@@ -7,4 +7,15 @@ data class Expenses(
     val payer: Payer,
     val category: Category,
     val amount: Int,
-)
+) {
+    companion object {
+        fun from(expenses: Expenses?, expense: Expense, expenseEventId: ExpenseEventId) : Expenses =
+            expenses!!
+                .let {
+                    expenses.copy(
+                        lastEventId = expenseEventId,
+                        amount = it.amount + expense.amount,
+                    )
+                }
+    }
+}
