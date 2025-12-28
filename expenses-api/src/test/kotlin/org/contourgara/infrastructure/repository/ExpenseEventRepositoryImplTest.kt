@@ -93,7 +93,7 @@ class ExpenseEventRepositoryImplTest : FunSpec({
         val actual = transaction { sut.save(expenseEvent) }
 
         // assert
-        val expected = Unit
+        val expected = expenseEvent
         actual shouldBe expected
 
         assertThat(expenseIdTable)

@@ -5,8 +5,8 @@ import org.contourgara.domain.infrastructure.ExpenseEventRepository
 import org.jetbrains.exposed.v1.jdbc.insert
 
 object ExpenseEventRepositoryImpl : ExpenseEventRepository {
-    override fun save(expenseEvent: ExpenseEvent): Unit =
-        Unit
+    override fun save(expenseEvent: ExpenseEvent): ExpenseEvent =
+        expenseEvent
             .also {
                 ExpenseEventIdTable
                     .insert {
