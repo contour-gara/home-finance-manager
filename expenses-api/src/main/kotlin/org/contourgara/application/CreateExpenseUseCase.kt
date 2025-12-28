@@ -20,21 +20,18 @@ class CreateExpenseUseCase(
                 .toModel().let {
                     Pair(
                         first = expenseRepository.create(it),
-                        second = ulidClient.nextUlid(),
+                        second = expenseEventRepository.save(
+                            ExpenseEvent(
+                                expenseEventID = ulidClient.nextUlid(),
+                                expenseId = it.expenseId,
+                                eventCategory = EventCategory.CREATE,
+                            ),
+                        ),
                     )
-                }.also { (expense, expenseEventID) ->
-                    expenseEventRepository.save(
-                        ExpenseEvent(
-                            expenseEventID = expenseEventID,
-                            expenseId = expense.expenseId,
-                            eventCategory = EventCategory.CREATE,
-                        )
-                    )
-                }.also {
-                    val expense = param.toModel()
+                }.also { (expense, expenseEvent) ->
                     expensesRepository.findLatestExpenses(expense.year, expense.month, expense.payer, expense.category)
-                }.let { (expense, expenseEventID) ->
-                    CreateExpenseDto.of(expense.expenseId, expenseEventID)
+                }.let { (expense, expenseEvent) ->
+                    CreateExpenseDto.of(expense.expenseId, expenseEvent.expenseEventID)
                 }
         }
 }

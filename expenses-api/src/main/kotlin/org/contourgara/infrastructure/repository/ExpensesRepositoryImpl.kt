@@ -14,6 +14,6 @@ object ExpensesRepositoryImpl : ExpensesRepository {
         payer: Payer,
         category: Category
     ): Expenses? {
-        TODO("Not yet implemented")
+        return null
     }
 }
