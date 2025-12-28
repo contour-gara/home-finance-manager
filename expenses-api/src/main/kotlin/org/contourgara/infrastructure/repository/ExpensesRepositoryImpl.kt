@@ -48,27 +48,27 @@ object ExpensesRepositoryImpl : ExpensesRepository {
             }
 }
 
-object ExpensesYearTable : Table("expenses_year") {
+private object ExpensesYearTable : Table("expenses_year") {
     val lastEventId = varchar("last_event_id", 26)
     val year = integer("year")
 }
 
-object ExpensesMonthTable : Table("expenses_month") {
+private object ExpensesMonthTable : Table("expenses_month") {
     val lastEventId = varchar("last_event_id", 26)
     val month = integer("month")
 }
 
-object ExpensesPayerTable : Table("expenses_payer") {
+private object ExpensesPayerTable : Table("expenses_payer") {
     val lastEventId = varchar("last_event_id", 26)
     val payer = varchar("payer", 100)
 }
 
-object ExpensesCategoryTable : Table("expenses_category") {
+private object ExpensesCategoryTable : Table("expenses_category") {
     val lastEventId = varchar("last_event_id", 26)
     val category = varchar("category", 100)
 }
 
-object ExpensesAmountTable : Table("expenses_amount") {
+private object ExpensesAmountTable : Table("expenses_amount") {
     val lastEventId = varchar("last_event_id", 26)
     val amount = integer("amount")
 }
