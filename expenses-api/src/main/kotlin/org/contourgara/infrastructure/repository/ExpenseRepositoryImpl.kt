@@ -1,14 +1,12 @@
 package org.contourgara.infrastructure.repository
 
 import org.contourgara.domain.Expense
-import org.contourgara.domain.ExpenseId
 import org.contourgara.domain.infrastructure.ExpenseRepository
 import org.jetbrains.exposed.v1.jdbc.insert
 
 object ExpenseRepositoryImpl : ExpenseRepository {
-    override fun create(expense: Expense): ExpenseId =
+    override fun create(expense: Expense): Expense =
         expense
-            .expenseId
             .also {
                 ExpenseIdTable
                     .insert {

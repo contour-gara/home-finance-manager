@@ -63,7 +63,7 @@ class CreateExpenseUseCaseTest : FunSpec({
         )
 
         val expenseRepository = mockk<ExpenseRepository>()
-        every { expenseRepository.create(expense) } returns expenseId
+        every { expenseRepository.create(expense) } returns expense
 
         val ulidClient = mockk<UlidClient>()
         every { ulidClient.nextUlid() } returns expenseEventId
