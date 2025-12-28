@@ -42,4 +42,35 @@ class ExpensesTest : FunSpec({
         )
         actual shouldBe expected
     }
+
+    test("合計支出が存在しない場合、合計支出を作成する") {
+        // setup
+        val expenses = null
+
+        val expense = Expense(
+            expenseId = ExpenseId(id = ULID.parseULID("01KDJ042GNBA94CWB2F151W2SE")),
+            amount = 500,
+            payer = Payer.DIRECT_DEBIT,
+            category = Category.RENT,
+            year = Year._2026,
+            month = Month.JANUARY,
+            memo = "test1",
+        )
+
+        val expenseEventId = ExpenseEventId(id = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y"))
+
+        // execute
+        val actual = Expenses.from(expenses, expense, expenseEventId)
+
+        // assert
+        val expected = Expenses(
+            lastEventId = ExpenseEventId(id = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y")),
+            payer = Payer.DIRECT_DEBIT,
+            category = Category.RENT,
+            year = Year._2026,
+            month = Month.JANUARY,
+            amount = 500,
+        )
+        actual shouldBe expected
+    }
 })

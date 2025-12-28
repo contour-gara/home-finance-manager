@@ -10,12 +10,20 @@ data class Expenses(
 ) {
     companion object {
         fun from(expenses: Expenses?, expense: Expense, expenseEventId: ExpenseEventId) : Expenses =
-            expenses!!
-                .let {
+            expenses
+                ?.let {
                     expenses.copy(
                         lastEventId = expenseEventId,
                         amount = it.amount + expense.amount,
                     )
-                }
+                } ?:
+                Expenses(
+                    lastEventId = expenseEventId,
+                    year = expense.year,
+                    month = expense.month,
+                    payer = expense.payer,
+                    category = expense.category,
+                    amount = expense.amount,
+                )
     }
 }
