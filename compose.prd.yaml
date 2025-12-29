@@ -2,8 +2,10 @@ services:
   discord-bot:
     image: ghcr.io/contour-gara/home-finance-manager-discord-bot:latest
     depends_on:
-      - ulid-sequencer
-      - kafka-rest-proxy
+      ulid-sequencer:
+        condition: service_started
+      kafka-rest-proxy:
+        condition: service_healthy
     environment:
       BOT_TOKEN: ${BOT_TOKEN}
       CHANNEL_ID: ${CHANNEL_ID}
@@ -13,8 +15,10 @@ services:
   finance-core:
     image: ghcr.io/contour-gara/home-finance-manager-finance-core:latest
     depends_on:
-      - ulid-sequencer
-      - kafka-broker
+      ulid-sequencer:
+        condition: service_started
+      kafka-broker:
+        condition: service_healthy
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-broker:29092
       SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET: latest
@@ -34,6 +38,12 @@ services:
 
   kafka-broker:
     image: confluentinc/cp-kafka:8.0.0
+    healthcheck:
+      test: kafka-topics --bootstrap-server kafka-broker:9092 --list
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
@@ -55,7 +65,14 @@ services:
   kafka-rest-proxy:
     image: confluentinc/cp-kafka-rest:8.0.0
     depends_on:
-      - kafka-broker
+      kafka-broker:
+        condition: service_healthy
+    healthcheck:
+      test: curl -f http://localhost:8082 || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     environment:
       KAFKA_REST_HOST_NAME: rest-proxy
       KAFKA_REST_BOOTSTRAP_SERVERS: "kafka-broker:29092"
@@ -69,7 +86,8 @@ services:
     ports:
       - "18081:8080"
     depends_on:
-      - kafka-broker
+      kafka-broker:
+        condition: service_healthy
     environment:
       KAFKA_CLUSTERS_0_NAME: kafka-broker
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-broker:29092
