@@ -32,7 +32,7 @@ class DiscordClientImpl(
                 .from(registerBill)
                 .also {
                     restClient.channel.createMessage(Snowflake(financeCoreConfig.discordChannelId)) {
-                        content = "${kord.getUser(it.lender.id)?.mention} から ${kord.getUser(it.borrower.id)?.mention} への請求を登録したっピ！"
+                        content = "${kord.getUser(it.lender.id)?.mention} から ${kord.getUser(it.borrower.id)?.username} への請求を登録したっピ！"
                         embed {
                             title = "詳細っピ"
                             color = Color(0, 255, 0)
@@ -56,7 +56,7 @@ class DiscordClientImpl(
                 .from(deleteBill)
                 .also {
                     restClient.channel.createMessage(Snowflake(financeCoreConfig.discordChannelId)) {
-                        content = "${kord.getUser(it.lender.id)?.mention} から ${kord.getUser(it.borrower.id)?.mention} への請求を削除したっピ！"
+                        content = "${kord.getUser(it.lender.id)?.mention} から ${kord.getUser(it.borrower.id)?.username} への請求を削除したっピ！"
                         embed {
                             title = "詳細っピ"
                             color = Color(255, 0, 0)
@@ -80,7 +80,7 @@ class DiscordClientImpl(
                 .from(loan)
                 .also {
                     restClient.channel.createMessage(Snowflake(financeCoreConfig.discordChannelId)) {
-                        content = "${kord.getUser(it.lender.id)?.mention} は ${kord.getUser(it.borrower.id)?.mention} に${it.displayAmount}貸してるっピ"
+                        content = "${kord.getUser(it.lender.id)?.username} は ${kord.getUser(it.borrower.id)?.username} に${it.displayAmount}貸してるっピ"
                         embed {
                             title = "詳細っピ"
                             color = Color(0, 255, 0)
@@ -100,7 +100,7 @@ class DiscordClientImpl(
                 .from(debt)
                 .also {
                     restClient.channel.createMessage(Snowflake(financeCoreConfig.discordChannelId)) {
-                        content = "${kord.getUser(it.lender.id)?.mention} は ${kord.getUser(it.borrower.id)?.mention} に${it.displayAmount}借りてるっピ"
+                        content = "${kord.getUser(it.lender.id)?.username} は ${kord.getUser(it.borrower.id)?.username} に${it.displayAmount}借りてるっピ"
                         embed {
                             title = "詳細っピ"
                             color = Color(0, 255, 0)
