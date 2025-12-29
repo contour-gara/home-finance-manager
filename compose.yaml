@@ -4,9 +4,12 @@ services:
       context: ./discord-bot
       dockerfile: Dockerfile
     depends_on:
-      - ulid-sequencer
-      - kafka-rest-proxy
-      - expenses-api
+      ulid-sequencer:
+        condition: service_started
+      kafka-rest-proxy:
+        condition: service_healthy
+      expenses-api:
+        condition: service_started
     environment:
       BOT_TOKEN: ${BOT_TOKEN}
       ULID_SEQUENCER_BASE_URL: http://ulid-sequencer:8080
@@ -138,7 +141,14 @@ services:
   kafka-rest-proxy:
     image: confluentinc/cp-kafka-rest:8.0.0
     depends_on:
-      - kafka-broker
+      kafka-broker:
+        condition: service_healthy
+    healthcheck:
+      test: curl -f http://localhost:8082 || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     environment:
       KAFKA_REST_HOST_NAME: rest-proxy
       KAFKA_REST_BOOTSTRAP_SERVERS: "kafka-broker:29092"
@@ -150,7 +160,8 @@ services:
     ports:
       - "18081:8080"
     depends_on:
-      - kafka-broker
+      kafka-broker:
+        condition: service_healthy
     environment:
       KAFKA_CLUSTERS_0_NAME: kafka-broker
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-broker:29092
