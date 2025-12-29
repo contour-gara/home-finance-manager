@@ -29,7 +29,7 @@ fun Application.module() {
     configureExpenseRouting(
         createExpenseUseCase = CreateExpenseUseCase(
             expenseRepository = ExpenseRepositoryImpl,
-            ulidClient = UlidClientImpl(),
+            ulidClient = UlidClientImpl(appConfig = appConfig),
             expenseEventRepository = ExpenseEventRepositoryImpl,
             expensesRepository = ExpensesRepositoryImpl,
         )

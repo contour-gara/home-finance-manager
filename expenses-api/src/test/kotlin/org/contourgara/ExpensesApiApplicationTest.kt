@@ -1,9 +1,14 @@
 package org.contourgara
 
+import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.ok
+import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import io.kotest.assertions.ktor.client.shouldHaveStatus
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.extensions.wiremock.ListenerMode
+import io.kotest.extensions.wiremock.WireMockListener
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldStartWith
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -20,6 +25,17 @@ class ExpensesApiApplicationTest : FunSpec({
     }
     mysql.start()
 
+    val wireMockServer = WireMockServer(28080)
+
+    extensions(
+        WireMockListener(wireMockServer, ListenerMode.PER_SPEC),
+    )
+
+    wireMockServer.stubFor(
+        WireMock.get(urlPathEqualTo("/next-ulid"))
+            .willReturn(ok("01KD27JEZQQY88RG18034YZHBV"))
+    )
+
     test("ルートエンドポイントにアクセスすると、'Expenses API is running!' が取得できる") {
         testApplication {
             // setup
@@ -32,6 +48,7 @@ class ExpensesApiApplicationTest : FunSpec({
                     "application.datasource.url" to mysql.jdbcUrl,
                     "application.datasource.username" to mysql.username,
                     "application.datasource.password" to mysql.password,
+                    "application.ulid-sequencer.base-url" to "http://localhost:28080",
                 )
             }
 
@@ -56,6 +73,7 @@ class ExpensesApiApplicationTest : FunSpec({
                     "application.datasource.url" to mysql.jdbcUrl,
                     "application.datasource.username" to mysql.username,
                     "application.datasource.password" to mysql.password,
+                    "application.ulid-sequencer.base-url" to "http://localhost:28080",
                 )
             }
 
@@ -77,7 +95,7 @@ class ExpensesApiApplicationTest : FunSpec({
 
             // assert
             actual shouldHaveStatus 201
-            actual.bodyAsText() shouldStartWith "{\"expenseId\":\"01K4MXEKC0PMTJ8FA055N4SH79\",\"expenseEventId\":"
+            actual.bodyAsText() shouldBe "{\"expenseId\":\"01K4MXEKC0PMTJ8FA055N4SH79\",\"expenseEventId\":\"01KD27JEZQQY88RG18034YZHBV\"}"
         }
     }
 })
