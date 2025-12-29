@@ -44,12 +44,15 @@ services:
     depends_on:
       mysql-expenses-api:
         condition: service_healthy
+      ulid-sequencer:
+        condition: service_started
     ports:
       - "28080:8080"
     environment:
       EXPENSES_API_DATASOURCE_URL: jdbc:mysql://mysql-expenses-api:3306/home_finance_manager_expenses_api_db
       DATASOURCE_USERNAME: user
       DATASOURCE_PASSWORD: password
+      ULID_SEQUENCER_BASE_URL: http://ulid-sequencer:8080
 
   ulid-sequencer:
     build:

@@ -10,3 +10,5 @@ application:
     url: ${EXPENSES_API_DATASOURCE_URL}
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
+  ulid-sequencer:
+    base-url: ${ULID_SEQUENCER_BASE_URL}

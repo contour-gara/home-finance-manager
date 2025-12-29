@@ -6,7 +6,8 @@ RUN jlink \
     --strip-java-debug-attributes \
     --no-header-files \
     --no-man-pages \
-    --add-modules java.base,java.desktop,java.instrument,java.logging,java.management,jdk.unsupported,jdk.crypto.ec \
+#    --add-modules java.base,java.desktop,java.instrument,java.logging,java.management,jdk.unsupported,jdk.crypto.ec \
+    --add-modules java.base,java.desktop,java.instrument,java.management,java.naming,java.security.sasl,java.sql,jdk.jfr,jdk.unsupported,jdk.crypto.ec \
     --output jre-min
 
 FROM gcr.io/distroless/java-base-debian12:nonroot
