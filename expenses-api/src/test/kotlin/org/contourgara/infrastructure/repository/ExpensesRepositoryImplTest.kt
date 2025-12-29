@@ -148,4 +148,67 @@ class ExpensesRepositoryImplTest : FunSpec({
         assertThat(expensesAmountTable)
             .hasNumberOfRows(6)
     }
+
+    test("支出合計を保存できる") {
+        // setup
+        val expensesYearTable = assertDbConnection.table("expenses_year").build()
+        val expensesMonthTable = assertDbConnection.table("expenses_month").build()
+        val expensesPayerTable = assertDbConnection.table("expenses_payer").build()
+        val expensesCategoryTable = assertDbConnection.table("expenses_category").build()
+        val expensesAmountTable = assertDbConnection.table("expenses_amount").build()
+
+        dbSetup(
+            to = DriverManagerDestination(mysql.jdbcUrl, mysql.username, mysql.password)
+        ) {
+            insertInto("expense_event_id") {
+                columns("expense_event_id")
+                values("01KD27JEZQQY88RG18034YZHBV")
+            }
+        }.launch()
+            val expenses = Expenses(
+            lastEventId = ExpenseEventId(ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
+            year = Year._2026,
+            month = Month.JANUARY,
+            payer = Payer.DIRECT_DEBIT,
+            category = Category.RENT,
+            amount = 1000,
+        )
+
+        // execute
+        val actual = transaction { sut.save(expenses) }
+
+        // assert
+        val expected = expenses
+        actual shouldBe expected
+
+        assertThat(expensesYearTable)
+            .hasNumberOfRows(1)
+            .row(0)
+            .value("last_event_id").isEqualTo("01KD27JEZQQY88RG18034YZHBV")
+            .value("year").isEqualTo(2026)
+
+        assertThat(expensesMonthTable)
+            .hasNumberOfRows(1)
+            .row(0)
+            .value("last_event_id").isEqualTo("01KD27JEZQQY88RG18034YZHBV")
+            .value("month").isEqualTo(1)
+
+        assertThat(expensesPayerTable)
+            .hasNumberOfRows(1)
+            .row(0)
+            .value("last_event_id").isEqualTo("01KD27JEZQQY88RG18034YZHBV")
+            .value("payer").isEqualTo("DIRECT_DEBIT")
+
+        assertThat(expensesCategoryTable)
+            .hasNumberOfRows(1)
+            .row(0)
+            .value("last_event_id").isEqualTo("01KD27JEZQQY88RG18034YZHBV")
+            .value("category").isEqualTo("RENT")
+
+        assertThat(expensesAmountTable)
+            .hasNumberOfRows(1)
+            .row(0)
+            .value("last_event_id").isEqualTo("01KD27JEZQQY88RG18034YZHBV")
+            .value("amount").isEqualTo(1000)
+    }
 })

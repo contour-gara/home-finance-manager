@@ -12,6 +12,7 @@ import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.innerJoin
+import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.select
 import ulid.ULID
 
@@ -55,7 +56,35 @@ object ExpensesRepositoryImpl : ExpensesRepository {
                 )
             }
 
-    override fun save(expenses: Expenses): Expenses = expenses
+    override fun save(expenses: Expenses): Expenses =
+        expenses
+            .also {
+                ExpensesYearTable
+                    .insert {
+                        it[lastEventId] = expenses.lastEventId.id.toString()
+                        it[year] = expenses.year.intYear
+                    }
+                ExpensesMonthTable
+                    .insert {
+                        it[lastEventId] = expenses.lastEventId.id.toString()
+                        it[month] = expenses.month.intMonth
+                    }
+                ExpensesPayerTable
+                    .insert {
+                        it[lastEventId] = expenses.lastEventId.id.toString()
+                        it[payer] = expenses.payer.name
+                    }
+                ExpensesCategoryTable
+                    .insert {
+                        it[lastEventId] = expenses.lastEventId.id.toString()
+                        it[category] = expenses.category.name
+                    }
+                ExpensesAmountTable
+                    .insert {
+                        it[lastEventId] = expenses.lastEventId.id.toString()
+                        it[amount] = expenses.amount
+                    }
+            }
 }
 
 private object ExpensesYearTable : Table("expenses_year") {
