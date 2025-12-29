@@ -18,7 +18,7 @@ import org.contourgara.domain.Year
 import org.contourgara.domain.infrastructure.ExpenseEventRepository
 import org.contourgara.domain.infrastructure.ExpenseRepository
 import org.contourgara.domain.infrastructure.ExpensesRepository
-import org.contourgara.domain.infrastructure.UlidClient
+import org.contourgara.domain.infrastructure.ExpenseEventIdClient
 import org.jetbrains.exposed.v1.jdbc.Database
 import ulid.ULID
 
@@ -75,8 +75,8 @@ class CreateExpenseUseCaseTest : FunSpec({
         val expenseRepository = mockk<ExpenseRepository>()
         every { expenseRepository.create(expense) } returns expense
 
-        val ulidClient = mockk<UlidClient>()
-        every { ulidClient.nextUlid() } returns expenseEventId
+        val expenseEventIdClient = mockk<ExpenseEventIdClient>()
+        every { expenseEventIdClient.nextExpensesEventId() } returns expenseEventId
 
         val expenseEventRepository = mockk<ExpenseEventRepository>()
         every { expenseEventRepository.save(expenseEvent) } returns expenseEvent
@@ -87,7 +87,7 @@ class CreateExpenseUseCaseTest : FunSpec({
 
         val sut = CreateExpenseUseCase(
             expenseRepository = expenseRepository,
-            ulidClient = ulidClient,
+            expenseEventIdClient = expenseEventIdClient,
             expenseEventRepository = expenseEventRepository,
             expensesRepository = expensesRepository,
         )
@@ -158,8 +158,8 @@ class CreateExpenseUseCaseTest : FunSpec({
         val expenseRepository = mockk<ExpenseRepository>()
         every { expenseRepository.create(expense) } returns expense
 
-        val ulidClient = mockk<UlidClient>()
-        every { ulidClient.nextUlid() } returns expenseEventId
+        val expenseEventIdClient = mockk<ExpenseEventIdClient>()
+        every { expenseEventIdClient.nextExpensesEventId() } returns expenseEventId
 
         val expenseEventRepository = mockk<ExpenseEventRepository>()
         every { expenseEventRepository.save(expenseEvent) } returns expenseEvent
@@ -170,7 +170,7 @@ class CreateExpenseUseCaseTest : FunSpec({
 
         val sut = CreateExpenseUseCase(
             expenseRepository = expenseRepository,
-            ulidClient = ulidClient,
+            expenseEventIdClient = expenseEventIdClient,
             expenseEventRepository = expenseEventRepository,
             expensesRepository = expensesRepository,
         )

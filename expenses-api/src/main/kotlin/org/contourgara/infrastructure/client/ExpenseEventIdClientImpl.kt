@@ -11,13 +11,13 @@ import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.runBlocking
 import org.contourgara.AppConfig
 import org.contourgara.domain.ExpenseEventId
-import org.contourgara.domain.infrastructure.UlidClient
+import org.contourgara.domain.infrastructure.ExpenseEventIdClient
 import ulid.ULID
 
-class UlidClientImpl(
+class ExpenseEventIdClientImpl(
     private val appConfig: AppConfig,
-) : UlidClient {
-    override fun nextUlid(): ExpenseEventId =
+) : ExpenseEventIdClient {
+    override fun nextExpensesEventId(): ExpenseEventId =
         runBlocking {
             HttpClient(CIO) {
                 install(Logging) {

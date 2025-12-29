@@ -16,14 +16,14 @@ import org.contourgara.AppConfig
 import org.contourgara.domain.ExpenseEventId
 import ulid.ULID
 
-class UlidClientImplTest : FunSpec({
+class ExpenseEventIdClientImplTest : FunSpec({
     val wireMockServer = WireMockServer(28080)
 
     extensions(
         WireMockListener(wireMockServer, ListenerMode.PER_SPEC),
     )
 
-    context("ulid-sequencer から ULID を取得できる") {
+    context("ulid-sequencer から ExpenseEventId を取得できる") {
         data class TestCase(val ulid: String) : WithDataTestName {
             override fun dataTestName(): String = "ulid-sequencer から $ulid が返る場合"
         }
@@ -37,7 +37,7 @@ class UlidClientImplTest : FunSpec({
                 val appConfig = mockk<AppConfig>()
                 every { appConfig.ulidSequencerBaseUrl } returns "http://localhost:28080"
 
-                val sut = UlidClientImpl(appConfig = appConfig)
+                val sut = ExpenseEventIdClientImpl(appConfig = appConfig)
 
                 wireMockServer.stubFor(
                     get(urlPathEqualTo("/next-ulid"))
@@ -45,7 +45,7 @@ class UlidClientImplTest : FunSpec({
                 )
 
                 // execute
-                val actual = sut.nextUlid()
+                val actual = sut.nextExpensesEventId()
 
                 // assert
                 val expected = ExpenseEventId(id = ULID.parseULID(ulid))

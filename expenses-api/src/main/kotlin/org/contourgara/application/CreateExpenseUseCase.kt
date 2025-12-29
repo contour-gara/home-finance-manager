@@ -7,12 +7,12 @@ import org.contourgara.domain.Expenses
 import org.contourgara.domain.infrastructure.ExpenseEventRepository
 import org.contourgara.domain.infrastructure.ExpenseRepository
 import org.contourgara.domain.infrastructure.ExpensesRepository
-import org.contourgara.domain.infrastructure.UlidClient
+import org.contourgara.domain.infrastructure.ExpenseEventIdClient
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 class CreateExpenseUseCase(
     private val expenseRepository: ExpenseRepository,
-    private val ulidClient: UlidClient,
+    private val expenseEventIdClient: ExpenseEventIdClient,
     private val expenseEventRepository: ExpenseEventRepository,
     private val expensesRepository: ExpensesRepository,
 ) {
@@ -25,7 +25,7 @@ class CreateExpenseUseCase(
                         first = expenseRepository.create(it),
                         second = expenseEventRepository.save(
                             ExpenseEvent(
-                                expenseEventId = ulidClient.nextUlid(),
+                                expenseEventId = expenseEventIdClient.nextExpensesEventId(),
                                 expenseId = it.expenseId,
                                 eventCategory = EventCategory.CREATE,
                             ),
