@@ -6,6 +6,7 @@ services:
     depends_on:
       - ulid-sequencer
       - kafka-rest-proxy
+      - expenses-api
     environment:
       BOT_TOKEN: ${BOT_TOKEN}
       ULID_SEQUENCER_BASE_URL: http://ulid-sequencer:8080
@@ -15,6 +16,11 @@ services:
     build:
       context: ./finance-core
       dockerfile: Dockerfile
+    depends_on:
+      kafka-broker:
+        condition: service_healthy
+      ulid-sequencer:
+        condition: service_started
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-broker:29092
       SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET: latest
@@ -62,7 +68,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 3
-      start_period: 30s
+      start_period: 5s
     ports:
       - "3307:3306"
     environment:
@@ -78,7 +84,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 3
-      start_period: 30s
+      start_period: 5s
     ports:
       - "3308:3306"
     environment:
@@ -94,7 +100,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 3
-      start_period: 30s
+      start_period: 5s
     ports:
       - "3306:3306"
     environment:
@@ -105,6 +111,12 @@ services:
 
   kafka-broker:
     image: confluentinc/cp-kafka:8.0.0
+    healthcheck:
+      test: kafka-topics --bootstrap-server kafka-broker:9092 --list
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
