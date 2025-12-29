@@ -32,14 +32,12 @@ object DbTestHelper {
             to = DriverManagerDestination(url, user, password),
         ) {
             deleteAllFrom(
-                "expense_id",
                 "expense_amount",
                 "expense_payer",
                 "expense_category",
                 "expense_year",
                 "expense_month",
                 "expense_memo",
-                "expense_event_id",
                 "expense_event",
                 "expense_event_category",
                 "expenses_year",
@@ -47,6 +45,8 @@ object DbTestHelper {
                 "expenses_payer",
                 "expenses_category",
                 "expenses_amount",
+                "expense_event_id",
+                "expense_id",
             )
         }.launch()
     }

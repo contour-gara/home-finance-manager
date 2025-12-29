@@ -165,7 +165,8 @@ class ExpensesRepositoryImplTest : FunSpec({
                 values("01KD27JEZQQY88RG18034YZHBV")
             }
         }.launch()
-            val expenses = Expenses(
+
+        val expenses = Expenses(
             lastEventId = ExpenseEventId(ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
             year = Year._2026,
             month = Month.JANUARY,
