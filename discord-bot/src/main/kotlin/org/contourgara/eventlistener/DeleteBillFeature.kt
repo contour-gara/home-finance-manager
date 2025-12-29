@@ -6,7 +6,7 @@ import arrow.core.flatMap
 import dev.kord.common.Color
 import dev.kord.common.entity.ButtonStyle
 import dev.kord.common.entity.Snowflake
-import dev.kord.core.behavior.edit
+import dev.kord.core.Kord
 import dev.kord.core.behavior.interaction.response.edit
 import dev.kord.core.behavior.interaction.response.respond
 import dev.kord.core.entity.channel.MessageChannel
@@ -37,16 +37,19 @@ object DeleteBillFeature : KoinComponent {
                     interaction.command.strings[DELETE_BILL_COMMAND_ARGUMENT]!!
                         .let {
                             kord.getChannelOf<MessageChannel>(Snowflake(discordBotConfig.channelId))?.getMessage(Snowflake(it))!!
-                        }
-                        .let { DeleteBillRequest.fromEnbedDataAndMessageId(embedData = it.embeds.first().data, messageId = it.id) }
-                        .let {
+                        }.let {
+                            DeleteBillRequest.from(
+                                embedData = it.embeds.first().data,
+                                registerBillMessageId = it.id,
+                            )
+                        }.let {
                             when (it) {
                                 is Either.Left -> {
                                     content = "請求情報の取得に失敗したっピ"
                                     embed(it.value.toEmbedBuilder())
                                 }
                                 is Either.Right -> {
-                                    content = "削除内容確認して欲しいっピ"
+                                    content = "削除する請求は ${kord.getMessageUrl(it.value.registerBillMessageId)} で間違いないっピか？"
                                     embed(it.value.toEmbedBuilder())
                                     actionRow {
                                         interactionButton(
@@ -86,14 +89,8 @@ object DeleteBillFeature : KoinComponent {
                             }
                         }
                     is Either.Right -> {
-                        kord.getChannelOf<MessageChannel>(Snowflake(discordBotConfig.channelId))?.getMessage(it.value.messageId)!!
-                            .edit {
-                                content = "この請求は削除されたっピ"
-                                embed(it.value.toEmbedBuilderForEditRegisterMessage())
-                            }
-
                         interaction.deferPublicMessageUpdate().edit {
-                            content = "${kord.getUser(it.value.borrowerId)?.mention} 請求が削除されたっピ"
+                            content = "${kord.getMessageUrl(it.value.registerBillMessageId)} の請求が削除されたっピ"
                             embed(it.value.toEmbedBuilder())
                             actionRow {
                                 interactionButton(
@@ -116,4 +113,8 @@ object DeleteBillFeature : KoinComponent {
             field(name = it.dataPath, inline = true, value = { it.message })
         }
     }
+
+    private suspend fun Kord.getMessageUrl(messageId: Snowflake): String =
+        getChannelOf<MessageChannel>(Snowflake(discordBotConfig.channelId))?.getMessage(messageId)!!
+            .let { "https://discord.com/channels/${it.getGuild().id}/${it.channelId}/${it.id}" }
 }

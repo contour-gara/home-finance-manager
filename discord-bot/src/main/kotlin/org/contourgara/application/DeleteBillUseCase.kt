@@ -14,10 +14,6 @@ class DeleteBillUseCase(
             .let {
                 DeleteBillDto(
                     billId = it.value,
-                    amount = param.amount,
-                    lender = param.lender,
-                    borrower = param.borrower,
-                    memo = param.memo,
                     registerBillMessageId = param.registerBillMessageId,
                 )
             }

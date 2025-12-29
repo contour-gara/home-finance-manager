@@ -1,5 +1,6 @@
 package org.contourgara.application
 
+import dev.kord.common.entity.Snowflake
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.koin.KoinExtension
 import io.mockk.mockkClass
@@ -29,7 +30,7 @@ class DeleteBillUseCaseTest :  KoinTest, FunSpec() {
 
             val sut: DeleteBillUseCase by inject()
 
-            val param = DeleteBillParam(ulid, 5000, "GARA", "YUKI", "test", "123456789012345678")
+            val param = DeleteBillParam(ulid, Snowflake(123456789012345678))
 
             // execute
             sut.execute(param)
