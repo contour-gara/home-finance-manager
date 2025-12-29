@@ -27,12 +27,6 @@ services:
 
   ulid-sequencer:
     image: ghcr.io/contour-gara/home-finance-manager-ulid-sequencer:latest
-    healthcheck:
-      test: "curl -f http://localhost:8080 || exit 1"
-      interval: 5s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
     environment:
       ULID_SEQUENCER_DATASOURCE_URL: jdbc:mysql://gateway01.ap-northeast-1.prod.aws.tidbcloud.com:4000/home_finance_manager_ulid_db?sslMode=VERIFY_IDENTITY
       DATASOURCE_USERNAME: ${DATASOURCE_USERNAME}
