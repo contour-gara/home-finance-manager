@@ -26,7 +26,8 @@ fun Application.configureExpenseRouting(
                 try {
                     call
                         .receive<CreateExpenseRequest>()
-                        .toParam().let {
+                        .toParam()
+                        .let {
                             createExpenseUseCase
                                 .execute(
                                     param = it,
