@@ -14,6 +14,7 @@ import org.contourgara.infrastructure.repository.ExpenseEventRepositoryImpl
 import org.contourgara.infrastructure.repository.ExpenseRepositoryImpl
 import org.contourgara.infrastructure.repository.ExpensesRepositoryImpl
 import org.contourgara.presentation.configureExpenseRouting
+import org.contourgara.presentation.configureGlobalExceptionHandler
 import org.slf4j.event.Level
 
 fun main(args: Array<String>): Unit = EngineMain.main(args)
@@ -26,6 +27,7 @@ fun Application.module() {
     val appConfig = AppConfig.from(applicationConfig = environment.config)
 
     setUpDatabase(appConfig = appConfig)
+    configureGlobalExceptionHandler()
     configureExpenseRouting(
         createExpenseUseCase = CreateExpenseUseCase(
             expenseRepository = ExpenseRepositoryImpl,

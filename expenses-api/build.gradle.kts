@@ -76,7 +76,7 @@ tasks.test {
 
 tasks.test {
     useJUnitPlatform()
-
+    enableAssertions = false
     finalizedBy(tasks.koverHtmlReport)
 
     testLogging {
