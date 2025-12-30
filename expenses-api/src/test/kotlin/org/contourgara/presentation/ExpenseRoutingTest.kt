@@ -25,7 +25,7 @@ class ExpenseRoutingTest : FunSpec({
                 createExpenseUseCase
                     .execute(
                         param = CreateExpenseParam(
-                            expenseId = ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"),
+                            expenseId = "01K4MXEKC0PMTJ8FA055N4SH79",
                             amount = 1000,
                             payer = "DIRECT_DEBIT",
                             category = "RENT",

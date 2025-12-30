@@ -35,7 +35,7 @@ class CreateExpenseUseCaseTest : FunSpec({
     test("支出作成メソッドが、支出とイベントを保存し、支出に該当する合計支出が存在しなかった場合は合計支出を作成して保存し、支出 ID とイベント ID を返す") {
         // setup
         val param = CreateExpenseParam(
-            expenseId = ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"),
+            expenseId = "01K4MXEKC0PMTJ8FA055N4SH79",
             amount = 1000,
             payer = "DIRECT_DEBIT",
             category = "RENT",
@@ -109,7 +109,7 @@ class CreateExpenseUseCaseTest : FunSpec({
     test("支出作成メソッドが、支出とイベントを保存し、その支出に該当する合計支出が存在した場合は合計支出を更新して保存し、支出 ID とイベント ID を返す") {
         // setup
         val param = CreateExpenseParam(
-            expenseId = ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"),
+            expenseId = "01K4MXEKC0PMTJ8FA055N4SH79",
             amount = 1000,
             payer = "DIRECT_DEBIT",
             category = "RENT",

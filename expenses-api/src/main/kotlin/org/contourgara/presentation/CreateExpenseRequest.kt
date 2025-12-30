@@ -2,11 +2,10 @@ package org.contourgara.presentation
 
 import kotlinx.serialization.Serializable
 import org.contourgara.application.CreateExpenseParam
-import ulid.ULID
 
 @Serializable
 data class CreateExpenseRequest(
-    private val expenseId: ULID,
+    private val expenseId: String,
     private val amount: Int,
     private val payer: String,
     private val category: String,

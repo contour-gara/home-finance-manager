@@ -6,10 +6,9 @@ import org.contourgara.domain.ExpenseId
 import org.contourgara.domain.Month
 import org.contourgara.domain.Payer
 import org.contourgara.domain.Year
-import ulid.ULID
 
 data class CreateExpenseParam(
-    private val expenseId: ULID,
+    private val expenseId: String,
     private val amount: Int,
     private val payer: String,
     private val category: String,
