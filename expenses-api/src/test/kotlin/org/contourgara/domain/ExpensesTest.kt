@@ -14,7 +14,7 @@ class ExpensesTest : FunSpec({
             month = Month.JANUARY,
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            amount = 1000,
+            amount = Amount(value = 1000),
         )
 
         val expense = Expense(
@@ -39,7 +39,7 @@ class ExpensesTest : FunSpec({
             month = Month.JANUARY,
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            amount = 1500,
+            amount = Amount(value = 1500),
         )
         actual shouldBe expected
     }
@@ -70,7 +70,7 @@ class ExpensesTest : FunSpec({
             month = Month.JANUARY,
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            amount = 500,
+            amount = Amount(value = 500),
         )
         actual shouldBe expected
     }
@@ -83,7 +83,7 @@ class ExpensesTest : FunSpec({
             month = Month.JANUARY,
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            amount = 1000,
+            amount = Amount(value = 1000),
         )
 
         val expense = Expense(
@@ -112,7 +112,7 @@ class ExpensesTest : FunSpec({
             month = Month.JANUARY,
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            amount = 1000,
+            amount = Amount(value = 1000),
         )
 
         val expense = Expense(
@@ -141,7 +141,7 @@ class ExpensesTest : FunSpec({
             month = Month.FEBRUARY,
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            amount = 1000,
+            amount = Amount(value = 1000),
         )
 
         val expense = Expense(
@@ -170,7 +170,7 @@ class ExpensesTest : FunSpec({
             month = Month.JANUARY,
             payer = Payer.GARA,
             category = Category.RENT,
-            amount = 1000,
+            amount = Amount(value = 1000),
         )
 
         val expense = Expense(
@@ -199,7 +199,7 @@ class ExpensesTest : FunSpec({
             month = Month.JANUARY,
             payer = Payer.DIRECT_DEBIT,
             category = Category.UTILITIES,
-            amount = 1000,
+            amount = Amount(value = 1000),
         )
 
         val expense = Expense(

@@ -1,5 +1,6 @@
 package org.contourgara.infrastructure.repository
 
+import org.contourgara.domain.Amount
 import org.contourgara.domain.Category
 import org.contourgara.domain.ExpenseEventId
 import org.contourgara.domain.Expenses
@@ -52,7 +53,7 @@ object ExpensesRepositoryImpl : ExpensesRepository {
                     month = Month.of(intMonth = it[ExpensesMonthTable.month]),
                     payer = Payer.valueOf(value = it[ExpensesPayerTable.payer]),
                     category = Category.valueOf(value = it[ExpensesCategoryTable.category]),
-                    amount = it[ExpensesAmountTable.amount],
+                    amount = Amount(value = it[ExpensesAmountTable.amount]),
                 )
             }
 
@@ -82,7 +83,7 @@ object ExpensesRepositoryImpl : ExpensesRepository {
                 ExpensesAmountTable
                     .insert {
                         it[lastEventId] = expenses.lastEventId.value.toString()
-                        it[amount] = expenses.amount
+                        it[amount] = expenses.amount.value
                     }
             }
 }

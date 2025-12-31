@@ -70,7 +70,7 @@ class CreateExpenseUseCaseTest : FunSpec({
             month = Month.JANUARY,
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            amount = 1000,
+            amount = Amount(value = 1000),
         )
 
         val expenseRepository = mockk<ExpenseRepository>()
@@ -144,7 +144,7 @@ class CreateExpenseUseCaseTest : FunSpec({
             month = Month.JANUARY,
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            amount = 500,
+            amount = Amount(value = 500),
         )
 
         val newExpenses = Expenses(
@@ -153,7 +153,7 @@ class CreateExpenseUseCaseTest : FunSpec({
             month = Month.JANUARY,
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            amount = 1500,
+            amount = Amount(value = 1500),
         )
 
         val expenseRepository = mockk<ExpenseRepository>()

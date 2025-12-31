@@ -8,6 +8,7 @@ import io.kotest.matchers.shouldBe
 import org.assertj.db.api.Assertions.assertThat
 import org.assertj.db.type.AssertDbConnection
 import org.assertj.db.type.AssertDbConnectionFactory
+import org.contourgara.domain.Amount
 import org.contourgara.domain.Category
 import org.contourgara.domain.ExpenseEventId
 import org.contourgara.domain.Expenses
@@ -134,7 +135,15 @@ class ExpensesRepositoryImplTest : FunSpec({
         val actual = transaction { sut.findLatestExpenses(Year._2026, Month.JANUARY, Payer.DIRECT_DEBIT, Category.RENT) }
 
         // assert
-        val expected = Expenses(ExpenseEventId(ULID.parseULID("01KDHVD5XTTR9XR4ZAFSSETGXS")), Year._2026, Month.JANUARY, Payer.DIRECT_DEBIT, Category.RENT, 1500)
+        val expected = Expenses(
+            lastEventId = ExpenseEventId(value = ULID.parseULID(ulidString = "01KDHVD5XTTR9XR4ZAFSSETGXS")),
+            year = Year._2026,
+            month = Month.JANUARY,
+            payer = Payer.DIRECT_DEBIT,
+            category = Category.RENT,
+            amount = Amount(value = 1500),
+        )
+
         actual shouldBe expected
 
         assertThat(expensesYearTable)
@@ -172,7 +181,7 @@ class ExpensesRepositoryImplTest : FunSpec({
             month = Month.JANUARY,
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            amount = 1000,
+            amount = Amount(value = 1000),
         )
 
         // execute
