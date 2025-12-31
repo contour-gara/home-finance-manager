@@ -10,20 +10,20 @@ import ulid.ULID
 @OptIn(ExperimentalRaiseAccumulateApi::class)
 value class ExpenseId(val value: ULID) {
     companion object {
-        fun of(id: String): EitherNel<Error, ExpenseId> =
+        fun of(value: String): EitherNel<Error, ExpenseId> =
             either {
                 accumulate {
                     ensureOrAccumulate(
-                        condition = runCatching { ULID.parseULID(ulidString = id) }.isSuccess,
+                        condition = runCatching { ULID.parseULID(ulidString = value) }.isSuccess,
                     ) {
                         ValidationError(
                             pointer = "expenseId",
-                            invalidValue = id,
+                            invalidValue = value,
                             detail = "value is not a valid ULID format.",
                         )
                     }
                 }
-                ExpenseId(value = id)
+                ExpenseId(value = value)
             }
 
     }

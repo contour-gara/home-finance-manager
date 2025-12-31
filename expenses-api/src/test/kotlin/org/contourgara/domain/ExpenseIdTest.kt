@@ -14,7 +14,7 @@ class ExpenseIdTest : FunSpec({
     context("ExpenseId のファクトリーメソッドの動作確認") {
         test("ULID にパースできる場合、right に ExpenseId が返る") {
             // execute
-            val actual = ExpenseId.of(id = "01K4MXEKC0PMTJ8FA055N4SH79")
+            val actual = ExpenseId.of(value = "01K4MXEKC0PMTJ8FA055N4SH79")
 
             // assert
             assertSoftly {
@@ -23,16 +23,16 @@ class ExpenseIdTest : FunSpec({
             }
         }
 
-        data class InvalidUlidTestCase(val id: String) : WithDataTestName {
-            override fun dataTestName(): String = "入力が $id の場合、ValidationError を返す"
+        data class InvalidUlidTestCase(val value: String) : WithDataTestName {
+            override fun dataTestName(): String = "入力が $value の場合、ValidationError を返す"
         }
 
         withData(
-            InvalidUlidTestCase(id = "test"),
-            InvalidUlidTestCase(id = "aaaaaaaaaaaaaaaaaaaaaaaaaa"),
-        ) { (id) ->
+            InvalidUlidTestCase(value = "test"),
+            InvalidUlidTestCase(value = "aaaaaaaaaaaaaaaaaaaaaaaaaa"),
+        ) { (value) ->
             // execute
-            val actual = ExpenseId.of(id = id)
+            val actual = ExpenseId.of(value = value)
 
             // assert
             assertSoftly {
@@ -40,7 +40,7 @@ class ExpenseIdTest : FunSpec({
                 actual.value shouldHaveSize 1
                 actual.value.first() shouldBe ValidationError(
                     pointer = "expenseId",
-                    invalidValue = id,
+                    invalidValue = value,
                     detail = "value is not a valid ULID format.",
                 )
             }
