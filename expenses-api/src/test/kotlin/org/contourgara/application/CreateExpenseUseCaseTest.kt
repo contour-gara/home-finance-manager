@@ -99,7 +99,7 @@ class CreateExpenseUseCaseTest : FunSpec({
         // assert
         val expected = CreateExpenseDto(
             expenseId = expenseId.value,
-            expenseEventId = expenseEventId.id,
+            expenseEventId = expenseEventId.value,
         )
         actual shouldBe expected
 
@@ -182,7 +182,7 @@ class CreateExpenseUseCaseTest : FunSpec({
         // assert
         val expected = CreateExpenseDto(
             expenseId = expenseId.value,
-            expenseEventId = expenseEventId.id,
+            expenseEventId = expenseEventId.value,
         )
         actual shouldBe expected
 

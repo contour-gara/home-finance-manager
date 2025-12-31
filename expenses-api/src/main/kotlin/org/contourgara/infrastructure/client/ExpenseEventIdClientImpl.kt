@@ -32,7 +32,7 @@ class ExpenseEventIdClientImpl(
                 it.get("${appConfig.ulidSequencerBaseUrl}/next-ulid")
                     .bodyAsText()
                     .let { ULID.parseULID(it) }
-                    .let { ExpenseEventId(id = it) }
+                    .let { ExpenseEventId(value = it) }
             }
         }
 }

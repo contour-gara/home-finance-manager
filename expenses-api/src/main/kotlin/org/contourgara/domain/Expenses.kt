@@ -12,7 +12,7 @@ data class Expenses(
         fun from(expenses: Expenses?, expense: Expense, expenseEventId: ExpenseEventId) : Expenses =
             expenses
                 ?.also {
-                    require(expenses.lastEventId < expenseEventId) { "expenseEventId must be greater than lastEventId: expenseEventId = ${expenseEventId.id}, lastEventId = ${expenses.lastEventId.id}" }
+                    require(expenses.lastEventId < expenseEventId) { "expenseEventId must be greater than lastEventId: expenseEventId = ${expenseEventId.value}, lastEventId = ${expenses.lastEventId.value}" }
                     require(expenses.year == expense.year) { "year must be same: expenses.year = ${expenses.year.intYear}, expense.year = ${expense.year.intYear}" }
                     require(expenses.month == expense.month) { "month must be same: expenses.month = ${expenses.month.intMonth}, expense.month = ${expense.month.intMonth}" }
                     require(expenses.payer == expense.payer) { "payer must be same: expenses.payer = ${expenses.payer.name}, expense.payer = ${expense.payer.name}" }

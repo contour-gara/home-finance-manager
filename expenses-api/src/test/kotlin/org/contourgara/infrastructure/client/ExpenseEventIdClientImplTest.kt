@@ -48,7 +48,7 @@ class ExpenseEventIdClientImplTest : FunSpec({
                 val actual = sut.nextExpensesEventId()
 
                 // assert
-                val expected = ExpenseEventId(id = ULID.parseULID(ulid))
+                val expected = ExpenseEventId(value = ULID.parseULID(ulid))
                 actual shouldBe expected
             }
         }

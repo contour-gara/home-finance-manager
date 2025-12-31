@@ -9,7 +9,7 @@ class ExpensesTest : FunSpec({
     test("合計支出を更新できる") {
         // setup
         val expenses = Expenses(
-            lastEventId = ExpenseEventId(id = ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
+            lastEventId = ExpenseEventId(value = ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
             year = Year._2026,
             month = Month.JANUARY,
             payer = Payer.DIRECT_DEBIT,
@@ -27,14 +27,14 @@ class ExpensesTest : FunSpec({
             memo = "test1",
         )
 
-        val expenseEventId = ExpenseEventId(id = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y"))
+        val expenseEventId = ExpenseEventId(value = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y"))
 
         // execute
         val actual = Expenses.from(expenses, expense, expenseEventId)
 
         // assert
         val expected = Expenses(
-            lastEventId = ExpenseEventId(id = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y")),
+            lastEventId = ExpenseEventId(value = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y")),
             year = Year._2026,
             month = Month.JANUARY,
             payer = Payer.DIRECT_DEBIT,
@@ -58,14 +58,14 @@ class ExpensesTest : FunSpec({
             memo = "test1",
         )
 
-        val expenseEventId = ExpenseEventId(id = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y"))
+        val expenseEventId = ExpenseEventId(value = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y"))
 
         // execute
         val actual = Expenses.from(expenses, expense, expenseEventId)
 
         // assert
         val expected = Expenses(
-            lastEventId = ExpenseEventId(id = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y")),
+            lastEventId = ExpenseEventId(value = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y")),
             year = Year._2026,
             month = Month.JANUARY,
             payer = Payer.DIRECT_DEBIT,
@@ -78,7 +78,7 @@ class ExpensesTest : FunSpec({
     test("支出合計のイベント ID よりもイベント ID が古い場合、例外を投げる") {
         // setup
         val expenses = Expenses(
-            lastEventId = ExpenseEventId(id = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y")),
+            lastEventId = ExpenseEventId(value = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y")),
             year = Year._2026,
             month = Month.JANUARY,
             payer = Payer.DIRECT_DEBIT,
@@ -96,7 +96,7 @@ class ExpensesTest : FunSpec({
             memo = "test1",
         )
 
-        val expenseEventId = ExpenseEventId(id = ULID.parseULID("01KD27JEZQQY88RG18034YZHBV"))
+        val expenseEventId = ExpenseEventId(value = ULID.parseULID("01KD27JEZQQY88RG18034YZHBV"))
 
         // execute & assert
         shouldThrowExactly<IllegalArgumentException> {
@@ -107,7 +107,7 @@ class ExpensesTest : FunSpec({
     test("支出合計と支出の年が違う場合、例外を投げる") {
         // setup
         val expenses = Expenses(
-            lastEventId = ExpenseEventId(id = ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
+            lastEventId = ExpenseEventId(value = ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
             year = Year._2027,
             month = Month.JANUARY,
             payer = Payer.DIRECT_DEBIT,
@@ -125,7 +125,7 @@ class ExpensesTest : FunSpec({
             memo = "test1",
         )
 
-        val expenseEventId = ExpenseEventId(id = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y"))
+        val expenseEventId = ExpenseEventId(value = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y"))
 
         // execute & assert
         shouldThrowExactly<IllegalArgumentException> {
@@ -136,7 +136,7 @@ class ExpensesTest : FunSpec({
     test("支出合計と支出の月が違う場合、例外を投げる") {
         // setup
         val expenses = Expenses(
-            lastEventId = ExpenseEventId(id = ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
+            lastEventId = ExpenseEventId(value = ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
             year = Year._2026,
             month = Month.FEBRUARY,
             payer = Payer.DIRECT_DEBIT,
@@ -154,7 +154,7 @@ class ExpensesTest : FunSpec({
             memo = "test1",
         )
 
-        val expenseEventId = ExpenseEventId(id = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y"))
+        val expenseEventId = ExpenseEventId(value = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y"))
 
         // execute & assert
         shouldThrowExactly<IllegalArgumentException> {
@@ -165,7 +165,7 @@ class ExpensesTest : FunSpec({
     test("支出合計と支出の支出者が違う場合、例外を投げる") {
         // setup
         val expenses = Expenses(
-            lastEventId = ExpenseEventId(id = ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
+            lastEventId = ExpenseEventId(value = ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
             year = Year._2026,
             month = Month.JANUARY,
             payer = Payer.GARA,
@@ -183,7 +183,7 @@ class ExpensesTest : FunSpec({
             memo = "test1",
         )
 
-        val expenseEventId = ExpenseEventId(id = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y"))
+        val expenseEventId = ExpenseEventId(value = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y"))
 
         // execute & assert
         shouldThrowExactly<IllegalArgumentException> {
@@ -194,7 +194,7 @@ class ExpensesTest : FunSpec({
     test("支出合計と支出の支出カテゴリが違う場合、例外を投げる") {
         // setup
         val expenses = Expenses(
-            lastEventId = ExpenseEventId(id = ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
+            lastEventId = ExpenseEventId(value = ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
             year = Year._2026,
             month = Month.JANUARY,
             payer = Payer.DIRECT_DEBIT,
@@ -212,7 +212,7 @@ class ExpensesTest : FunSpec({
             memo = "test1",
         )
 
-        val expenseEventId = ExpenseEventId(id = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y"))
+        val expenseEventId = ExpenseEventId(value = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y"))
 
         // execute & assert
         shouldThrowExactly<IllegalArgumentException> {

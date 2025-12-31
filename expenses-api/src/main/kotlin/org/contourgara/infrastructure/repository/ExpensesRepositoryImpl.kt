@@ -47,7 +47,7 @@ object ExpensesRepositoryImpl : ExpensesRepository {
             .singleOrNull()
             ?.let {
                 Expenses(
-                    lastEventId = ExpenseEventId(id = ULID.parseULID(it[ExpensesYearTable.lastEventId])),
+                    lastEventId = ExpenseEventId(value = ULID.parseULID(it[ExpensesYearTable.lastEventId])),
                     year = Year.of(intYear = it[ExpensesYearTable.year]),
                     month = Month.of(intMonth = it[ExpensesMonthTable.month]),
                     payer = Payer.valueOf(value = it[ExpensesPayerTable.payer]),
@@ -61,27 +61,27 @@ object ExpensesRepositoryImpl : ExpensesRepository {
             .also {
                 ExpensesYearTable
                     .insert {
-                        it[lastEventId] = expenses.lastEventId.id.toString()
+                        it[lastEventId] = expenses.lastEventId.value.toString()
                         it[year] = expenses.year.intYear
                     }
                 ExpensesMonthTable
                     .insert {
-                        it[lastEventId] = expenses.lastEventId.id.toString()
+                        it[lastEventId] = expenses.lastEventId.value.toString()
                         it[month] = expenses.month.intMonth
                     }
                 ExpensesPayerTable
                     .insert {
-                        it[lastEventId] = expenses.lastEventId.id.toString()
+                        it[lastEventId] = expenses.lastEventId.value.toString()
                         it[payer] = expenses.payer.name
                     }
                 ExpensesCategoryTable
                     .insert {
-                        it[lastEventId] = expenses.lastEventId.id.toString()
+                        it[lastEventId] = expenses.lastEventId.value.toString()
                         it[category] = expenses.category.name
                     }
                 ExpensesAmountTable
                     .insert {
-                        it[lastEventId] = expenses.lastEventId.id.toString()
+                        it[lastEventId] = expenses.lastEventId.value.toString()
                         it[amount] = expenses.amount
                     }
             }

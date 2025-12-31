@@ -12,7 +12,7 @@ data class CreateExpenseDto(
         fun of(expenseId: ExpenseId, expenseEventId: ExpenseEventId): CreateExpenseDto =
             CreateExpenseDto(
                 expenseId = expenseId.value,
-                expenseEventId = expenseEventId.id,
+                expenseEventId = expenseEventId.value,
             )
     }
 }
