@@ -1,24 +1,24 @@
 package org.contourgara.domain
 
-enum class Month(val intMonth: Int) {
-    JANUARY(intMonth = 1),
-    FEBRUARY(intMonth = 2),
-    MARCH(intMonth = 3),
-    APRIL(intMonth = 4),
-    MAY(intMonth = 5),
-    JUNE(intMonth = 6),
-    JULY(intMonth = 7),
-    AUGUST(intMonth = 8),
-    SEPTEMBER(intMonth = 9),
-    OCTOBER(intMonth = 10),
-    NOVEMBER(intMonth = 11),
-    DECEMBER(intMonth = 12),
+enum class Month(val value: Int) {
+    JANUARY(value = 1),
+    FEBRUARY(value = 2),
+    MARCH(value = 3),
+    APRIL(value = 4),
+    MAY(value = 5),
+    JUNE(value = 6),
+    JULY(value = 7),
+    AUGUST(value = 8),
+    SEPTEMBER(value = 9),
+    OCTOBER(value = 10),
+    NOVEMBER(value = 11),
+    DECEMBER(value = 12),
     ;
 
     companion object {
-        fun of(intMonth: Int): Month =
+        fun of(value: Int): Month =
             entries.firstOrNull {
-                it.intMonth == intMonth
-            } ?: throw IllegalArgumentException("Not found: $intMonth")
+                it.value == value
+            } ?: throw IllegalArgumentException("Not found: $value")
     }
 }

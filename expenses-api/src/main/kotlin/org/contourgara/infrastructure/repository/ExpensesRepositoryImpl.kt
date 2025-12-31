@@ -39,7 +39,7 @@ object ExpensesRepositoryImpl : ExpensesRepository {
             )
             .where {
                 (ExpensesYearTable.year eq year.value)
-                    .and(ExpensesMonthTable.month eq month.intMonth)
+                    .and(ExpensesMonthTable.month eq month.value)
                     .and(ExpensesPayerTable.payer eq payer.name)
                     .and(ExpensesCategoryTable.category eq category.name)
             }
@@ -50,7 +50,7 @@ object ExpensesRepositoryImpl : ExpensesRepository {
                 Expenses(
                     lastEventId = ExpenseEventId(value = ULID.parseULID(it[ExpensesYearTable.lastEventId])),
                     year = Year.of(value = it[ExpensesYearTable.year]),
-                    month = Month.of(intMonth = it[ExpensesMonthTable.month]),
+                    month = Month.of(value = it[ExpensesMonthTable.month]),
                     payer = Payer.valueOf(value = it[ExpensesPayerTable.payer]),
                     category = Category.valueOf(value = it[ExpensesCategoryTable.category]),
                     amount = Amount(value = it[ExpensesAmountTable.amount]),
@@ -68,7 +68,7 @@ object ExpensesRepositoryImpl : ExpensesRepository {
                 ExpensesMonthTable
                     .insert {
                         it[lastEventId] = expenses.lastEventId.value.toString()
-                        it[month] = expenses.month.intMonth
+                        it[month] = expenses.month.value
                     }
                 ExpensesPayerTable
                     .insert {

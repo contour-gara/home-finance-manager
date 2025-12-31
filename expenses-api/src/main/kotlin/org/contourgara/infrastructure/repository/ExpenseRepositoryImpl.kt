@@ -36,7 +36,7 @@ object ExpenseRepositoryImpl : ExpenseRepository {
                 ExpenseMonthTable
                     .insert {
                         it[expenseId] = expense.expenseId.value.toString()
-                        it[month] = expense.month.intMonth
+                        it[month] = expense.month.value
                     }
                 ExpenseMemoTable
                     .insert {
