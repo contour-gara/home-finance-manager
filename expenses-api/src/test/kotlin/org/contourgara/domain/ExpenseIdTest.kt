@@ -39,7 +39,7 @@ class ExpenseIdTest : FunSpec({
                 actual.shouldBeLeft()
                 actual.value shouldHaveSize 1
                 actual.value.first() shouldBe ValidationError(
-                    pointer = "/ulid",
+                    pointer = "expenseId",
                     invalidValue = id,
                     detail = "value is not a valid ULID format.",
                 )
