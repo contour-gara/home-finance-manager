@@ -28,7 +28,7 @@ class YearTest : FunSpec({
     }
 
     context("Year のファクトリーメソッドの動作確認") {
-        test("ULID にパースできる場合、right に _root_ide_package_.org.contourgara.domain.Year が返る") {
+        test("サポートしている年の場合、right に Year が返る") {
             // execute
             val actual = Year.ofValidate(value = 2026)
 
