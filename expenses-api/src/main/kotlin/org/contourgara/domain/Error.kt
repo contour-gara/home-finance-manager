@@ -9,6 +9,8 @@ data class ValidationError(
     val pointer: String,
     val invalidValue: String,
     val detail: String,
-) : Error
+) : Error {
+    constructor(pointer: String, invalidValue: Int, detail: String) : this(pointer = pointer, invalidValue = invalidValue.toString(), detail = detail)
+}
 
 // TODO: ExpenseNotFoundError
