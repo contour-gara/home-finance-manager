@@ -20,7 +20,7 @@ data class Expenses(
                 } ?.let {
                     expenses.copy(
                         lastEventId = expenseEventId,
-                        amount = Amount(value = it.amount.value + expense.amount.value),
+                        amount = it.amount + expense.amount,
                     )
                 } ?:
                 Expenses(
