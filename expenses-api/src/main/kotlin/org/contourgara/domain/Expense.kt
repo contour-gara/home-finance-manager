@@ -7,5 +7,5 @@ data class Expense(
     val category: Category,
     val year: Year,
     val month: Month,
-    val memo: String,
+    val memo: Memo,
 )

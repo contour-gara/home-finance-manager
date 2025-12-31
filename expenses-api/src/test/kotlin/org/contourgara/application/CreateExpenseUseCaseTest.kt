@@ -13,6 +13,7 @@ import org.contourgara.domain.ExpenseEvent
 import org.contourgara.domain.ExpenseEventId
 import org.contourgara.domain.ExpenseId
 import org.contourgara.domain.Expenses
+import org.contourgara.domain.Memo
 import org.contourgara.domain.Month
 import org.contourgara.domain.Payer
 import org.contourgara.domain.Year
@@ -55,7 +56,7 @@ class CreateExpenseUseCaseTest : FunSpec({
             category = Category.RENT,
             year = Year._2026,
             month = Month.JANUARY,
-            memo = "test",
+            memo = Memo(value = "test"),
         )
 
         val expenseEvent = ExpenseEvent(
@@ -129,7 +130,7 @@ class CreateExpenseUseCaseTest : FunSpec({
             category = Category.RENT,
             year = Year._2026,
             month = Month.JANUARY,
-            memo = "test",
+            memo = Memo(value = "test"),
         )
 
         val expenseEvent = ExpenseEvent(

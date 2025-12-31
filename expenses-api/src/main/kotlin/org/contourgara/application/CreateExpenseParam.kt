@@ -4,6 +4,7 @@ import org.contourgara.domain.Amount
 import org.contourgara.domain.Category
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseId
+import org.contourgara.domain.Memo
 import org.contourgara.domain.Month
 import org.contourgara.domain.Payer
 import org.contourgara.domain.Year
@@ -25,6 +26,6 @@ data class CreateExpenseParam(
             category = Category.valueOf(value = category),
             year = Year.of(value = year),
             month = Month.of(value = month),
-            memo = memo,
+            memo = Memo(value = memo),
         )
 }

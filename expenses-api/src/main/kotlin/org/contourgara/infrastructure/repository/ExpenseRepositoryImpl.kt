@@ -41,7 +41,7 @@ object ExpenseRepositoryImpl : ExpenseRepository {
                 ExpenseMemoTable
                     .insert {
                         it[expenseId] = expense.expenseId.value.toString()
-                        it[memo] = expense.memo
+                        it[memo] = expense.memo.value
                     }
             }
 }

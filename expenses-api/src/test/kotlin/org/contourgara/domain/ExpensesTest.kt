@@ -24,7 +24,7 @@ class ExpensesTest : FunSpec({
             category = Category.RENT,
             year = Year._2026,
             month = Month.JANUARY,
-            memo = "test1",
+            memo = Memo(value = "test1"),
         )
 
         val expenseEventId = ExpenseEventId(value = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y"))
@@ -55,7 +55,7 @@ class ExpensesTest : FunSpec({
             category = Category.RENT,
             year = Year._2026,
             month = Month.JANUARY,
-            memo = "test1",
+            memo = Memo(value = "test1"),
         )
 
         val expenseEventId = ExpenseEventId(value = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y"))
@@ -93,7 +93,7 @@ class ExpensesTest : FunSpec({
             category = Category.RENT,
             year = Year._2026,
             month = Month.JANUARY,
-            memo = "test1",
+            memo = Memo(value = "test1"),
         )
 
         val expenseEventId = ExpenseEventId(value = ULID.parseULID("01KD27JEZQQY88RG18034YZHBV"))
@@ -122,7 +122,7 @@ class ExpensesTest : FunSpec({
             category = Category.RENT,
             year = Year._2026,
             month = Month.JANUARY,
-            memo = "test1",
+            memo = Memo(value = "test1"),
         )
 
         val expenseEventId = ExpenseEventId(value = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y"))
@@ -151,7 +151,7 @@ class ExpensesTest : FunSpec({
             category = Category.RENT,
             year = Year._2026,
             month = Month.JANUARY,
-            memo = "test1",
+            memo = Memo(value = "test1"),
         )
 
         val expenseEventId = ExpenseEventId(value = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y"))
@@ -180,7 +180,7 @@ class ExpensesTest : FunSpec({
             category = Category.RENT,
             year = Year._2026,
             month = Month.JANUARY,
-            memo = "test1",
+            memo = Memo(value = "test1"),
         )
 
         val expenseEventId = ExpenseEventId(value = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y"))
@@ -209,7 +209,7 @@ class ExpensesTest : FunSpec({
             category = Category.RENT,
             year = Year._2026,
             month = Month.JANUARY,
-            memo = "test1",
+            memo = Memo(value = "test1"),
         )
 
         val expenseEventId = ExpenseEventId(value = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y"))
