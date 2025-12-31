@@ -1,5 +1,11 @@
 package org.contourgara.domain
 
+import arrow.core.EitherNel
+import arrow.core.raise.ExperimentalRaiseAccumulateApi
+import arrow.core.raise.accumulate
+import arrow.core.raise.either
+
+@OptIn(ExperimentalRaiseAccumulateApi::class)
 enum class Month(val value: Int) {
     JANUARY(value = 1),
     FEBRUARY(value = 2),
@@ -20,5 +26,23 @@ enum class Month(val value: Int) {
             entries.firstOrNull {
                 it.value == value
             } ?: throw IllegalArgumentException("Not found: $value")
+
+        fun ofValidate(value: Int): EitherNel<Error, Month> =
+            either {
+                accumulate {
+                    ensureOrAccumulate(
+                        condition = Month.entries.any {
+                            it.value == value
+                        },
+                    ) {
+                        ValidationError(
+                            pointer = "month",
+                            invalidValue = value,
+                            detail = "value is not supported.",
+                        )
+                    }
+                }
+                Month.of(value = value)
+            }
     }
 }
