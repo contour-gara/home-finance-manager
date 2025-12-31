@@ -11,7 +11,7 @@ data class CreateExpenseDto(
     companion object {
         fun of(expenseId: ExpenseId, expenseEventId: ExpenseEventId): CreateExpenseDto =
             CreateExpenseDto(
-                expenseId = expenseId.id,
+                expenseId = expenseId.value,
                 expenseEventId = expenseEventId.id,
             )
     }

@@ -1,5 +1,6 @@
 package org.contourgara.application
 
+import org.contourgara.domain.Amount
 import org.contourgara.domain.Category
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseId
@@ -18,8 +19,8 @@ data class CreateExpenseParam(
 ) {
     fun toModel(): Expense =
         Expense(
-            expenseId = ExpenseId(expenseId),
-            amount = amount,
+            expenseId = ExpenseId(value = expenseId),
+            amount = Amount(value = amount),
             payer = Payer.valueOf(value = payer),
             category = Category.valueOf(value = category),
             year = Year.of(intYear = year),

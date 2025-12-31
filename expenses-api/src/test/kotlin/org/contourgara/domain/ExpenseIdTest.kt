@@ -19,7 +19,7 @@ class ExpenseIdTest : FunSpec({
             // assert
             assertSoftly {
                 actual.shouldBeRight()
-                actual.value shouldBe ExpenseId(id = ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"))
+                actual.value shouldBe ExpenseId(value = ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"))
             }
         }
 

@@ -5,6 +5,7 @@ import io.kotest.matchers.shouldBe
 import org.assertj.db.api.Assertions.assertThat
 import org.assertj.db.type.AssertDbConnection
 import org.assertj.db.type.AssertDbConnectionFactory
+import org.contourgara.domain.Amount
 import org.contourgara.domain.Category
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseId
@@ -46,7 +47,7 @@ class ExpenseRepositoryImplTest : FunSpec({
 
         val expenses = Expense(
             expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79")),
-            amount = 1000,
+            amount = Amount(value = 1000),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
             year = Year._2026,

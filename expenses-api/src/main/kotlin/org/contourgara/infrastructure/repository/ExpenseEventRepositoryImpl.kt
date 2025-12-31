@@ -16,7 +16,7 @@ object ExpenseEventRepositoryImpl : ExpenseEventRepository {
                 ExpenseEventTable
                     .insert {
                         it[expenseEventId] = expenseEvent.expenseEventId.id.toString()
-                        it[expenseId] = expenseEvent.expenseId.id.toString()
+                        it[expenseId] = expenseEvent.expenseId.value.toString()
                     }
                 ExpenseEventCategoryTable
                     .insert {

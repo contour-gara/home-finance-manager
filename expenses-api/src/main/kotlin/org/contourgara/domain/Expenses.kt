@@ -20,7 +20,7 @@ data class Expenses(
                 } ?.let {
                     expenses.copy(
                         lastEventId = expenseEventId,
-                        amount = it.amount + expense.amount,
+                        amount = it.amount + expense.amount.value,
                     )
                 } ?:
                 Expenses(
@@ -29,7 +29,7 @@ data class Expenses(
                     month = expense.month,
                     payer = expense.payer,
                     category = expense.category,
-                    amount = expense.amount,
+                    amount = expense.amount.value,
                 )
     }
 }

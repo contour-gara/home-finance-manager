@@ -18,8 +18,8 @@ class ExpensesTest : FunSpec({
         )
 
         val expense = Expense(
-            expenseId = ExpenseId(id = ULID.parseULID("01KDJ042GNBA94CWB2F151W2SE")),
-            amount = 500,
+            expenseId = ExpenseId(value = ULID.parseULID("01KDJ042GNBA94CWB2F151W2SE")),
+            amount = Amount(value = 500),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
             year = Year._2026,
@@ -49,8 +49,8 @@ class ExpensesTest : FunSpec({
         val expenses = null
 
         val expense = Expense(
-            expenseId = ExpenseId(id = ULID.parseULID("01KDJ042GNBA94CWB2F151W2SE")),
-            amount = 500,
+            expenseId = ExpenseId(value = ULID.parseULID("01KDJ042GNBA94CWB2F151W2SE")),
+            amount = Amount(value = 500),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
             year = Year._2026,
@@ -87,8 +87,8 @@ class ExpensesTest : FunSpec({
         )
 
         val expense = Expense(
-            expenseId = ExpenseId(id = ULID.parseULID("01KDJ042GNBA94CWB2F151W2SE")),
-            amount = 500,
+            expenseId = ExpenseId(value = ULID.parseULID("01KDJ042GNBA94CWB2F151W2SE")),
+            amount = Amount(value = 500),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
             year = Year._2026,
@@ -116,8 +116,8 @@ class ExpensesTest : FunSpec({
         )
 
         val expense = Expense(
-            expenseId = ExpenseId(id = ULID.parseULID("01KDJ042GNBA94CWB2F151W2SE")),
-            amount = 500,
+            expenseId = ExpenseId(value = ULID.parseULID("01KDJ042GNBA94CWB2F151W2SE")),
+            amount = Amount(value = 500),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
             year = Year._2026,
@@ -145,8 +145,8 @@ class ExpensesTest : FunSpec({
         )
 
         val expense = Expense(
-            expenseId = ExpenseId(id = ULID.parseULID("01KDJ042GNBA94CWB2F151W2SE")),
-            amount = 500,
+            expenseId = ExpenseId(value = ULID.parseULID("01KDJ042GNBA94CWB2F151W2SE")),
+            amount = Amount(value = 500),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
             year = Year._2026,
@@ -174,8 +174,8 @@ class ExpensesTest : FunSpec({
         )
 
         val expense = Expense(
-            expenseId = ExpenseId(id = ULID.parseULID("01KDJ042GNBA94CWB2F151W2SE")),
-            amount = 500,
+            expenseId = ExpenseId(value = ULID.parseULID("01KDJ042GNBA94CWB2F151W2SE")),
+            amount = Amount(value = 500),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
             year = Year._2026,
@@ -203,8 +203,8 @@ class ExpensesTest : FunSpec({
         )
 
         val expense = Expense(
-            expenseId = ExpenseId(id = ULID.parseULID("01KDJ042GNBA94CWB2F151W2SE")),
-            amount = 500,
+            expenseId = ExpenseId(value = ULID.parseULID("01KDJ042GNBA94CWB2F151W2SE")),
+            amount = Amount(value = 500),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
             year = Year._2026,

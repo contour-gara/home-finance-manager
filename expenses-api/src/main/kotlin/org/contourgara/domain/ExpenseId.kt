@@ -8,7 +8,7 @@ import ulid.ULID
 
 @JvmInline
 @OptIn(ExperimentalRaiseAccumulateApi::class)
-value class ExpenseId(val id: ULID) {
+value class ExpenseId(val value: ULID) {
     companion object {
         fun of(id: String): EitherNel<Error, ExpenseId> =
             either {
@@ -23,10 +23,10 @@ value class ExpenseId(val id: ULID) {
                         )
                     }
                 }
-                ExpenseId(id = id)
+                ExpenseId(value = id)
             }
 
     }
 
-    constructor(id: String) : this(id = ULID.parseULID(ulidString = id))
+    constructor(value: String) : this(value = ULID.parseULID(ulidString = value))
 }

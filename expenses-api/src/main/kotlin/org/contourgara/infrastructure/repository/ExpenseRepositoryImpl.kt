@@ -11,36 +11,36 @@ object ExpenseRepositoryImpl : ExpenseRepository {
             .also {
                 ExpenseIdTable
                     .insert {
-                        it[expenseId] = expense.expenseId.id.toString()
+                        it[expenseId] = expense.expenseId.value.toString()
                     }
                 ExpenseAmountTable
                     .insert {
-                        it[expenseId] = expense.expenseId.id.toString()
-                        it[amount] = expense.amount
+                        it[expenseId] = expense.expenseId.value.toString()
+                        it[amount] = expense.amount.value
                     }
                 ExpensePayerTable
                     .insert {
-                        it[expenseId] = expense.expenseId.id.toString()
+                        it[expenseId] = expense.expenseId.value.toString()
                         it[payer] = expense.payer.name
                     }
                 ExpenseCategoryTable
                     .insert {
-                        it[expenseId] = expense.expenseId.id.toString()
+                        it[expenseId] = expense.expenseId.value.toString()
                         it[category] = expense.category.name
                     }
                 ExpenseYearTable
                     .insert {
-                        it[expenseId] = expense.expenseId.id.toString()
+                        it[expenseId] = expense.expenseId.value.toString()
                         it[year] = expense.year.intYear
                     }
                 ExpenseMonthTable
                     .insert {
-                        it[expenseId] = expense.expenseId.id.toString()
+                        it[expenseId] = expense.expenseId.value.toString()
                         it[month] = expense.month.intMonth
                     }
                 ExpenseMemoTable
                     .insert {
-                        it[expenseId] = expense.expenseId.id.toString()
+                        it[expenseId] = expense.expenseId.value.toString()
                         it[memo] = expense.memo
                     }
             }

@@ -5,6 +5,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.contourgara.domain.Amount
 import org.contourgara.domain.Category
 import org.contourgara.domain.EventCategory
 import org.contourgara.domain.Expense
@@ -49,7 +50,7 @@ class CreateExpenseUseCaseTest : FunSpec({
 
         val expense = Expense(
             expenseId = expenseId,
-            amount = 1000,
+            amount = Amount(value = 1000),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
             year = Year._2026,
@@ -97,7 +98,7 @@ class CreateExpenseUseCaseTest : FunSpec({
 
         // assert
         val expected = CreateExpenseDto(
-            expenseId = expenseId.id,
+            expenseId = expenseId.value,
             expenseEventId = expenseEventId.id,
         )
         actual shouldBe expected
@@ -123,7 +124,7 @@ class CreateExpenseUseCaseTest : FunSpec({
 
         val expense = Expense(
             expenseId = expenseId,
-            amount = 1000,
+            amount = Amount(value = 1000),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
             year = Year._2026,
@@ -180,7 +181,7 @@ class CreateExpenseUseCaseTest : FunSpec({
 
         // assert
         val expected = CreateExpenseDto(
-            expenseId = expenseId.id,
+            expenseId = expenseId.value,
             expenseEventId = expenseEventId.id,
         )
         actual shouldBe expected
