@@ -23,7 +23,7 @@ data class CreateExpenseParam(
             amount = Amount(value = amount),
             payer = Payer.valueOf(value = payer),
             category = Category.valueOf(value = category),
-            year = Year.of(intYear = year),
+            year = Year.of(value = year),
             month = Month.of(intMonth = month),
             memo = memo,
         )

@@ -1,14 +1,38 @@
 package org.contourgara.domain
 
-enum class Year(val intYear: Int) {
-    _2026(intYear = 2026),
-    _2027(intYear = 2027),
+import arrow.core.EitherNel
+import arrow.core.raise.ExperimentalRaiseAccumulateApi
+import arrow.core.raise.accumulate
+import arrow.core.raise.either
+
+@OptIn(ExperimentalRaiseAccumulateApi::class)
+enum class Year(val value: Int) {
+    _2026(value = 2026),
+    _2027(value = 2027),
     ;
 
     companion object {
-        fun of(intYear: Int): Year =
+        fun of(value: Int): Year =
             entries.firstOrNull {
-                it.intYear == intYear
-            } ?: throw IllegalArgumentException("Not found: $intYear")
+                it.value == value
+            } ?: throw IllegalArgumentException("Not found: $value")
+
+        fun ofValidate(value: Int): EitherNel<Error, Year> =
+            either {
+                accumulate {
+                    ensureOrAccumulate(
+                        condition = entries.any {
+                            it.value == value
+                        },
+                    ) {
+                        ValidationError(
+                            pointer = "year",
+                            invalidValue = value,
+                            detail = "value is not supported.",
+                        )
+                    }
+                }
+                Year.of(value = value)
+            }
     }
 }

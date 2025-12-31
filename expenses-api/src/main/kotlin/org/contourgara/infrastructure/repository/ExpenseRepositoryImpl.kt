@@ -31,7 +31,7 @@ object ExpenseRepositoryImpl : ExpenseRepository {
                 ExpenseYearTable
                     .insert {
                         it[expenseId] = expense.expenseId.value.toString()
-                        it[year] = expense.year.intYear
+                        it[year] = expense.year.value
                     }
                 ExpenseMonthTable
                     .insert {
