@@ -3,6 +3,7 @@ package org.contourgara.infrastructure.repository
 import com.ninja_squad.dbsetup.destination.DriverManagerDestination
 import com.ninja_squad.dbsetup_kotlin.dbSetup
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.assertj.db.api.Assertions.assertThat
 import org.assertj.db.type.AssertDbConnection
@@ -82,5 +83,69 @@ class ExpenseEventRepositoryImplTest : FunSpec({
             .row(0)
             .value("expense_event_id").isEqualTo("01KD27JEZQQY88RG18034YZHBV")
             .value("event_category").isEqualTo("CREATE")
+    }
+
+    context("支出 ID 検索") {
+        test("該当する支出 ID が存在しない場合、null を返す") {
+            // setup
+            val expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"))
+
+            // execute
+            val actual = transaction { sut.findByExpenseId(expenseId = expenseId) }
+
+            // assert
+            actual.shouldBeNull()
+        }
+
+        test("該当する支出 ID が存在する場合、ExpenseEvent を返す") {
+            // setup
+            dbSetup(
+                to = DriverManagerDestination(mysql.jdbcUrl, mysql.username, mysql.password),
+            ) {
+                insertInto("expense_id") {
+                    columns("expense_id")
+                    values("01K4MXEKC0PMTJ8FA055N4SH79")
+                }
+                insertInto("expense_event_id") {
+                    columns("expense_event_id")
+                    values("01KD27JEZQQY88RG18034YZHBV")
+                    values("01KDHVD5XTTR9XR4ZAFSSETGXS")
+                }
+                insertInto("expense_event") {
+                    columns("expense_event_id", "expense_id")
+                    values("01KD27JEZQQY88RG18034YZHBV", "01K4MXEKC0PMTJ8FA055N4SH79")
+                    values("01KDHVD5XTTR9XR4ZAFSSETGXS", "01K4MXEKC0PMTJ8FA055N4SH79")
+                }
+                insertInto("expense_event_category") {
+                    columns("expense_event_id", "event_category")
+                    values("01KD27JEZQQY88RG18034YZHBV", "CREATE")
+                    values("01KDHVD5XTTR9XR4ZAFSSETGXS", "DELETE")
+                }
+            }
+                .launch()
+
+            val expenseIdTable = assertDbConnection.table("expense_id").build()
+            val expenseEventIdTable = assertDbConnection.table("expense_event_id").build()
+            val expenseEventTable = assertDbConnection.table("expense_event").build()
+            val expenseEventCategoryTable = assertDbConnection.table("expense_event_category").build()
+
+            val expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"))
+
+            // execute
+            val actual = transaction { sut.findByExpenseId(expenseId = expenseId) }
+
+            // assert
+            val expected = ExpenseEvent(
+                expenseEventId = ExpenseEventId(ULID.parseULID("01KDHVD5XTTR9XR4ZAFSSETGXS")),
+                expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79")),
+                eventCategory = EventCategory.DELETE,
+            )
+            actual shouldBe expected
+
+            assertThat(expenseIdTable).hasNumberOfRows(1)
+            assertThat(expenseEventIdTable).hasNumberOfRows(2)
+            assertThat(expenseEventTable).hasNumberOfRows(2)
+            assertThat(expenseEventCategoryTable).hasNumberOfRows(2)
+        }
     }
 })

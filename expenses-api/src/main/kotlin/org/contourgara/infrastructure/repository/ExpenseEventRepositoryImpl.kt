@@ -1,9 +1,17 @@
 package org.contourgara.infrastructure.repository
 
+import org.contourgara.domain.EventCategory
 import org.contourgara.domain.ExpenseEvent
+import org.contourgara.domain.ExpenseEventId
+import org.contourgara.domain.ExpenseId
 import org.contourgara.domain.infrastructure.ExpenseEventRepository
+import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.Table
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.innerJoin
 import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.select
+import ulid.ULID
 
 object ExpenseEventRepositoryImpl : ExpenseEventRepository {
     override fun save(expenseEvent: ExpenseEvent): ExpenseEvent =
@@ -23,6 +31,27 @@ object ExpenseEventRepositoryImpl : ExpenseEventRepository {
                         it[expenseEventId] = expenseEvent.expenseEventId.value.toString()
                         it[eventCategory] = expenseEvent.eventCategory.name
                     }
+            }
+
+    override fun findByExpenseId(expenseId: ExpenseId): ExpenseEvent? =
+        ExpenseEventIdTable
+            .innerJoin(otherTable = ExpenseEventTable, onColumn = { ExpenseEventIdTable.expenseEventId }, otherColumn = { ExpenseEventTable.expenseEventId })
+            .innerJoin(otherTable = ExpenseEventCategoryTable, onColumn = { ExpenseEventIdTable.expenseEventId }, otherColumn = { ExpenseEventCategoryTable.expenseEventId })
+            .select(
+                ExpenseEventIdTable.expenseEventId,
+                ExpenseEventTable.expenseId,
+                ExpenseEventCategoryTable.eventCategory,
+            )
+            .where { ExpenseEventTable.expenseId eq expenseId.value.toString() }
+            .orderBy(column = ExpenseEventIdTable.expenseEventId, order = SortOrder.DESC)
+            .limit(count = 1)
+            .singleOrNull()
+            ?.let {
+                ExpenseEvent(
+                    expenseEventId = ExpenseEventId(value = ULID.parseULID(it[ExpenseEventIdTable.expenseEventId])),
+                    expenseId = ExpenseId(value = it[ExpenseEventTable.expenseId]),
+                    eventCategory = EventCategory.valueOf(value = it[ExpenseEventCategoryTable.eventCategory]),
+                )
             }
 }
 
