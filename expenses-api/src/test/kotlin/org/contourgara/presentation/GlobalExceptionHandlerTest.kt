@@ -12,6 +12,7 @@ import io.ktor.server.testing.testApplication
 import io.mockk.every
 import io.mockk.mockk
 import org.contourgara.application.CreateExpenseUseCase
+import org.contourgara.domain.ValidationException
 
 class GlobalExceptionHandlerTest : FunSpec({
     test("リクエストのフィールド不足で BadRequestException が発生した場合、ステータス 400 と適切なエラーレスポンスが返却される") {
@@ -76,6 +77,44 @@ class GlobalExceptionHandlerTest : FunSpec({
             actual shouldHaveStatus 400
             actual.bodyAsText() shouldBe
                     """{"type":"kotlinx.serialization.json.internal.JsonDecodingException","title":"Serialization Error","errors":[{"detail":"Encountered an unknown key 'test' at offset 165 at path: $\nUse 'ignoreUnknownKeys = true' in 'Json {}' builder or '@JsonIgnoreUnknownKeys' annotation to ignore unknown keys.\nJSON input: {\n  \"expenseId\": \"01K4MXEKC0PMTJ8FA055N4SH79\",\n  \"amount\": 1000,\n  \"payer\":\"DIRECT_DEBIT\",\n  \"category\":\"RENT\",\n  \"year\":\"2026\",\n  \"month\": \"5\",\n  \"memo\":\"test\",\n  \"test\":\"test\n}"}]}"""
+        }
+    }
+
+    test("ValidationException が発生した場合、ステータス 400 と適切なエラーレスポンスが返却される") {
+        testApplication {
+            // setup
+            val createExpenseUseCase = mockk<CreateExpenseUseCase>()
+            every { createExpenseUseCase.execute(any()) }throws
+                    ValidationException(
+                        title = "test",
+                        errors = listOf("test"),
+                    )
+
+            application {
+                configureExpenseRouting(createExpenseUseCase = createExpenseUseCase)
+                configureGlobalExceptionHandler()
+            }
+
+            // execute
+            val actual = client.post("/expense") {
+                contentType(ContentType.Application.Json)
+                setBody("""
+                    {
+                      "expenseId": "01K4MXEKC0PMTJ8FA055N4SH79",
+                      "amount": 1000,
+                      "payer":"DIRECT_DEBIT",
+                      "category":"RENT",
+                      "year":"2026",
+                      "month": "5",
+                      "memo":"test"
+                    }
+                """.trimIndent())
+            }
+
+            // assert
+            actual shouldHaveStatus 400
+            actual.bodyAsText() shouldBe
+                    """{"type":"org.contourgara.domain.ValidationException","title":"test","errors":[{"detail":"test"}]}"""
         }
     }
 

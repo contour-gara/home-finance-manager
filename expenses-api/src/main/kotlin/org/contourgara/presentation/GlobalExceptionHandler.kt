@@ -11,6 +11,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.MissingFieldException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
+import org.contourgara.domain.ValidationException
 
 @OptIn(ExperimentalSerializationApi::class)
 fun Application.configureGlobalExceptionHandler() {
@@ -45,6 +46,18 @@ fun Application.configureGlobalExceptionHandler() {
                     )
                 }
             }
+        }
+
+        exception<ValidationException> { call, cause ->
+            call.application.environment.log.error(cause)
+            call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = ErrorResponse(
+                    type = cause::class.java.name,
+                    title = cause.title,
+                    errors = cause.errors.map { ErrorDetail(detail = it) },
+                ),
+            )
         }
     }
 }

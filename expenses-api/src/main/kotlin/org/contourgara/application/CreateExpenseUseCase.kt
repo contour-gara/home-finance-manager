@@ -1,7 +1,6 @@
 package org.contourgara.application
 
 import arrow.core.Either
-import arrow.core.EitherNel
 import org.contourgara.domain.EventCategory
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseEvent
@@ -10,6 +9,7 @@ import org.contourgara.domain.infrastructure.ExpenseEventRepository
 import org.contourgara.domain.infrastructure.ExpenseRepository
 import org.contourgara.domain.infrastructure.ExpensesRepository
 import org.contourgara.domain.infrastructure.ExpenseEventIdClient
+import org.contourgara.domain.toException
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 class CreateExpenseUseCase(
@@ -37,7 +37,7 @@ class CreateExpenseUseCase(
                     findAndUpdateExpenses(expense = expense, expenseEvent = expenseEvent)
                 }.let {
                     when (it) {
-                        is Either.Left -> throw IllegalArgumentException("Invalid CreateExpenseParam")
+                        is Either.Left -> throw it.value.toException()
                         is Either.Right -> CreateExpenseDto.of(
                             expenseId = it.value.first.expenseId,
                             expenseEventId = it.value.second.expenseEventId,
