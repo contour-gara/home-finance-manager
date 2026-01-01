@@ -1,5 +1,7 @@
 package org.contourgara.application
 
+import arrow.core.Either
+import arrow.core.EitherNel
 import org.contourgara.domain.EventCategory
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseEvent
@@ -20,7 +22,7 @@ class CreateExpenseUseCase(
         transaction {
             param
                 .toModel()
-                .let {
+                .map {
                     Pair(
                         first = expenseRepository.create(it),
                         second = expenseEventRepository.save(
@@ -31,13 +33,16 @@ class CreateExpenseUseCase(
                             ),
                         ),
                     )
-                }.also { (expense, expenseEvent) ->
+                }.onRight { (expense, expenseEvent) ->
                     findAndUpdateExpenses(expense = expense, expenseEvent = expenseEvent)
-                }.let { (expense, expenseEvent) ->
-                    CreateExpenseDto.of(
-                        expenseId = expense.expenseId,
-                        expenseEventId = expenseEvent.expenseEventId,
-                    )
+                }.let {
+                    when (it) {
+                        is Either.Left -> throw IllegalArgumentException("Invalid CreateExpenseParam")
+                        is Either.Right -> CreateExpenseDto.of(
+                            expenseId = it.value.first.expenseId,
+                            expenseEventId = it.value.second.expenseEventId,
+                        )
+                    }
                 }
         }
 

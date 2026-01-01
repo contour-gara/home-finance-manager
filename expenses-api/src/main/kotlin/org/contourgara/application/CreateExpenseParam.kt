@@ -1,7 +1,9 @@
 package org.contourgara.application
 
+import arrow.core.EitherNel
 import org.contourgara.domain.Amount
 import org.contourgara.domain.Category
+import org.contourgara.domain.Error
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseId
 import org.contourgara.domain.Memo
@@ -18,14 +20,14 @@ data class CreateExpenseParam(
     private val month: Int,
     private val memo: String,
 ) {
-    fun toModel(): Expense =
-        Expense(
-            expenseId = ExpenseId(value = expenseId),
-            amount = Amount(value = amount),
-            payer = Payer.valueOf(value = payer),
-            category = Category.valueOf(value = category),
-            year = Year.of(value = year),
-            month = Month.of(value = month),
-            memo = Memo(value = memo),
+    fun toModel(): EitherNel<Error, Expense> =
+        Expense.of(
+            expenseId = expenseId,
+            amount = amount,
+            payer = payer,
+            category = category,
+            year = year,
+            month = month,
+            memo = memo,
         )
 }
