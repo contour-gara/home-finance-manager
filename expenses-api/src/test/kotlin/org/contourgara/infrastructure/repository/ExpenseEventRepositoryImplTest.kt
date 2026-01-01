@@ -2,8 +2,10 @@ package org.contourgara.infrastructure.repository
 
 import com.ninja_squad.dbsetup.destination.DriverManagerDestination
 import com.ninja_squad.dbsetup_kotlin.dbSetup
+import io.kotest.assertions.arrow.core.shouldBeLeft
+import io.kotest.assertions.arrow.core.shouldBeRight
+import io.kotest.assertions.assertSoftly
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.assertj.db.api.Assertions.assertThat
 import org.assertj.db.type.AssertDbConnection
@@ -12,6 +14,7 @@ import org.contourgara.domain.EventCategory
 import org.contourgara.domain.ExpenseEvent
 import org.contourgara.domain.ExpenseEventId
 import org.contourgara.domain.ExpenseId
+import org.contourgara.domain.ExpenseNotFoundError
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.testcontainers.containers.MySQLContainer
 import ulid.ULID
@@ -94,7 +97,12 @@ class ExpenseEventRepositoryImplTest : FunSpec({
             val actual = transaction { sut.findByExpenseId(expenseId = expenseId) }
 
             // assert
-            actual.shouldBeNull()
+            val expected = ExpenseNotFoundError(expenseId = "01K4MXEKC0PMTJ8FA055N4SH79")
+
+            assertSoftly {
+                actual.shouldBeLeft()
+                actual.value shouldBe expected
+            }
         }
 
         test("該当する支出 ID が存在する場合、ExpenseEvent を返す") {
@@ -140,12 +148,15 @@ class ExpenseEventRepositoryImplTest : FunSpec({
                 expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79")),
                 eventCategory = EventCategory.DELETE,
             )
-            actual shouldBe expected
 
-            assertThat(expenseIdTable).hasNumberOfRows(1)
-            assertThat(expenseEventIdTable).hasNumberOfRows(2)
-            assertThat(expenseEventTable).hasNumberOfRows(2)
-            assertThat(expenseEventCategoryTable).hasNumberOfRows(2)
+            assertSoftly {
+                actual.shouldBeRight()
+                actual.value shouldBe expected
+                assertThat(expenseIdTable).hasNumberOfRows(1)
+                assertThat(expenseEventIdTable).hasNumberOfRows(2)
+                assertThat(expenseEventTable).hasNumberOfRows(2)
+                assertThat(expenseEventCategoryTable).hasNumberOfRows(2)
+            }
         }
     }
 })

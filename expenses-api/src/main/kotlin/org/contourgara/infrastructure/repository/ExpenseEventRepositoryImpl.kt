@@ -1,9 +1,12 @@
 package org.contourgara.infrastructure.repository
 
+import arrow.core.Either
+import org.contourgara.domain.Error
 import org.contourgara.domain.EventCategory
 import org.contourgara.domain.ExpenseEvent
 import org.contourgara.domain.ExpenseEventId
 import org.contourgara.domain.ExpenseId
+import org.contourgara.domain.ExpenseNotFoundError
 import org.contourgara.domain.infrastructure.ExpenseEventRepository
 import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.Table
@@ -33,7 +36,7 @@ object ExpenseEventRepositoryImpl : ExpenseEventRepository {
                     }
             }
 
-    override fun findByExpenseId(expenseId: ExpenseId): ExpenseEvent? =
+    override fun findByExpenseId(expenseId: ExpenseId): Either<Error, ExpenseEvent> =
         ExpenseEventIdTable
             .innerJoin(otherTable = ExpenseEventTable, onColumn = { ExpenseEventIdTable.expenseEventId }, otherColumn = { ExpenseEventTable.expenseEventId })
             .innerJoin(otherTable = ExpenseEventCategoryTable, onColumn = { ExpenseEventIdTable.expenseEventId }, otherColumn = { ExpenseEventCategoryTable.expenseEventId })
@@ -47,12 +50,18 @@ object ExpenseEventRepositoryImpl : ExpenseEventRepository {
             .limit(count = 1)
             .singleOrNull()
             ?.let {
-                ExpenseEvent(
-                    expenseEventId = ExpenseEventId(value = ULID.parseULID(it[ExpenseEventIdTable.expenseEventId])),
-                    expenseId = ExpenseId(value = it[ExpenseEventTable.expenseId]),
-                    eventCategory = EventCategory.valueOf(value = it[ExpenseEventCategoryTable.eventCategory]),
+                Either.Right(
+                    value = ExpenseEvent(
+                        expenseEventId = ExpenseEventId(value = ULID.parseULID(it[ExpenseEventIdTable.expenseEventId])),
+                        expenseId = ExpenseId(value = it[ExpenseEventTable.expenseId]),
+                        eventCategory = EventCategory.valueOf(value = it[ExpenseEventCategoryTable.eventCategory]),
+                    ),
                 )
-            }
+            } ?: Either.Left(
+                value = ExpenseNotFoundError(
+                    expenseId = expenseId.value.toString(),
+                ),
+            )
 }
 
 private object ExpenseEventTable : Table("expense_event") {
