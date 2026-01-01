@@ -32,4 +32,10 @@ data class Expenses(
                     amount = expense.amount,
                 )
     }
+
+    fun deleteExpense(expense: Expense, deleteEventId: ExpenseEventId): Expenses =
+        copy(
+            lastEventId = deleteEventId,
+            amount = amount - expense.amount,
+        )
 }

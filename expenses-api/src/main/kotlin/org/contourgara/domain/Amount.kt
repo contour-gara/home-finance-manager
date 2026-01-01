@@ -25,5 +25,7 @@ value class Amount(val value: Int) {
                 Amount(value = value)
             }
     }
+
     operator fun plus(other: Amount): Amount = Amount(value + other.value)
+    operator fun minus(other: Amount): Amount = Amount(value - other.value)
 }

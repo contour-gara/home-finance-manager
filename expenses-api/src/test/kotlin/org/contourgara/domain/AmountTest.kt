@@ -23,6 +23,19 @@ class AmountTest : FunSpec({
         actual shouldBe expected
     }
 
+    test("Amount の減算ができる") {
+        // setup
+        val amount1 = Amount(value = 1000)
+        val amount2 = Amount(value = 500)
+
+        // execute
+        val actual = amount1 - amount2
+
+        // assert
+        val expected = Amount(value = 500)
+        actual shouldBe expected
+    }
+
     context("Amount のファクトリーメソッドの動作確認") {
         test("正の値の場合、right に Amount が返る") {
             // execute

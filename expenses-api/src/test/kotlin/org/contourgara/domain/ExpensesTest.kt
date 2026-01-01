@@ -44,6 +44,44 @@ class ExpensesTest : FunSpec({
         actual shouldBe expected
     }
 
+    test("支出の削除で合計支出を更新できる") {
+        // setup
+        val expenses = Expenses(
+            lastEventId = ExpenseEventId(value = ULID.parseULID("01KD27JEZQQY88RG18034YZHBV")),
+            year = Year._2026,
+            month = Month.JANUARY,
+            payer = Payer.DIRECT_DEBIT,
+            category = Category.RENT,
+            amount = Amount(value = 1000),
+        )
+
+        val expense = Expense(
+            expenseId = ExpenseId(value = ULID.parseULID("01KDJ042GNBA94CWB2F151W2SE")),
+            amount = Amount(value = 500),
+            payer = Payer.DIRECT_DEBIT,
+            category = Category.RENT,
+            year = Year._2026,
+            month = Month.JANUARY,
+            memo = Memo(value = "test1"),
+        )
+
+        val deleteEventId = ExpenseEventId(value = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y"))
+
+        // execute
+        val actual = expenses.deleteExpense(expense = expense, deleteEventId = deleteEventId)
+
+        // assert
+        val expected = Expenses(
+            lastEventId = ExpenseEventId(value = ULID.parseULID("01KDJBSGQSV39NEGEQGXPH350Y")),
+            year = Year._2026,
+            month = Month.JANUARY,
+            payer = Payer.DIRECT_DEBIT,
+            category = Category.RENT,
+            amount = Amount(value = 500),
+        )
+        actual shouldBe expected
+    }
+
     test("合計支出が存在しない場合、合計支出を作成する") {
         // setup
         val expenses = null
