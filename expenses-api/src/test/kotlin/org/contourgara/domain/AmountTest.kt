@@ -40,7 +40,7 @@ class AmountTest : FunSpec({
         }
 
         withData(
-            InvalidIntTestCase(value = 0),
+            InvalidIntTestCase(value = -2),
             InvalidIntTestCase(value = -1),
         ) { (value) ->
             // execute

@@ -13,7 +13,7 @@ value class Amount(val value: Int) {
             either {
                 accumulate {
                     ensureOrAccumulate(
-                        condition = value > 0,
+                        condition = value >= 0,
                     ) {
                         ValidationError(
                             pointer = "amount",
