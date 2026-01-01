@@ -1,9 +1,20 @@
 package org.contourgara.infrastructure.repository
 
+import org.contourgara.domain.Amount
+import org.contourgara.domain.Category
 import org.contourgara.domain.Expense
+import org.contourgara.domain.ExpenseId
+import org.contourgara.domain.Memo
+import org.contourgara.domain.Month
+import org.contourgara.domain.Payer
+import org.contourgara.domain.Year
 import org.contourgara.domain.infrastructure.ExpenseRepository
+import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.Table
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.innerJoin
 import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.select
 
 object ExpenseRepositoryImpl : ExpenseRepository {
     override fun create(expense: Expense): Expense =
@@ -43,6 +54,39 @@ object ExpenseRepositoryImpl : ExpenseRepository {
                         it[expenseId] = expense.expenseId.value.toString()
                         it[memo] = expense.memo.value
                     }
+            }
+
+    override fun findById(expenseId: ExpenseId): Expense? =
+        ExpenseIdTable
+            .innerJoin(otherTable = ExpenseAmountTable, onColumn = { ExpenseIdTable.expenseId }, otherColumn = { ExpenseAmountTable.expenseId })
+            .innerJoin(otherTable = ExpensePayerTable, onColumn = { ExpenseIdTable.expenseId }, otherColumn = { ExpensePayerTable.expenseId })
+            .innerJoin(otherTable = ExpenseCategoryTable, onColumn = { ExpenseIdTable.expenseId }, otherColumn = { ExpenseCategoryTable.expenseId })
+            .innerJoin(otherTable = ExpenseYearTable, onColumn = { ExpenseIdTable.expenseId }, otherColumn = { ExpenseYearTable.expenseId })
+            .innerJoin(otherTable = ExpenseMonthTable, onColumn = { ExpenseIdTable.expenseId }, otherColumn = { ExpenseMonthTable.expenseId })
+            .innerJoin(otherTable = ExpenseMemoTable, onColumn = { ExpenseIdTable.expenseId }, otherColumn = { ExpenseMemoTable.expenseId })
+            .select(
+                ExpenseIdTable.expenseId,
+                ExpenseAmountTable.amount,
+                ExpensePayerTable.payer,
+                ExpenseCategoryTable.category,
+                ExpenseYearTable.year,
+                ExpenseMonthTable.month,
+                ExpenseMemoTable.memo,
+            )
+            .where { ExpenseIdTable.expenseId eq expenseId.value.toString() }
+            .orderBy(column = ExpenseIdTable.expenseId, order = SortOrder.DESC)
+            .limit(count = 1)
+            .singleOrNull()
+            ?.let {
+                Expense(
+                    expenseId = ExpenseId(value = it[ExpenseIdTable.expenseId]),
+                    amount = Amount(value = it[ExpenseAmountTable.amount]),
+                    payer = Payer.valueOf(value = it[ExpensePayerTable.payer]),
+                    category = Category.valueOf(value = it[ExpenseCategoryTable.category]),
+                    year = Year.of(value = it[ExpenseYearTable.year]),
+                    month = Month.of(value = it[ExpenseMonthTable.month]),
+                    memo = Memo(value = it[ExpenseMemoTable.memo]),
+                )
             }
 }
 
