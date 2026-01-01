@@ -7,13 +7,18 @@ import io.ktor.server.application.install
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
+import io.ktor.server.routing.delete
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
+import kotlinx.serialization.Serializable
 import org.contourgara.application.CreateExpenseUseCase
+import org.contourgara.application.DeleteExpenseUseCase
+import ulid.ULID
 
 fun Application.configureExpenseRouting(
     createExpenseUseCase: CreateExpenseUseCase,
+    deleteExpenseUseCase: DeleteExpenseUseCase,
 ) {
     install(ContentNegotiation) {
         json()
@@ -37,6 +42,24 @@ fun Application.configureExpenseRouting(
                         )
                     }
             }
+
+            delete("{expensesId}") {
+                call
+                    .pathParameters["expensesId"]
+                    ?.let { deleteExpenseUseCase.execute(expenseId = it) }
+                    ?.let {
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = DeleteExpenseResponse(expenseEventId = it),
+                        )
+                    }
+                    ?: throw RuntimeException("path parameter was not found: expensesId")
+            }
         }
     }
 }
+
+@Serializable
+data class DeleteExpenseResponse(
+    private val expenseEventId: ULID,
+)

@@ -9,6 +9,7 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import org.contourgara.application.CreateExpenseUseCase
+import org.contourgara.application.DeleteExpenseUseCase
 import org.contourgara.infrastructure.client.ExpenseEventIdClientImpl
 import org.contourgara.infrastructure.repository.ExpenseEventRepositoryImpl
 import org.contourgara.infrastructure.repository.ExpenseRepositoryImpl
@@ -34,7 +35,8 @@ fun Application.module() {
             expenseEventIdClient = ExpenseEventIdClientImpl(appConfig = appConfig),
             expenseEventRepository = ExpenseEventRepositoryImpl,
             expensesRepository = ExpensesRepositoryImpl,
-        )
+        ),
+        deleteExpenseUseCase = DeleteExpenseUseCase(),
     )
 
     routing {

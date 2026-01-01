@@ -12,6 +12,7 @@ import io.ktor.server.testing.testApplication
 import io.mockk.every
 import io.mockk.mockk
 import org.contourgara.application.CreateExpenseUseCase
+import org.contourgara.application.DeleteExpenseUseCase
 import org.contourgara.domain.ValidationException
 
 class GlobalExceptionHandlerTest : FunSpec({
@@ -19,9 +20,10 @@ class GlobalExceptionHandlerTest : FunSpec({
         testApplication {
             // setup
             val createExpenseUseCase = mockk<CreateExpenseUseCase>()
+            val deleteExpenseUseCase = mockk<DeleteExpenseUseCase>()
 
             application {
-                configureExpenseRouting(createExpenseUseCase = createExpenseUseCase)
+                configureExpenseRouting(createExpenseUseCase = createExpenseUseCase, deleteExpenseUseCase = deleteExpenseUseCase)
                 configureGlobalExceptionHandler()
             }
 
@@ -50,9 +52,10 @@ class GlobalExceptionHandlerTest : FunSpec({
         testApplication {
             // setup
             val createExpenseUseCase = mockk<CreateExpenseUseCase>()
+            val deleteExpenseUseCase = mockk<DeleteExpenseUseCase>()
 
             application {
-                configureExpenseRouting(createExpenseUseCase = createExpenseUseCase)
+                configureExpenseRouting(createExpenseUseCase = createExpenseUseCase, deleteExpenseUseCase = deleteExpenseUseCase)
                 configureGlobalExceptionHandler()
             }
 
@@ -83,6 +86,7 @@ class GlobalExceptionHandlerTest : FunSpec({
     test("ValidationException が発生した場合、ステータス 400 と適切なエラーレスポンスが返却される") {
         testApplication {
             // setup
+            val deleteExpenseUseCase = mockk<DeleteExpenseUseCase>()
             val createExpenseUseCase = mockk<CreateExpenseUseCase>()
             every { createExpenseUseCase.execute(any()) }throws
                     ValidationException(
@@ -91,7 +95,7 @@ class GlobalExceptionHandlerTest : FunSpec({
                     )
 
             application {
-                configureExpenseRouting(createExpenseUseCase = createExpenseUseCase)
+                configureExpenseRouting(createExpenseUseCase = createExpenseUseCase, deleteExpenseUseCase = deleteExpenseUseCase)
                 configureGlobalExceptionHandler()
             }
 
@@ -121,11 +125,12 @@ class GlobalExceptionHandlerTest : FunSpec({
     test("RuntimeException が発生した場合、ステータス 500 と適切なエラーレスポンスが返却される") {
         testApplication {
             // setup
+            val deleteExpenseUseCase = mockk<DeleteExpenseUseCase>()
             val createExpenseUseCase = mockk<CreateExpenseUseCase>()
             every { createExpenseUseCase.execute(any()) } throws RuntimeException("test")
 
             application {
-                configureExpenseRouting(createExpenseUseCase = createExpenseUseCase)
+                configureExpenseRouting(createExpenseUseCase = createExpenseUseCase, deleteExpenseUseCase = deleteExpenseUseCase)
                 configureGlobalExceptionHandler()
             }
 
