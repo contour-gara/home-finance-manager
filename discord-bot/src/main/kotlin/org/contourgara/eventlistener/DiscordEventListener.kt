@@ -10,8 +10,15 @@ import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.core.on
 import dev.kord.gateway.Intent
 import dev.kord.gateway.PrivilegedIntent
+import dev.kord.rest.builder.interaction.integer
 import dev.kord.rest.builder.interaction.string
 import org.contourgara.DiscordBotConfig
+import org.contourgara.eventlistener.ExpenseFeature.openExpenseMemoModal
+import org.contourgara.eventlistener.ExpenseFeature.sendSelectParamMessage
+import org.contourgara.eventlistener.ExpenseFeature.submitCreateExpense
+import org.contourgara.eventlistener.ExpenseFeature.submitExpenseCategory
+import org.contourgara.eventlistener.ExpenseFeature.submitExpenseMemoModal
+import org.contourgara.eventlistener.ExpenseFeature.submitExpensePayer
 import org.contourgara.eventlistener.DeleteBillFeature.DELETE_BILL_BUTTON_ID
 import org.contourgara.eventlistener.DeleteBillFeature.DELETE_BILL_COMMAND_ARGUMENT
 import org.contourgara.eventlistener.DeleteBillFeature.DELETE_BILL_COMMAND_ARGUMENT_DESCRIPTION
@@ -88,6 +95,37 @@ object DiscordEventListener : KoinComponent {
             name = SHOW_BALANCE_COMMAND_NAME,
             description = SHOW_BALANCE_COMMAND_DESCRIPTION,
         )
+
+        kord.createGuildChatInputCommand(
+            guildId = Snowflake(889318150615744523),
+            name = ExpenseFeature.COMMAND_NAME_CREATE,
+            description = ExpenseFeature.COMMAND_DESCRIPTION_CREATE,
+        ) {
+            integer(
+                name = ExpenseFeature.COMMAND_ARGUMENT_NAME_AMOUNT,
+                description = ExpenseFeature.COMMAND_ARGUMENT_DESCRIPTION_AMOUNT,
+            ) {
+                required = true
+                minValue = 0
+                maxValue = Int.MAX_VALUE.toLong()
+            }
+            integer(
+                name = ExpenseFeature.COMMAND_ARGUMENT_NAME_YEAR,
+                description = ExpenseFeature.COMMAND_ARGUMENT_DESCRIPTION_YEAR,
+            ) {
+                required = true
+                minValue = 2026
+                maxValue = 2026
+            }
+            integer(
+                name = ExpenseFeature.COMMAND_ARGUMENT_NAME_MONTH,
+                description = ExpenseFeature.COMMAND_ARGUMENT_DESCRIPTION_MONTH,
+            ) {
+                required = true
+                minValue = 1
+                maxValue = 12
+            }
+        }
     }
 
     private fun createExecuteCommandEvent() {
@@ -97,6 +135,7 @@ object DiscordEventListener : KoinComponent {
                 REGISTER_BILL_COMMAND_NAME -> sendSelectUserMessage()
                 DELETE_BILL_COMMAND_NAME -> sendConfirmDeleteMessage()
                 SHOW_BALANCE_COMMAND_NAME -> requestShowBalance()
+                ExpenseFeature.COMMAND_NAME_CREATE -> sendSelectParamMessage()
             }
         }
     }
@@ -105,6 +144,8 @@ object DiscordEventListener : KoinComponent {
         kord.on<SelectMenuInteractionCreateEvent> {
             when (interaction.componentId) {
                 REGISTER_BILL_SELECT_MENU_ID -> openBillMemoModal()
+                ExpenseFeature.SELECT_PAYER_ID -> submitExpensePayer()
+                ExpenseFeature.SELECT_CATEGORY_ID -> submitExpenseCategory()
             }
         }
     }
@@ -114,6 +155,7 @@ object DiscordEventListener : KoinComponent {
             when (interaction.modalId) {
                 TEST_MODAL_MODAL_ID -> submitTestModal()
                 REGISTER_BILL_MODAL_ID -> submitBillMemoModal()
+                ExpenseFeature.MEMO_MODAL_ID -> submitExpenseMemoModal()
             }
         }
     }
@@ -122,6 +164,8 @@ object DiscordEventListener : KoinComponent {
         kord.on<ButtonInteractionCreateEvent> {
             when (interaction.componentId) {
                 DELETE_BILL_BUTTON_ID -> pushDeleteBillButton()
+                ExpenseFeature.MEMO_BUTTON_ID -> openExpenseMemoModal()
+                ExpenseFeature.SUBMIT_BUTTON_ID -> submitCreateExpense()
             }
         }
     }
