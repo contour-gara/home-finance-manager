@@ -3,6 +3,7 @@ package org.contourgara.presentation
 import io.kotest.assertions.ktor.client.shouldHaveStatus
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import io.ktor.client.request.delete
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
@@ -13,6 +14,8 @@ import io.mockk.every
 import io.mockk.mockk
 import org.contourgara.application.CreateExpenseUseCase
 import org.contourgara.application.DeleteExpenseUseCase
+import org.contourgara.domain.ExpenseAlreadyDeletedException
+import org.contourgara.domain.ExpenseNotFoundException
 import org.contourgara.domain.ValidationException
 
 class GlobalExceptionHandlerTest : FunSpec({
@@ -119,6 +122,50 @@ class GlobalExceptionHandlerTest : FunSpec({
             actual shouldHaveStatus 400
             actual.bodyAsText() shouldBe
                     """{"type":"org.contourgara.domain.ValidationException","title":"test","errors":[{"detail":"test"}]}"""
+        }
+    }
+
+    test("ExpenseNotFoundException が発生した場合、ステータス 404 と適切なエラーレスポンスが返却される") {
+        testApplication {
+            // setup
+            val deleteExpenseUseCase = mockk<DeleteExpenseUseCase>()
+            every { deleteExpenseUseCase.execute(expenseId = "01K4MXEKC0PMTJ8FA055N4SH79") } throws ExpenseNotFoundException(title = "test", errors = listOf("test"))
+            val createExpenseUseCase = mockk<CreateExpenseUseCase>()
+
+            application {
+                configureExpenseRouting(createExpenseUseCase = createExpenseUseCase, deleteExpenseUseCase = deleteExpenseUseCase)
+                configureGlobalExceptionHandler()
+            }
+
+            // execute
+            val actual = client.delete("/expense/01K4MXEKC0PMTJ8FA055N4SH79")
+
+            // assert
+            actual shouldHaveStatus 404
+            actual.bodyAsText() shouldBe
+                    """{"type":"org.contourgara.domain.ExpenseNotFoundException","title":"test","errors":[{"detail":"test"}]}"""
+        }
+    }
+
+    test("ExpenseAlreadyDeletedException が発生した場合、ステータス 400 と適切なエラーレスポンスが返却される") {
+        testApplication {
+            // setup
+            val deleteExpenseUseCase = mockk<DeleteExpenseUseCase>()
+            every { deleteExpenseUseCase.execute(expenseId = "01K4MXEKC0PMTJ8FA055N4SH79") } throws ExpenseAlreadyDeletedException(title = "test", errors = listOf("test"))
+            val createExpenseUseCase = mockk<CreateExpenseUseCase>()
+
+            application {
+                configureExpenseRouting(createExpenseUseCase = createExpenseUseCase, deleteExpenseUseCase = deleteExpenseUseCase)
+                configureGlobalExceptionHandler()
+            }
+
+            // execute
+            val actual = client.delete("/expense/01K4MXEKC0PMTJ8FA055N4SH79")
+
+            // assert
+            actual shouldHaveStatus 400
+            actual.bodyAsText() shouldBe
+                    """{"type":"org.contourgara.domain.ExpenseAlreadyDeletedException","title":"test","errors":[{"detail":"test"}]}"""
         }
     }
 

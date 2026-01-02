@@ -11,6 +11,9 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.MissingFieldException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
+import org.contourgara.domain.ApplicationException
+import org.contourgara.domain.ExpenseAlreadyDeletedException
+import org.contourgara.domain.ExpenseNotFoundException
 import org.contourgara.domain.ValidationException
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -52,11 +55,23 @@ fun Application.configureGlobalExceptionHandler() {
             call.application.environment.log.error(cause)
             call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = ErrorResponse(
-                    type = cause::class.java.name,
-                    title = cause.title,
-                    errors = cause.errors.map { ErrorDetail(detail = it) },
-                ),
+                message = cause.toResponse(),
+            )
+        }
+
+        exception<ExpenseNotFoundException> { call, cause ->
+            call.application.environment.log.error(cause)
+            call.respond(
+                status = HttpStatusCode.NotFound,
+                message = cause.toResponse(),
+            )
+        }
+
+        exception<ExpenseAlreadyDeletedException> { call, cause ->
+            call.application.environment.log.error(cause)
+            call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = cause.toResponse(),
             )
         }
     }
@@ -96,6 +111,18 @@ private fun SerializationException.toResponse(): ErrorResponse =
                 detail = message ?: "Unknown serialization error",
             ),
         ),
+    )
+
+private fun ApplicationException.toResponse(): ErrorResponse =
+    ErrorResponse(
+        type = this::class.java.name,
+        title = title,
+        errors = errors
+            .map {
+                ErrorDetail(
+                    detail = it,
+                )
+            },
     )
 
 private fun Throwable.toResponse(): ErrorResponse =
