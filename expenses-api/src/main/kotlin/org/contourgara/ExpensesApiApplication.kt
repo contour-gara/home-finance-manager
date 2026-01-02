@@ -36,7 +36,12 @@ fun Application.module() {
             expenseEventRepository = ExpenseEventRepositoryImpl,
             expensesRepository = ExpensesRepositoryImpl,
         ),
-        deleteExpenseUseCase = DeleteExpenseUseCase(),
+        deleteExpenseUseCase = DeleteExpenseUseCase(
+            expenseRepository = ExpenseRepositoryImpl,
+            expenseEventRepository = ExpenseEventRepositoryImpl,
+            expensesRepository = ExpensesRepositoryImpl,
+            expenseEventIdClient = ExpenseEventIdClientImpl(appConfig = appConfig),
+        ),
     )
 
     routing {
