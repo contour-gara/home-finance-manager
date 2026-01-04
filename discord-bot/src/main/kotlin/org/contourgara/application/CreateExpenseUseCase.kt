@@ -3,17 +3,17 @@ package org.contourgara.application
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseEventId
 import org.contourgara.domain.ExpenseId
+import org.contourgara.domain.UlidGenerator
 import org.koin.core.annotation.Single
-import ulid.ULID
 
 @Single
-class CreateExpenseUseCase() {
+class CreateExpenseUseCase(
+    private val ulidGenerator: UlidGenerator,
+) {
     fun execute(createExpenseParam: CreateExpenseParam): CreateExpenseDto =
-        ULID
-            .nextULID()
-            .let { ExpenseId(value = it) }
+        ExpenseId(value = ulidGenerator.nextUlid())
             .let { createExpenseParam.toModel(expenseId = it) }
-            .let { Pair(first = it, second = ExpenseEventId(value = ULID.nextULID())) }
+            .let { Pair(first = it, second = ExpenseEventId(value = ulidGenerator.nextUlid())) }
             .let { (expense, expenseEventId) ->
                 CreateExpenseDto.from(expense = expense, expenseEventId = expenseEventId)
             }
