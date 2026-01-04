@@ -1,6 +1,7 @@
 package org.contourgara.application
 
 import org.contourgara.domain.Expense
+import org.contourgara.domain.ExpenseClient
 import org.contourgara.domain.ExpenseEventId
 import org.contourgara.domain.ExpenseId
 import org.contourgara.domain.UlidGenerator
@@ -9,11 +10,12 @@ import org.koin.core.annotation.Single
 @Single
 class CreateExpenseUseCase(
     private val ulidGenerator: UlidGenerator,
+    private val expenseClient: ExpenseClient,
 ) {
     fun execute(createExpenseParam: CreateExpenseParam): CreateExpenseDto =
         ExpenseId(value = ulidGenerator.nextUlid())
             .let { createExpenseParam.toModel(expenseId = it) }
-            .let { Pair(first = it, second = ExpenseEventId(value = ulidGenerator.nextUlid())) }
+            .let { expenseClient.create(it) }
             .let { (expense, expenseEventId) ->
                 CreateExpenseDto.from(expense = expense, expenseEventId = expenseEventId)
             }
