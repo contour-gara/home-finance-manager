@@ -20,9 +20,11 @@ import dev.kord.rest.builder.message.actionRow
 import dev.kord.rest.builder.message.embed
 import dev.kord.rest.builder.message.modify.InteractionResponseModifyBuilder
 import org.contourgara.DiscordBotConfig
+import org.contourgara.application.CreateExpenseDto
+import org.contourgara.application.CreateExpenseParam
+import org.contourgara.application.CreateExpenseUseCase
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import ulid.ULID
 import kotlin.getValue
 import kotlin.text.toInt
 
@@ -55,6 +57,7 @@ object ExpenseFeature : KoinComponent {
     const val BUTTON_LABEL_SUBMIT_CREATE = "送信"
 
     private val discordBotConfig: DiscordBotConfig by inject()
+    private val createExpenseUseCase: CreateExpenseUseCase by inject()
 
     suspend fun GuildChatInputCommandInteractionCreateEvent.sendSelectParamMessage() =
         when (interaction.channelId) {
@@ -161,25 +164,10 @@ object ExpenseFeature : KoinComponent {
             .embeds
             .first()
             .data
-            .let {
-                CreateExpenseRequest
-                    .fromEmbedData(embedData = it)
-            }
-            .also { println(it) }
-            .let { Triple(first = it, second = ULID.nextULID(), third = ULID.nextULID()) }
-            .also { println(it) }
-            .let { (request, expenseId, expenseEventId) ->
-                CreateExpenseResponse(
-                    amount = request.amount,
-                    payer = request.payer!!,
-                    category = request.category!!,
-                    year = request.year,
-                    month = request.month,
-                    memo = request.memo!!,
-                    expenseId = expenseId.toString(),
-                    expenseEventId = expenseEventId.toString(),
-                )
-            }
+            .let { CreateExpenseRequest.fromEmbedData(embedData = it) }
+            .toParam()
+            .let { createExpenseUseCase.execute(createExpenseParam = it) }
+            .let { CreateExpenseResponse.fromDto(createExpenseDto = it) }
             .let {
                 interaction
                     .deferPublicMessageUpdate()
@@ -278,6 +266,16 @@ data class CreateExpenseRequest(
             disabled = payer == null || category == null || memo == null
         }
     }
+
+    fun toParam(): CreateExpenseParam =
+        CreateExpenseParam(
+            amount = amount,
+            payer = payer!!,
+            category = category!!,
+            year = year,
+            month = month,
+            memo = memo!!,
+        )
 }
 
 data class CreateExpenseResponse(
@@ -290,6 +288,20 @@ data class CreateExpenseResponse(
     val expenseId: String,
     val expenseEventId: String,
 ) {
+    companion object {
+        fun fromDto(createExpenseDto: CreateExpenseDto): CreateExpenseResponse =
+            CreateExpenseResponse(
+                amount = createExpenseDto.amount,
+                payer = createExpenseDto.payer,
+                category = createExpenseDto.category,
+                year = createExpenseDto.year,
+                month = createExpenseDto.month,
+                memo = createExpenseDto.memo,
+                expenseId = createExpenseDto.expenseId,
+                expenseEventId = createExpenseDto.expenseEventId,
+            )
+    }
+
     fun toInteractionResponseModifyBuilder(): InteractionResponseModifyBuilder.() -> Unit = {
         content = "支出が作成されたっピ"
         embed {
