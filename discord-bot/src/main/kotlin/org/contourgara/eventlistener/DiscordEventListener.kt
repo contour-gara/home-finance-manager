@@ -98,28 +98,28 @@ object DiscordEventListener : KoinComponent {
 
         kord.createGuildChatInputCommand(
             guildId = Snowflake(889318150615744523),
-            name = ExpenseFeature.COMMAND_NAME_CREATE,
-            description = ExpenseFeature.COMMAND_DESCRIPTION_CREATE,
+            name = ExpenseFeature.CREATE_COMMAND_NAME,
+            description = ExpenseFeature.CREATE_COMMAND_DESCRIPTION,
         ) {
             integer(
-                name = ExpenseFeature.COMMAND_ARGUMENT_NAME_AMOUNT,
-                description = ExpenseFeature.COMMAND_ARGUMENT_DESCRIPTION_AMOUNT,
+                name = ExpenseFeature.CREATE_COMMAND_ARGUMENT_NAME_AMOUNT,
+                description = ExpenseFeature.CREATE_COMMAND_ARGUMENT_DESCRIPTION_AMOUNT,
             ) {
                 required = true
                 minValue = 0
                 maxValue = Int.MAX_VALUE.toLong()
             }
             integer(
-                name = ExpenseFeature.COMMAND_ARGUMENT_NAME_YEAR,
-                description = ExpenseFeature.COMMAND_ARGUMENT_DESCRIPTION_YEAR,
+                name = ExpenseFeature.CREATE_COMMAND_ARGUMENT_NAME_YEAR,
+                description = ExpenseFeature.CREATE_COMMAND_ARGUMENT_DESCRIPTION_YEAR,
             ) {
                 required = true
                 minValue = 2026
                 maxValue = 2026
             }
             integer(
-                name = ExpenseFeature.COMMAND_ARGUMENT_NAME_MONTH,
-                description = ExpenseFeature.COMMAND_ARGUMENT_DESCRIPTION_MONTH,
+                name = ExpenseFeature.CREATE_COMMAND_ARGUMENT_NAME_MONTH,
+                description = ExpenseFeature.CREATE_COMMAND_ARGUMENT_DESCRIPTION_MONTH,
             ) {
                 required = true
                 minValue = 1
@@ -135,7 +135,7 @@ object DiscordEventListener : KoinComponent {
                 REGISTER_BILL_COMMAND_NAME -> sendSelectUserMessage()
                 DELETE_BILL_COMMAND_NAME -> sendConfirmDeleteMessage()
                 SHOW_BALANCE_COMMAND_NAME -> requestShowBalance()
-                ExpenseFeature.COMMAND_NAME_CREATE -> sendSelectParamMessage()
+                ExpenseFeature.CREATE_COMMAND_NAME -> sendSelectParamMessage()
             }
         }
     }

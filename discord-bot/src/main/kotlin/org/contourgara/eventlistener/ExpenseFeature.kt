@@ -29,14 +29,14 @@ import kotlin.getValue
 import kotlin.text.toInt
 
 object ExpenseFeature : KoinComponent {
-    const val COMMAND_NAME_CREATE = "create-expense"
-    const val COMMAND_DESCRIPTION_CREATE = "支出を作成するっピ"
-    const val COMMAND_ARGUMENT_NAME_AMOUNT = "amount"
-    const val COMMAND_ARGUMENT_DESCRIPTION_AMOUNT = "金額を入力してっピ"
-    const val COMMAND_ARGUMENT_NAME_YEAR = "select-year"
-    const val COMMAND_ARGUMENT_DESCRIPTION_YEAR = "年を入力してっピ"
-    const val COMMAND_ARGUMENT_NAME_MONTH = "select-month"
-    const val COMMAND_ARGUMENT_DESCRIPTION_MONTH = "月を入力してっピ"
+    const val CREATE_COMMAND_NAME = "create-expense"
+    const val CREATE_COMMAND_DESCRIPTION = "支出を作成するっピ"
+    const val CREATE_COMMAND_ARGUMENT_NAME_AMOUNT = "amount"
+    const val CREATE_COMMAND_ARGUMENT_DESCRIPTION_AMOUNT = "金額を入力してっピ"
+    const val CREATE_COMMAND_ARGUMENT_NAME_YEAR = "select-year"
+    const val CREATE_COMMAND_ARGUMENT_DESCRIPTION_YEAR = "年を入力してっピ"
+    const val CREATE_COMMAND_ARGUMENT_NAME_MONTH = "select-month"
+    const val CREATE_COMMAND_ARGUMENT_DESCRIPTION_MONTH = "月を入力してっピ"
     const val SELECT_PAYER_ID = "select-payer"
     const val SELECT_PAYER_PLACEHOLDER = "支払い者を選択してっピ"
     const val SELECT_CATEGORY_ID = "select-category"
@@ -67,11 +67,11 @@ object ExpenseFeature : KoinComponent {
                     .integers
                     .let {
                         CreateExpenseRequest(
-                            amount = it[COMMAND_ARGUMENT_NAME_AMOUNT]!!.toInt(),
+                            amount = it[CREATE_COMMAND_ARGUMENT_NAME_AMOUNT]!!.toInt(),
                             payer = null,
                             category = null,
-                            year = it[COMMAND_ARGUMENT_NAME_YEAR]!!.toInt(),
-                            month = it[COMMAND_ARGUMENT_NAME_MONTH]!!.toInt(),
+                            year = it[CREATE_COMMAND_ARGUMENT_NAME_YEAR]!!.toInt(),
+                            month = it[CREATE_COMMAND_ARGUMENT_NAME_MONTH]!!.toInt(),
                             memo = null,
                         )
                     }
