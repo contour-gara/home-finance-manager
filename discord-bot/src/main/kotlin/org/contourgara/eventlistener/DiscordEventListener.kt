@@ -26,6 +26,8 @@ import org.contourgara.eventlistener.DeleteBillFeature.DELETE_BILL_COMMAND_DESCR
 import org.contourgara.eventlistener.DeleteBillFeature.DELETE_BILL_COMMAND_NAME
 import org.contourgara.eventlistener.DeleteBillFeature.pushDeleteBillButton
 import org.contourgara.eventlistener.DeleteBillFeature.sendConfirmDeleteMessage
+import org.contourgara.eventlistener.ExpenseFeature.sendConfirmDeleteExpenseMessage
+import org.contourgara.eventlistener.ExpenseFeature.submitDeleteExpense
 import org.contourgara.eventlistener.RegisterBillFeature.REGISTER_BILL_COMMAND_DESCRIPTION
 import org.contourgara.eventlistener.RegisterBillFeature.REGISTER_BILL_COMMAND_NAME
 import org.contourgara.eventlistener.RegisterBillFeature.REGISTER_BILL_MODAL_ID
@@ -126,6 +128,19 @@ object DiscordEventListener : KoinComponent {
                 maxValue = 12
             }
         }
+
+        kord.createGuildChatInputCommand(
+            guildId = Snowflake(value = 889318150615744523),
+            name = ExpenseFeature.DELETE_COMMAND_NAME,
+            description = ExpenseFeature.DELETE_COMMAND_DESCRIPTION,
+        ) {
+            string(
+                name = ExpenseFeature.DELETE_COMMAND_ARGUMENT_NAME_MESSAGE_ID,
+                description = ExpenseFeature.DELETE_COMMAND_ARGUMENT_DESCRIPTION_MESSAGE_ID,
+            ) {
+                required = true
+            }
+        }
     }
 
     private fun createExecuteCommandEvent() {
@@ -136,6 +151,7 @@ object DiscordEventListener : KoinComponent {
                 DELETE_BILL_COMMAND_NAME -> sendConfirmDeleteMessage()
                 SHOW_BALANCE_COMMAND_NAME -> requestShowBalance()
                 ExpenseFeature.CREATE_COMMAND_NAME -> sendSelectParamMessage()
+                ExpenseFeature.DELETE_COMMAND_NAME -> sendConfirmDeleteExpenseMessage()
             }
         }
     }
@@ -166,6 +182,7 @@ object DiscordEventListener : KoinComponent {
                 DELETE_BILL_BUTTON_ID -> pushDeleteBillButton()
                 ExpenseFeature.MEMO_BUTTON_ID -> openExpenseMemoModal()
                 ExpenseFeature.SUBMIT_BUTTON_ID -> submitCreateExpense()
+                ExpenseFeature.DELETE_BUTTON_ID -> submitDeleteExpense()
             }
         }
     }

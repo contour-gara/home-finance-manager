@@ -7,6 +7,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.delete
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -20,6 +21,7 @@ import org.contourgara.DiscordBotConfig
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseClient
 import org.contourgara.domain.ExpenseEventId
+import org.contourgara.domain.ExpenseId
 import org.koin.core.annotation.Single
 import org.slf4j.LoggerFactory
 import ulid.ULID
@@ -68,6 +70,36 @@ class ExpenseClientImpl(
                     )
                 }
         }
+
+    override fun delete(expenseId: ExpenseId): Pair<ExpenseId, ExpenseEventId> =
+        runBlocking {
+            HttpClient(engineFactory = CIO) {
+                install(plugin = Logging) {
+                    logger = object : Logger {
+                        override fun log(message: String) {
+                            LoggerFactory.getLogger(HttpClient::class.java).debug(message)
+                        }
+                    }
+                    level = LogLevel.ALL
+                }
+                install(plugin = ContentNegotiation) {
+                    json()
+                }
+            }
+                .use { client ->
+                    client.delete(urlString = "${discordBotConfig.expensesApiBaseUrl}/expense/${expenseId.value}")
+                }
+                .also {
+                    if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
+                }
+                .body<DeleteExpenseResponse>()
+                .let {
+                    Pair(
+                        first = expenseId,
+                        second = ExpenseEventId(value = ULID.parseULID(ulidString = it.expenseEventId)),
+                    )
+                }
+        }
 }
 
 @Serializable
@@ -97,5 +129,10 @@ data class CreateExpenseRequest(
 @Serializable
 data class CreateExpenseResponse(
     val expenseId: String,
+    val expenseEventId: String,
+)
+
+@Serializable
+data class DeleteExpenseResponse(
     val expenseEventId: String,
 )

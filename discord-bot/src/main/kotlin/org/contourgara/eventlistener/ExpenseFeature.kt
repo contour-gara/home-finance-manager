@@ -9,6 +9,7 @@ import dev.kord.core.behavior.interaction.modal
 import dev.kord.core.behavior.interaction.response.edit
 import dev.kord.core.behavior.interaction.response.respond
 import dev.kord.core.cache.data.EmbedData
+import dev.kord.core.entity.channel.MessageChannel
 import dev.kord.core.event.interaction.ButtonInteractionCreateEvent
 import dev.kord.core.event.interaction.GuildChatInputCommandInteractionCreateEvent
 import dev.kord.core.event.interaction.ModalSubmitInteractionCreateEvent
@@ -23,6 +24,7 @@ import org.contourgara.DiscordBotConfig
 import org.contourgara.application.CreateExpenseDto
 import org.contourgara.application.CreateExpenseParam
 import org.contourgara.application.CreateExpenseUseCase
+import org.contourgara.application.DeleteExpenseUseCase
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.getValue
@@ -37,6 +39,10 @@ object ExpenseFeature : KoinComponent {
     const val CREATE_COMMAND_ARGUMENT_DESCRIPTION_YEAR = "年を入力してっピ"
     const val CREATE_COMMAND_ARGUMENT_NAME_MONTH = "select-month"
     const val CREATE_COMMAND_ARGUMENT_DESCRIPTION_MONTH = "月を入力してっピ"
+    const val DELETE_COMMAND_NAME = "delete-expense"
+    const val DELETE_COMMAND_DESCRIPTION = "支出を削除するっピ"
+    const val DELETE_COMMAND_ARGUMENT_NAME_MESSAGE_ID = "message-id"
+    const val DELETE_COMMAND_ARGUMENT_DESCRIPTION_MESSAGE_ID = "メッセージ ID を入力してっピ"
     const val SELECT_PAYER_ID = "select-payer"
     const val SELECT_PAYER_PLACEHOLDER = "支払い者を選択してっピ"
     const val SELECT_CATEGORY_ID = "select-category"
@@ -45,6 +51,8 @@ object ExpenseFeature : KoinComponent {
     const val MEMO_MODAL_ID = "memo-modal"
     const val MEMO_MODAL_INPUT_ID = "memo-modal-input"
     const val SUBMIT_BUTTON_ID = "submit-button"
+    const val DELETE_BUTTON_ID = "delete-expense-button"
+    const val DELETE_BUTTON_LABEL = "削除"
     const val EMBED_FIELD_KEY_AMOUNT = "支出金額"
     const val EMBED_FIELD_KEY_PAYER = "支払い者"
     const val EMBED_FIELD_KEY_CATEGORY = "支出カテゴリー"
@@ -53,11 +61,13 @@ object ExpenseFeature : KoinComponent {
     const val EMBED_FIELD_KEY_MEMO = "メモ"
     const val EMBED_FIELD_KEY_EXPENSE_ID = "支出 ID"
     const val EMBED_FIELD_KEY_EXPENSE_EVENT_ID = "支出イベント ID"
+    const val EMBED_FIELD_KEY_CREATE_EXPENSE_MESSAGE_ID = "支出作成メッセージ ID"
     const val BUTTON_LABEL_MEMO = "メモを入力"
     const val BUTTON_LABEL_SUBMIT_CREATE = "送信"
 
     private val discordBotConfig: DiscordBotConfig by inject()
     private val createExpenseUseCase: CreateExpenseUseCase by inject()
+    private val deleteExpenseUseCase: DeleteExpenseUseCase by inject()
 
     suspend fun GuildChatInputCommandInteractionCreateEvent.sendSelectParamMessage() =
         when (interaction.channelId) {
@@ -79,6 +89,30 @@ object ExpenseFeature : KoinComponent {
                         interaction
                             .deferPublicResponse()
                             .respond(builder = it.toInteractionResponseModifyBuilder())
+                    }
+            else ->
+                interaction
+                    .deferPublicResponse()
+                    .respond {
+                        content = "${kord.getChannel(Snowflake(discordBotConfig.channelId))?.mention} で実行してっピ"
+                    }
+        }
+
+    suspend fun GuildChatInputCommandInteractionCreateEvent.sendConfirmDeleteExpenseMessage() =
+        when (interaction.channelId) {
+            Snowflake(value = discordBotConfig.channelId) ->
+                interaction
+                    .command
+                    .strings
+                    .let {
+                        DeleteExpenseRequest(
+                            messageId = it[DELETE_COMMAND_ARGUMENT_NAME_MESSAGE_ID]!!,
+                        )
+                    }
+                    .also {
+                        interaction
+                            .deferPublicResponse()
+                            .respond(builder = it.toInteractionResponseModifyBuilder(channelId = discordBotConfig.channelId))
                     }
             else ->
                 interaction
@@ -172,6 +206,45 @@ object ExpenseFeature : KoinComponent {
                 interaction
                     .deferPublicMessageUpdate()
                     .edit(builder = it.toInteractionResponseModifyBuilder())
+            }
+
+    suspend fun ButtonInteractionCreateEvent.submitDeleteExpense() =
+        interaction
+            .message
+            .embeds
+            .first()
+            .data
+            .let { DeleteExpenseRequest.fromEmbedData(embedData = it) }
+            .let { request ->
+                request.copy(
+                    expenseId = kord
+                        .getChannelOf<MessageChannel>(
+                            id = Snowflake(value = discordBotConfig.channelId),
+                        )!!
+                        .getMessage(
+                            messageId = Snowflake(value = request.messageId),
+                        )
+                        .embeds
+                        .first()
+                        .data
+                        .fields
+                        .orEmpty()
+                        .associate { it.name to it.value }
+                        [EMBED_FIELD_KEY_EXPENSE_ID]!!
+                )
+            }
+            .let {
+                val (expenseId, expenseEventId) = deleteExpenseUseCase.execute(expenseId = it.expenseId!!)
+                DeleteExpenseResponse(
+                    messageId = it.messageId,
+                    expenseId = expenseId,
+                    expenseEventId = expenseEventId,
+                )
+            }
+            .let {
+                interaction
+                    .deferPublicMessageUpdate()
+                    .edit(builder = it.toInteractionResponseModifyBuilder(channelId = discordBotConfig.channelId))
             }
 }
 
@@ -383,4 +456,71 @@ enum class Category(
     TRAVEL(label = "旅費"),
     OTHER(label = "その他"),
     ;
+}
+
+data class DeleteExpenseRequest(
+    val messageId: String,
+    val expenseId: String? = null,
+) {
+    companion object {
+        fun fromEmbedData(embedData: EmbedData): DeleteExpenseRequest =
+            embedData
+                .fields
+                .orEmpty()
+                .associate { it.name to it.value }
+                .let {
+                    DeleteExpenseRequest(
+                        messageId = it[ExpenseFeature.EMBED_FIELD_KEY_CREATE_EXPENSE_MESSAGE_ID]!!,
+                    )
+                }
+    }
+
+    fun toInteractionResponseModifyBuilder(channelId: String): InteractionResponseModifyBuilder.() -> Unit = {
+        content = "削除する支出は https://discord.com/channels/889318150615744523/$channelId/$messageId で間違いないっピか？"
+        embed(builder = toEmbedBuilder())
+        actionRow(builder = toSubmitActionRowBuilder())
+    }
+
+    private fun toEmbedBuilder(): EmbedBuilder.() -> Unit = {
+        title = "入力情報だっピ"
+        color = Color(red = 255, green = 255, blue = 50)
+        field(name = ExpenseFeature.EMBED_FIELD_KEY_CREATE_EXPENSE_MESSAGE_ID, inline = true, value = { messageId })
+        expenseId?.let { field(name = ExpenseFeature.EMBED_FIELD_KEY_EXPENSE_ID, inline = true, value = { it }) }
+    }
+
+    private fun toSubmitActionRowBuilder(): ActionRowBuilder.() -> Unit = {
+        interactionButton(
+            customId = ExpenseFeature.DELETE_BUTTON_ID,
+            style = ButtonStyle.Danger,
+        ) {
+            label = ExpenseFeature.DELETE_BUTTON_LABEL
+            disabled = false
+        }
+    }
+}
+
+data class DeleteExpenseResponse(
+    val messageId: String,
+    val expenseId: String,
+    val expenseEventId: String,
+) {
+    fun toInteractionResponseModifyBuilder(channelId: String): InteractionResponseModifyBuilder.() -> Unit = {
+        content = "https://discord.com/channels/889318150615744523/$channelId/$messageId の支出が削除されたっピ"
+        embed {
+            title = "入力情報だっピ"
+            color = Color(red = 0, green = 255, blue = 0)
+            field(name = ExpenseFeature.EMBED_FIELD_KEY_CREATE_EXPENSE_MESSAGE_ID, inline = true, value = { messageId })
+            field(name = ExpenseFeature.EMBED_FIELD_KEY_EXPENSE_ID, inline = true, value = { expenseId })
+            field(name = ExpenseFeature.EMBED_FIELD_KEY_EXPENSE_EVENT_ID, inline = true, value = { expenseEventId })
+        }
+        actionRow {
+            interactionButton(
+                customId = ExpenseFeature.DELETE_BUTTON_ID,
+                style = ButtonStyle.Danger,
+            ) {
+                label = ExpenseFeature.DELETE_BUTTON_LABEL
+                disabled = true
+            }
+        }
+    }
 }
