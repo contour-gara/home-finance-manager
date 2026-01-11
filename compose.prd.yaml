@@ -29,6 +29,17 @@ services:
       FINANCE_CORE_DISCORD_BOT_TOKEN: ${BOT_TOKEN}
       FINANCE_CORE_DISCORD_CHANNEL_ID: ${CHANNEL_ID}
 
+  expenses-api:
+    image: ghcr.io/contour-gara/home-finance-manager-expenses-api:latest
+    depends_on:
+      ulid-sequencer:
+        condition: service_started
+    environment:
+      EXPENSES_API_DATASOURCE_URL: jdbc:mysql://gateway01.ap-northeast-1.prod.aws.tidbcloud.com:4000/home_finance_manager_expenses_api_db?sslMode=VERIFY_IDENTITY
+      DATASOURCE_USERNAME: ${DATASOURCE_USERNAME}
+      DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD}
+      ULID_SEQUENCER_BASE_URL: http://ulid-sequencer:8080
+
   ulid-sequencer:
     image: ghcr.io/contour-gara/home-finance-manager-ulid-sequencer:latest
     environment:
