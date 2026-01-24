@@ -49,7 +49,9 @@ object ExpenseFeature : KoinComponent {
     const val SELECT_CATEGORY_PLACEHOLDER = "支出カテゴリーを選択してっピ"
     const val MEMO_BUTTON_ID = "memo-button"
     const val MEMO_MODAL_ID = "memo-modal"
-    const val MEMO_MODAL_INPUT_ID = "memo-modal-input"
+    const val MEMO_MODAL_MONTH_INPUT_ID = "memo-modal-month-input"
+    const val MEMO_MODAL_DAY_INPUT_ID = "memo-modal-day-input"
+    const val MEMO_MODAL_MEMO_INPUT_ID = "memo-modal-memo-input"
     const val SUBMIT_BUTTON_ID = "submit-button"
     const val DELETE_BUTTON_ID = "delete-expense-button"
     const val DELETE_BUTTON_LABEL = "削除"
@@ -164,8 +166,30 @@ object ExpenseFeature : KoinComponent {
             ) {
                 actionRow {
                     textInput(
+                        style = TextInputStyle.Short,
+                        customId = MEMO_MODAL_MONTH_INPUT_ID,
+                        label = "月"
+                    ) {
+                        placeholder = "月を入力してっピ"
+                        allowedLength = 1..2
+                        required = true
+                    }
+                }
+                actionRow {
+                    textInput(
+                        style = TextInputStyle.Short,
+                        customId = MEMO_MODAL_DAY_INPUT_ID,
+                        label = "日"
+                    ) {
+                        placeholder = "日を入力してっピ"
+                        allowedLength = 1..2
+                        required = true
+                    }
+                }
+                actionRow {
+                    textInput(
                         style = TextInputStyle.Paragraph,
-                        customId = MEMO_MODAL_INPUT_ID,
+                        customId = MEMO_MODAL_MEMO_INPUT_ID,
                         label = "メモ",
                     ) {
                         placeholder = "メモを入力してっピ"
@@ -184,7 +208,12 @@ object ExpenseFeature : KoinComponent {
             .let {
                 CreateExpenseRequest
                     .fromEmbedData(embedData = it)
-                    .copy(memo = interaction.textInputs[MEMO_MODAL_INPUT_ID]!!.value)
+//                    .copy(memo = interaction.textInputs[MEMO_MODAL_MEMO_INPUT_ID]!!.value)
+                    .copyMemo(
+                        month = interaction.textInputs[MEMO_MODAL_MONTH_INPUT_ID]!!.value!!,
+                        day = interaction.textInputs[MEMO_MODAL_DAY_INPUT_ID]!!.value!!,
+                        memo = interaction.textInputs[MEMO_MODAL_MEMO_INPUT_ID]!!.value!!,
+                    )
             }
             .let {
                 interaction
@@ -273,6 +302,22 @@ data class CreateExpenseRequest(
                     )
                 }
     }
+
+    fun copyMemo(month: String, day: String, memo: String): CreateExpenseRequest =
+        Triple(first = month, second = day, third = memo)
+            .let { (month, day, memo) ->
+                Triple(first = month.toInt(), second = day.toInt(), third = memo)
+            }
+            .also { (month, day, _) ->
+                if (month !in 1..12) throw IllegalArgumentException("月の値が不正です: $month")
+                if (day !in 1..31) throw IllegalArgumentException("日の値が不正です: $day")
+            }
+            .let { (month, day, memo) ->
+                this.copy(memo = """
+                    $month/$day
+                    $memo
+                """.trimIndent())
+            }
 
     fun toInteractionResponseModifyBuilder(): InteractionResponseModifyBuilder.() -> Unit = {
         content = "支出の情報を入力してっピ"
