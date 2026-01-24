@@ -26,7 +26,7 @@ dependencies {
     implementation(libs.axon.spring.boot.starter)
     implementation(libs.ulid.kotlin)
     implementation(libs.jackson.module.kotlin)
-    implementation(libs.kord.core)
+    implementation(libs.kord.rest)
     runtimeOnly(libs.mysql.connector.j)
     runtimeOnly(libs.flyway.mysql.spring)
     testImplementation(libs.spring.boot.starter.test)

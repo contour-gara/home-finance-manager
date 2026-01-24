@@ -16,7 +16,7 @@ slf4j = "2.0.17"
 arrow = "2.2.1.1"
 koin  = "4.1.1"
 koin-annotations = "2.3.1"
-kord-core = "0.17.0"
+kord = "0.17.0"
 ulid-kotlin = "1.5.0"
 kotlinx-serialization = "1.9.0"
 
@@ -61,7 +61,8 @@ koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations" }
 koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations" }
-kord-core = { module = "dev.kord:kord-core", version.ref = "kord-core" }
+kord-core = { module = "dev.kord:kord-core", version.ref = "kord" }
+kord-rest = { module = "dev.kord:kord-rest", version.ref = "kord" }
 ulid-kotlin = { module = "com.aallam.ulid:ulid-kotlin", version.ref = "ulid-kotlin" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin" }

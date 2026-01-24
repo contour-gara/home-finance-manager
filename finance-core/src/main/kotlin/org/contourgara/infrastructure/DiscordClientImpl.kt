@@ -2,7 +2,6 @@ package org.contourgara.infrastructure
 
 import dev.kord.common.Color
 import dev.kord.common.entity.Snowflake
-import dev.kord.core.Kord
 import dev.kord.rest.builder.message.embed
 import dev.kord.rest.request.KtorRequestHandler
 import dev.kord.rest.service.RestClient
@@ -19,9 +18,6 @@ import org.springframework.stereotype.Component
 class DiscordClientImpl(
     private val financeCoreConfig: FinanceCoreConfig,
 ) : DiscordClient {
-    private val kord: Kord by lazy {
-        runBlocking { Kord(financeCoreConfig.discordBotToken) }
-    }
     private val restClient: RestClient by lazy {
         RestClient(KtorRequestHandler(financeCoreConfig.discordBotToken))
     }
@@ -32,7 +28,7 @@ class DiscordClientImpl(
                 .from(registerBill)
                 .also {
                     restClient.channel.createMessage(Snowflake(financeCoreConfig.discordChannelId)) {
-                        content = "${kord.getUser(it.lender.id)?.mention} から ${kord.getUser(it.borrower.id)?.username} への請求を登録したっピ！"
+                        content = "<@${it.lender.id}> から <@${it.borrower.id}> への請求を登録したっピ！"
                         embed {
                             title = "詳細っピ"
                             color = Color(0, 255, 0)
@@ -56,7 +52,7 @@ class DiscordClientImpl(
                 .from(deleteBill)
                 .also {
                     restClient.channel.createMessage(Snowflake(financeCoreConfig.discordChannelId)) {
-                        content = "${kord.getUser(it.lender.id)?.mention} から ${kord.getUser(it.borrower.id)?.username} への請求を削除したっピ！"
+                        content = "<@${it.lender.id}> から <@${it.borrower.id}> への請求を削除したっピ！"
                         embed {
                             title = "詳細っピ"
                             color = Color(255, 0, 0)
@@ -80,7 +76,7 @@ class DiscordClientImpl(
                 .from(loan)
                 .also {
                     restClient.channel.createMessage(Snowflake(financeCoreConfig.discordChannelId)) {
-                        content = "${kord.getUser(it.lender.id)?.username} は ${kord.getUser(it.borrower.id)?.username} に${it.displayAmount}貸してるっピ"
+                        content = "<@${it.lender.id}> は <@${it.borrower.id}> に${it.displayAmount}貸してるっピ"
                         embed {
                             title = "詳細っピ"
                             color = Color(0, 255, 0)
@@ -100,7 +96,7 @@ class DiscordClientImpl(
                 .from(debt)
                 .also {
                     restClient.channel.createMessage(Snowflake(financeCoreConfig.discordChannelId)) {
-                        content = "${kord.getUser(it.lender.id)?.username} は ${kord.getUser(it.borrower.id)?.username} に${it.displayAmount}借りてるっピ"
+                        content = "<@${it.lender.id}> は <@${it.borrower.id}> に${it.displayAmount}借りてるっピ"
                         embed {
                             title = "詳細っピ"
                             color = Color(0, 255, 0)
