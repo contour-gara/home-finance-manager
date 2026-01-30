@@ -37,6 +37,8 @@ services:
     depends_on:
       ulid-sequencer:
         condition: service_started
+    ports:
+      - "28080:8080"
     environment:
       EXPENSES_API_DATASOURCE_URL: jdbc:mysql://gateway01.ap-northeast-1.prod.aws.tidbcloud.com:4000/home_finance_manager_expenses_api_db?sslMode=VERIFY_IDENTITY
       DATASOURCE_USERNAME: ${DATASOURCE_USERNAME}
