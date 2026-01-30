@@ -43,9 +43,9 @@ fun Application.configureExpenseRouting(
                     }
             }
 
-            delete("{expensesId}") {
+            delete("{expenseId}") {
                 call
-                    .pathParameters["expensesId"]
+                    .pathParameters["expenseId"]
                     ?.let { deleteExpenseUseCase.execute(expenseId = it) }
                     ?.let {
                         call.respond(
@@ -53,7 +53,7 @@ fun Application.configureExpenseRouting(
                             message = DeleteExpenseResponse(expenseEventId = it),
                         )
                     }
-                    ?: throw RuntimeException("path parameter was not found: expensesId")
+                    ?: throw RuntimeException("path parameter was not found: expenseId")
             }
         }
     }
