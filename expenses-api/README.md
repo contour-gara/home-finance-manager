@@ -1,8 +1,8 @@
 # expenses-api
 
-## create expense
+## execute
 
-### execute
+### create expense
 
 ```shell
 curl -v -X POST http://localhost:28080/expense \
@@ -16,6 +16,12 @@ curl -v -X POST http://localhost:28080/expense \
     "month":"1",
     "memo":"test"
   }'
+```
+
+### delete expense
+
+```shell
+curl -v -X DELETE http://localhost:28080/expense/{expenseId}
 ```
 
 ### check
