@@ -28,7 +28,6 @@ class ExpenseEventIdClientImpl(
                 }
                 level = LogLevel.ALL
             }
-
             defaultRequest {
                 url(urlString = appConfig.ulidSequencerBaseUrl)
             }

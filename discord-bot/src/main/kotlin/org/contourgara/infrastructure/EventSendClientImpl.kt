@@ -4,13 +4,15 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.DEFAULT
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
@@ -27,109 +29,85 @@ import org.contourgara.domain.BillId
 import org.contourgara.domain.EventSendClient
 import org.contourgara.domain.User
 import org.koin.core.annotation.Single
+import org.slf4j.LoggerFactory
 
 @Single
 @OptIn(ExperimentalSerializationApi::class)
 class EventSendClientImpl(
     private val discordBotConfig: DiscordBotConfig,
 ) : EventSendClient {
-    override fun registerBill(bill: Bill) {
-        runBlocking {
-            HttpClient(CIO) {
-                install(Logging) {
-                    logger = Logger.DEFAULT
-                    level = LogLevel.ALL
-                }
-
-                install(ContentNegotiation) {
-                    json(
-                        Json {
-                            classDiscriminatorMode = ClassDiscriminatorMode.NONE
-                            encodeDefaults = true
-                        }
-                    )
-                }
-            }
-                .use { client ->
-                    client.post("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.registerBillTopicName}/records") {
-                        contentType(ContentType.Application.Json)
-                        setBody(RecordRequest.from(bill))
+    private val httpClient: HttpClient by lazy {
+        HttpClient(engineFactory = CIO) {
+            install(plugin = Logging) {
+                logger = object : Logger {
+                    override fun log(message: String) {
+                        LoggerFactory.getLogger(HttpClient::class.java).debug(message)
                     }
                 }
-                .also {
-                    if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
+                level = LogLevel.ALL
+            }
+            install(plugin = ContentNegotiation) {
+                json(
+                    Json {
+                        classDiscriminatorMode = ClassDiscriminatorMode.NONE
+                        encodeDefaults = true
+                    }
+                )
+            }
+            defaultRequest {
+                url(urlString = discordBotConfig.kafkaRestProxyBaseUrl)
+                header(HttpHeaders.ContentType, ContentType.Application.Json)
+            }
+        }
+    }
+
+    override fun registerBill(bill: Bill) {
+        runBlocking {
+            httpClient
+                .post(urlString = "/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.registerBillTopicName}/records") {
+                    setBody(RecordRequest.from(bill))
                 }
-                .body<ProduceRecordResponse>()
-                .also {
-                    if (it.isFailure()) throw RuntimeException("Bad Request")
-                }
-                .let { Unit }
+                    .also {
+                        if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
+                    }
+                    .body<ProduceRecordResponse>()
+                    .also {
+                        if (it.isFailure()) throw RuntimeException("Bad Request")
+                    }
         }
     }
 
     override fun deleteBill(billId: BillId) {
         runBlocking {
-            HttpClient(CIO) {
-                install(Logging) {
-                    logger = Logger.DEFAULT
-                    level = LogLevel.ALL
+            httpClient
+                .post(urlString = "/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.deleteBillTopicName}/records") {
+                    contentType(ContentType.Application.Json)
+                    setBody(RecordRequest.from(billId))
                 }
-
-                install(ContentNegotiation) {
-                    json(
-                        Json {
-                            classDiscriminatorMode = ClassDiscriminatorMode.NONE
-                            encodeDefaults = true
-                        }
-                    )
-                }
-            }
-                .use { client ->
-                    client.post("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.deleteBillTopicName}/records") {
-                        contentType(ContentType.Application.Json)
-                        setBody(RecordRequest.from(billId))
+                    .also {
+                        if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
                     }
-                }
-                .also {
-                    if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
-                }
-                .body<ProduceRecordResponse>()
-                .also {
-                    if (it.isFailure()) throw RuntimeException("Bad Request")
-                }
+                    .body<ProduceRecordResponse>()
+                    .also {
+                        if (it.isFailure()) throw RuntimeException("Bad Request")
+                    }
         }
     }
 
     override fun showBalance(lender: User, borrower: User) {
         runBlocking {
-            HttpClient(CIO) {
-                install(Logging) {
-                    logger = Logger.DEFAULT
-                    level = LogLevel.ALL
-                }
-
-                install(ContentNegotiation) {
-                    json(
-                        Json {
-                            classDiscriminatorMode = ClassDiscriminatorMode.NONE
-                            encodeDefaults = true
-                        }
-                    )
-                }
-            }
-                .use { client ->
-                    client.post("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.showBalanceTopicName}/records") {
+            httpClient
+                .post("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.showBalanceTopicName}/records") {
                         contentType(ContentType.Application.Json)
                         setBody(RecordRequest.from(lender, borrower))
+                }
+                    .also {
+                        if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
                     }
-                }
-                .also {
-                    if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
-                }
-                .body<ProduceRecordResponse>()
-                .also {
-                    if (it.isFailure()) throw RuntimeException("Bad Request")
-                }
+                    .body<ProduceRecordResponse>()
+                    .also {
+                        if (it.isFailure()) throw RuntimeException("Bad Request")
+                    }
         }
     }
 

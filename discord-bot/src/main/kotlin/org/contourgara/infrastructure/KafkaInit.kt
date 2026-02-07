@@ -4,7 +4,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
@@ -23,33 +22,38 @@ import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 import org.contourgara.DiscordBotConfig
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.slf4j.LoggerFactory
 
 object KafkaInit : KoinComponent {
     private val discordBotConfig: DiscordBotConfig by inject()
 
     fun execute() = runBlocking {
-        HttpClient(CIO) {
-            install(Logging) {
-                logger = Logger.DEFAULT
-                level = LogLevel.ALL
-            }
-
-            install(ContentNegotiation) {
-                json()
-            }
-        }.use { client ->
-            client.get("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics")
-                .body<GetAllTopicsResponse>()
-                .toCreatTopics()
-                .forEach {
-                    client.post("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics") {
-                        contentType(ContentType.Application.Json)
-                        setBody(CreateTopicRequest(it.topicName))
-                    }.also {
-                        if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
+        HttpClient(engineFactory = CIO) {
+            install(plugin = Logging) {
+                logger = object : Logger {
+                    override fun log(message: String) {
+                        LoggerFactory.getLogger(HttpClient::class.java).debug(message)
                     }
                 }
+                level = LogLevel.ALL
+            }
+            install(plugin = ContentNegotiation) {
+                json()
+            }
         }
+            .use { client ->
+                client.get(urlString = "${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics")
+                    .body<GetAllTopicsResponse>()
+                    .toCreatTopics()
+                    .forEach {
+                        client.post(urlString = "${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics") {
+                            contentType(type = ContentType.Application.Json)
+                            setBody(CreateTopicRequest(it.topicName))
+                        }.also {
+                            if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
+                        }
+                    }
+            }
     }
 
     @OptIn(ExperimentalSerializationApi::class)
