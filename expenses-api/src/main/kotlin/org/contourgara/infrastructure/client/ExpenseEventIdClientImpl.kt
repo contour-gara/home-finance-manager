@@ -2,6 +2,7 @@ package org.contourgara.infrastructure.client
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
@@ -27,13 +28,17 @@ class ExpenseEventIdClientImpl(
                 }
                 level = LogLevel.ALL
             }
+
+            defaultRequest {
+                url(urlString = appConfig.ulidSequencerBaseUrl)
+            }
         }
     }
 
     override fun nextExpensesEventId(): ExpenseEventId =
         runBlocking {
             httpClient
-                .get(urlString = "${appConfig.ulidSequencerBaseUrl}/next-ulid")
+                .get(urlString = "/next-ulid")
                     .bodyAsText()
                     .let { ULID.parseULID(it) }
                     .let { ExpenseEventId(value = it) }
