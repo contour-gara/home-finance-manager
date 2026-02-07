@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.serialization)
     alias(libs.plugins.ktor)
-    jacoco
+    alias(libs.plugins.kover)
     application
 }
 
@@ -70,16 +70,7 @@ tasks.test {
         showStackTraces = true
     }
 
-    finalizedBy(tasks.jacocoTestReport)
-}
-
-tasks.jacocoTestReport {
-    dependsOn(tasks.test)
-    reports {
-        xml.required.set(false)
-        csv.required.set(false)
-        html.required.set(true)
-    }
+    finalizedBy(tasks.koverHtmlReport)
 }
 
 tasks.withType<Jar> {
