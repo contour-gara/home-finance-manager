@@ -24,13 +24,14 @@ object ExpensesRepositoryImpl : ExpensesRepository {
         payer: Payer,
         category: Category
     ): Expenses? =
-        ExpensesYearTable
-            .innerJoin(otherTable = ExpensesMonthTable, onColumn = { ExpensesYearTable.lastEventId }, otherColumn = { ExpensesMonthTable.lastEventId })
-            .innerJoin(otherTable = ExpensesPayerTable, onColumn = { ExpensesYearTable.lastEventId }, otherColumn = { ExpensesPayerTable.lastEventId })
-            .innerJoin(otherTable = ExpensesCategoryTable, onColumn = { ExpensesYearTable.lastEventId }, otherColumn = { ExpensesCategoryTable.lastEventId })
-            .innerJoin(otherTable = ExpensesAmountTable, onColumn = { ExpensesYearTable.lastEventId }, otherColumn = { ExpensesAmountTable.lastEventId })
+        ExpenseEventIdTable
+            .innerJoin(otherTable = ExpensesYearTable, onColumn = { ExpenseEventIdTable.expenseEventId }, otherColumn = { ExpensesYearTable.lastEventId })
+            .innerJoin(otherTable = ExpensesMonthTable, onColumn = { ExpenseEventIdTable.expenseEventId }, otherColumn = { ExpensesMonthTable.lastEventId })
+            .innerJoin(otherTable = ExpensesPayerTable, onColumn = { ExpenseEventIdTable.expenseEventId }, otherColumn = { ExpensesPayerTable.lastEventId })
+            .innerJoin(otherTable = ExpensesCategoryTable, onColumn = { ExpenseEventIdTable.expenseEventId }, otherColumn = { ExpensesCategoryTable.lastEventId })
+            .innerJoin(otherTable = ExpensesAmountTable, onColumn = { ExpenseEventIdTable.expenseEventId }, otherColumn = { ExpensesAmountTable.lastEventId })
             .select(
-                ExpensesYearTable.lastEventId,
+                ExpenseEventIdTable.expenseEventId,
                 ExpensesYearTable.year,
                 ExpensesMonthTable.month,
                 ExpensesPayerTable.payer,
@@ -39,16 +40,16 @@ object ExpensesRepositoryImpl : ExpensesRepository {
             )
             .where {
                 (ExpensesYearTable.year eq year.value)
-                    .and(ExpensesMonthTable.month eq month.value)
-                    .and(ExpensesPayerTable.payer eq payer.name)
-                    .and(ExpensesCategoryTable.category eq category.name)
+                    .and(op = ExpensesMonthTable.month eq month.value)
+                    .and(op = ExpensesPayerTable.payer eq payer.name)
+                    .and(op = ExpensesCategoryTable.category eq category.name)
             }
-            .orderBy(ExpensesYearTable.lastEventId, SortOrder.DESC)
-            .limit(1)
+            .orderBy(column = ExpenseEventIdTable.expenseEventId, order = SortOrder.DESC)
+            .limit(count = 1)
             .singleOrNull()
             ?.let {
                 Expenses(
-                    lastEventId = ExpenseEventId(value = ULID.parseULID(it[ExpensesYearTable.lastEventId])),
+                    lastEventId = ExpenseEventId(value = ULID.parseULID(ulidString = it[ExpenseEventIdTable.expenseEventId])),
                     year = Year.of(value = it[ExpensesYearTable.year]),
                     month = Month.of(value = it[ExpensesMonthTable.month]),
                     payer = Payer.valueOf(value = it[ExpensesPayerTable.payer]),
