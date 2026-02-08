@@ -6,6 +6,13 @@ data class MonthlyExpenses(
     companion object {
         fun from(expenses: List<Expenses>): MonthlyExpenses =
             expenses
+                .also {
+                    require(
+                        value = expenses.distinctBy { it.year to it.month }.size == 1
+                    ) {
+                        "異なる年のデータがあります。"
+                    }
+                }
                 .groupBy { it.category to it.payer }
                 .mapValues { (_, expensesList) ->
                     expensesList.maxBy { it.lastEventId.value }
