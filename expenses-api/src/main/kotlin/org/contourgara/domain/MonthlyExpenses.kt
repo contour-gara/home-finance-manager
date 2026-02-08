@@ -4,8 +4,12 @@ data class MonthlyExpenses(
     val values: Map<Category, Amount>,
 ) {
     companion object {
-        fun from(expenses: List<Expenses>): MonthlyExpenses =
+        fun from(expenses: List<Expenses>, payer: Payer? = null): MonthlyExpenses =
             expenses
+                .let {
+                    if (payer != null) it.filter { it.payer == payer }
+                    else it
+                }
                 .also {
                     require(
                         value = expenses.distinctBy { it.year to it.month }.size == 1
