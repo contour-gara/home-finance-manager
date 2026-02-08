@@ -58,6 +58,40 @@ object ExpensesRepositoryImpl : ExpensesRepository {
                 )
             }
 
+    override fun findMonthlyExpenses(
+        year: Year,
+        month: Month
+    ): List<Expenses> =
+        ExpenseEventIdTable
+            .innerJoin(otherTable = ExpensesYearTable, onColumn = { ExpenseEventIdTable.expenseEventId }, otherColumn = { ExpensesYearTable.lastEventId })
+            .innerJoin(otherTable = ExpensesMonthTable, onColumn = { ExpenseEventIdTable.expenseEventId }, otherColumn = { ExpensesMonthTable.lastEventId })
+            .innerJoin(otherTable = ExpensesPayerTable, onColumn = { ExpenseEventIdTable.expenseEventId }, otherColumn = { ExpensesPayerTable.lastEventId })
+            .innerJoin(otherTable = ExpensesCategoryTable, onColumn = { ExpenseEventIdTable.expenseEventId }, otherColumn = { ExpensesCategoryTable.lastEventId })
+            .innerJoin(otherTable = ExpensesAmountTable, onColumn = { ExpenseEventIdTable.expenseEventId }, otherColumn = { ExpensesAmountTable.lastEventId })
+            .select(
+                ExpenseEventIdTable.expenseEventId,
+                ExpensesYearTable.year,
+                ExpensesMonthTable.month,
+                ExpensesPayerTable.payer,
+                ExpensesCategoryTable.category,
+                ExpensesAmountTable.amount,
+            )
+            .where {
+                (ExpensesYearTable.year eq year.value)
+                    .and(op = ExpensesMonthTable.month eq month.value)
+            }
+            .orderBy(column = ExpenseEventIdTable.expenseEventId, order = SortOrder.DESC)
+            .map {
+                Expenses(
+                    lastEventId = ExpenseEventId(value = ULID.parseULID(ulidString = it[ExpenseEventIdTable.expenseEventId])),
+                    year = Year.of(value = it[ExpensesYearTable.year]),
+                    month = Month.of(value = it[ExpensesMonthTable.month]),
+                    payer = Payer.valueOf(value = it[ExpensesPayerTable.payer]),
+                    category = Category.valueOf(value = it[ExpensesCategoryTable.category]),
+                    amount = Amount(value = it[ExpensesAmountTable.amount]),
+                )
+            }
+
     override fun save(expenses: Expenses): Expenses =
         expenses
             .also {
