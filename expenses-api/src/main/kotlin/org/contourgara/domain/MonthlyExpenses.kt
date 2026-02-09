@@ -14,7 +14,7 @@ data class MonthlyExpenses(
                     require(
                         value = expenses.distinctBy { it.year to it.month }.size in listOf(0, 1)
                     ) {
-                        "異なる年のデータがあります。"
+                        "異なる年月のデータがあります。"
                     }
                 }
                 .groupBy { it.category to it.payer }

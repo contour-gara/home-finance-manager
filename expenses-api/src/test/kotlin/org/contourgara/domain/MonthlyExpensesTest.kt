@@ -146,7 +146,7 @@ class MonthlyExpensesTest : FunSpec({
         // execute & assert
         shouldThrowExactly<IllegalArgumentException> {
             MonthlyExpenses.from(expenses = expenses)
-        }.message shouldBe "異なる年のデータがあります。"
+        }.message shouldBe "異なる年月のデータがあります。"
     }
 
     test("月の合計支出の算出において、月が異なるものがある場合例外を投げる") {
@@ -189,7 +189,7 @@ class MonthlyExpensesTest : FunSpec({
         // execute & assert
         shouldThrowExactly<IllegalArgumentException> {
             MonthlyExpenses.from(expenses = expenses)
-        }.message shouldBe "異なる年のデータがあります。"
+        }.message shouldBe "異なる年月のデータがあります。"
     }
 
     test("月の合計支出の算出において、支出が無い場合は空の合計支出を返す") {
