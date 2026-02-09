@@ -1,10 +1,7 @@
 package org.contourgara.presentation
 
 import io.ktor.http.HttpStatusCode
-import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
-import io.ktor.server.application.install
-import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.delete
@@ -20,12 +17,8 @@ fun Application.configureExpenseRouting(
     createExpenseUseCase: CreateExpenseUseCase,
     deleteExpenseUseCase: DeleteExpenseUseCase,
 ) {
-    install(ContentNegotiation) {
-        json()
-    }
-
     routing {
-        route("/expense") {
+        route(path = "/expense") {
             post {
                 call
                     .receive<CreateExpenseRequest>()
@@ -43,7 +36,7 @@ fun Application.configureExpenseRouting(
                     }
             }
 
-            delete("{expenseId}") {
+            delete(path = "{expenseId}") {
                 call
                     .pathParameters["expenseId"]
                     ?.let { deleteExpenseUseCase.execute(expenseId = it) }
