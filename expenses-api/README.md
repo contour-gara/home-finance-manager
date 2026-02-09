@@ -24,6 +24,12 @@ curl -v -X POST http://localhost:28080/expense \
 curl -v -X DELETE http://localhost:28080/expense/{expenseId}
 ```
 
+### get monthly expenses
+
+```shell
+curl -v -X GET "http://localhost:28080/expenses/2026/1?payer=DIRECT_DEBIT"
+````
+
 ### check
 
 #### expense
