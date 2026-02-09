@@ -24,9 +24,12 @@ class ConfigureExpensesRoutingTest : FunSpec({
                         year = 2026,
                         month = 1,
                     )
-            } returns mapOf(
-                "UTILITIES" to 1000,
-                "RENT" to 2500,
+            } returns Pair(
+                first = mapOf(
+                    "UTILITIES" to 1000,
+                    "RENT" to 2500,
+                ),
+                second = 3500,
             )
 
             application {
@@ -43,7 +46,7 @@ class ConfigureExpensesRoutingTest : FunSpec({
 
             // assert
             actual shouldHaveStatus 200
-            actual.bodyAsText() shouldBe  "{\"UTILITIES\":1000,\"RENT\":2500}"
+            actual.bodyAsText() shouldBe  "{\"breakdown\":{\"UTILITIES\":1000,\"RENT\":2500},\"total\":3500}"
         }
     }
 
@@ -58,9 +61,12 @@ class ConfigureExpensesRoutingTest : FunSpec({
                         month = 1,
                         payer = "DIRECT_DEBIT"
                     )
-            } returns mapOf(
-                "UTILITIES" to 1000,
-                "RENT" to 1500,
+            } returns Pair(
+                first = mapOf(
+                    "UTILITIES" to 1000,
+                    "RENT" to 1500,
+                ),
+                second = 2500,
             )
 
             application {
@@ -77,7 +83,7 @@ class ConfigureExpensesRoutingTest : FunSpec({
 
             // assert
             actual shouldHaveStatus 200
-            actual.bodyAsText() shouldBe  "{\"UTILITIES\":1000,\"RENT\":1500}"
+            actual.bodyAsText() shouldBe "{\"breakdown\":{\"UTILITIES\":1000,\"RENT\":1500},\"total\":2500}"
         }
     }
 })

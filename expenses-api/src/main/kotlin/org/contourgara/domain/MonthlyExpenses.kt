@@ -30,4 +30,6 @@ data class MonthlyExpenses(
                 }
                 .let { MonthlyExpenses(values = it) }
     }
+
+    val totalAmount: Amount get() = values.values.sumOf { it.value }.let { Amount(value = it) }
 }

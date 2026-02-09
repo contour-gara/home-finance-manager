@@ -6,6 +6,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
+import kotlinx.serialization.Serializable
 import org.contourgara.application.MonthlyExpensesQueryService
 
 fun Application.configureExpensesRouting(
@@ -29,10 +30,19 @@ fun Application.configureExpensesRouting(
                     .let {
                         call.respond(
                             status = HttpStatusCode.OK,
-                            message = it,
+                            message = GetExpensesResponse(
+                                breakdown = it.first,
+                                total = it.second,
+                            ),
                         )
                     }
             }
         }
     }
 }
+
+@Serializable
+data class GetExpensesResponse(
+    private val breakdown: Map<String, Int>,
+    private val total: Int,
+)

@@ -73,9 +73,12 @@ class MonthlyExpensesQueryServiceTest : FunSpec({
         val actual = sut.execute(year = 2026, month = 1)
 
         // assert
-        val expected = mapOf(
-            "UTILITIES" to 1000,
-            "RENT" to 2500,
+        val expected = Pair(
+            first = mapOf(
+                "UTILITIES" to 1000,
+                "RENT" to 2500,
+            ),
+            second = 3500,
         )
         actual shouldBe expected
     }
@@ -128,9 +131,12 @@ class MonthlyExpensesQueryServiceTest : FunSpec({
         val actual = sut.execute(year = 2026, month = 1, payer = "DIRECT_DEBIT")
 
         // assert
-        val expected = mapOf(
-            "UTILITIES" to 1000,
-            "RENT" to 1500,
+        val expected = Pair(
+            first = mapOf(
+                "UTILITIES" to 1000,
+                "RENT" to 1500,
+            ),
+            second = 2500,
         )
         actual shouldBe expected
     }

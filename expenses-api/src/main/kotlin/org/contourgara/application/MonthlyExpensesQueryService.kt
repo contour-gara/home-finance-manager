@@ -12,7 +12,7 @@ import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 class MonthlyExpensesQueryService(
     private val expensesRepository: ExpensesRepository,
 ) {
-    fun execute(year: Int, month: Int, payer: String? = null): Map<String, Int> =
+    fun execute(year: Int, month: Int, payer: String? = null): Pair<Map<String, Int>, Int> =
         transaction {
             expensesRepository
                 .findMonthlyExpenses(year = Year.of(value = year), month = Month.of(value = month))
@@ -23,10 +23,11 @@ class MonthlyExpensesQueryService(
                         is Either.Left -> throw result.value.toException()
                     }
                 }
-                .values
-                .entries
-                .associate { (category, amount) ->
-                    category.name to amount.value
+                .let { it.values.entries to it.totalAmount }
+                .let { (entries, totalAmount) ->
+                    entries.associate { (category, amount) ->
+                        category.name to amount.value
+                    } to totalAmount.value
                 }
         }
 }

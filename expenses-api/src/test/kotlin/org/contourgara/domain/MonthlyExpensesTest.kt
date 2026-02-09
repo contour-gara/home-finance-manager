@@ -205,4 +205,21 @@ class MonthlyExpensesTest : FunSpec({
         )
         actual shouldBe expected
     }
+
+    test("月の合計支出からトータルの金額を計算できる") {
+        // setup
+        val sut = MonthlyExpenses(
+            values = mapOf(
+                Category.UTILITIES to Amount(value = 1000),
+                Category.RENT to Amount(value = 1500),
+            )
+        )
+
+        // execute
+        val actual = sut.totalAmount
+
+        // assert
+        val expected = Amount(value = 2500)
+        actual shouldBe expected
+    }
 })
