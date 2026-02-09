@@ -9,6 +9,9 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
+import io.ktor.server.application.install
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.testing.testApplication
 import io.mockk.every
 import io.mockk.mockk
@@ -26,6 +29,9 @@ class GlobalExceptionHandlerTest : FunSpec({
             val deleteExpenseUseCase = mockk<DeleteExpenseUseCase>()
 
             application {
+                install(plugin = ContentNegotiation) {
+                    json()
+                }
                 configureExpenseRouting(createExpenseUseCase = createExpenseUseCase, deleteExpenseUseCase = deleteExpenseUseCase)
                 configureGlobalExceptionHandler()
             }
@@ -58,6 +64,9 @@ class GlobalExceptionHandlerTest : FunSpec({
             val deleteExpenseUseCase = mockk<DeleteExpenseUseCase>()
 
             application {
+                install(plugin = ContentNegotiation) {
+                    json()
+                }
                 configureExpenseRouting(createExpenseUseCase = createExpenseUseCase, deleteExpenseUseCase = deleteExpenseUseCase)
                 configureGlobalExceptionHandler()
             }
@@ -98,6 +107,9 @@ class GlobalExceptionHandlerTest : FunSpec({
                     )
 
             application {
+                install(plugin = ContentNegotiation) {
+                    json()
+                }
                 configureExpenseRouting(createExpenseUseCase = createExpenseUseCase, deleteExpenseUseCase = deleteExpenseUseCase)
                 configureGlobalExceptionHandler()
             }
@@ -133,6 +145,9 @@ class GlobalExceptionHandlerTest : FunSpec({
             val createExpenseUseCase = mockk<CreateExpenseUseCase>()
 
             application {
+                install(plugin = ContentNegotiation) {
+                    json()
+                }
                 configureExpenseRouting(createExpenseUseCase = createExpenseUseCase, deleteExpenseUseCase = deleteExpenseUseCase)
                 configureGlobalExceptionHandler()
             }
@@ -155,6 +170,9 @@ class GlobalExceptionHandlerTest : FunSpec({
             val createExpenseUseCase = mockk<CreateExpenseUseCase>()
 
             application {
+                install(plugin = ContentNegotiation) {
+                    json()
+                }
                 configureExpenseRouting(createExpenseUseCase = createExpenseUseCase, deleteExpenseUseCase = deleteExpenseUseCase)
                 configureGlobalExceptionHandler()
             }
@@ -177,6 +195,9 @@ class GlobalExceptionHandlerTest : FunSpec({
             every { createExpenseUseCase.execute(any()) } throws RuntimeException("test")
 
             application {
+                install(plugin = ContentNegotiation) {
+                    json()
+                }
                 configureExpenseRouting(createExpenseUseCase = createExpenseUseCase, deleteExpenseUseCase = deleteExpenseUseCase)
                 configureGlobalExceptionHandler()
             }
