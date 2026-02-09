@@ -12,7 +12,7 @@ data class MonthlyExpenses(
                 }
                 .also {
                     require(
-                        value = expenses.distinctBy { it.year to it.month }.size == 1
+                        value = expenses.distinctBy { it.year to it.month }.size in listOf(0, 1)
                     ) {
                         "異なる年のデータがあります。"
                     }

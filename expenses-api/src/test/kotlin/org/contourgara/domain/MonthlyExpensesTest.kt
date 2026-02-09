@@ -191,4 +191,18 @@ class MonthlyExpensesTest : FunSpec({
             MonthlyExpenses.from(expenses = expenses)
         }.message shouldBe "異なる年のデータがあります。"
     }
+
+    test("月の合計支出の算出において、支出が無い場合は空の合計支出を返す") {
+        // setup
+        val expenses = emptyList<Expenses>()
+
+        // execute
+        val actual = MonthlyExpenses.from(expenses = expenses)
+
+        // assert
+        val expected = MonthlyExpenses(
+            values = emptyMap(),
+        )
+        actual shouldBe expected
+    }
 })
