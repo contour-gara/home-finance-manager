@@ -17,7 +17,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.server.config.MapApplicationConfig
 import io.ktor.server.testing.testApplication
-import org.testcontainers.containers.MySQLContainer
+import org.testcontainers.mysql.MySQLContainer
 
 class ExpensesApiApplicationTest : FunSpec({
     val mysql = MySQLContainer("mysql:8.0.43-oraclelinux9").apply {

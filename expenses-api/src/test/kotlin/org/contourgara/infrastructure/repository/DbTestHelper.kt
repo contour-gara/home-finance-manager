@@ -4,10 +4,10 @@ import com.ninja_squad.dbsetup.destination.DriverManagerDestination
 import com.ninja_squad.dbsetup_kotlin.dbSetup
 import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.v1.jdbc.Database
-import org.testcontainers.containers.MySQLContainer
+import org.testcontainers.mysql.MySQLContainer
 
 object DbTestHelper {
-    fun migrateAndConnect(mysql: MySQLContainer<*>) {
+    fun migrateAndConnect(mysql: MySQLContainer) {
         Flyway
             .configure()
             .dataSource(

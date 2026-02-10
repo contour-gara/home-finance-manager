@@ -16,7 +16,7 @@ import org.contourgara.domain.ExpenseEventId
 import org.contourgara.domain.ExpenseId
 import org.contourgara.domain.ExpenseNotFoundError
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
-import org.testcontainers.containers.MySQLContainer
+import org.testcontainers.mysql.MySQLContainer
 import ulid.ULID
 
 class ExpenseEventRepositoryImplTest : FunSpec({

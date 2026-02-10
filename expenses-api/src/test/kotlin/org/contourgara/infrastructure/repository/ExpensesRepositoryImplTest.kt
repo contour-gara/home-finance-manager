@@ -16,7 +16,7 @@ import org.contourgara.domain.Month
 import org.contourgara.domain.Payer
 import org.contourgara.domain.Year
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
-import org.testcontainers.containers.MySQLContainer
+import org.testcontainers.mysql.MySQLContainer
 import ulid.ULID
 
 class ExpensesRepositoryImplTest : FunSpec({

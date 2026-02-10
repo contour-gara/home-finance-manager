@@ -6,7 +6,7 @@ import io.kotest.extensions.system.withEnvironment
 import io.kotest.matchers.shouldBe
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
-import org.testcontainers.containers.MySQLContainer
+import org.testcontainers.mysql.MySQLContainer
 
 class MigrationTest : FunSpec({
     val mysql = MySQLContainer("mysql:8.0.43-oraclelinux9").apply {

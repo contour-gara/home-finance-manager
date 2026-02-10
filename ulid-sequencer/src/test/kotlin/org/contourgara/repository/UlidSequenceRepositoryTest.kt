@@ -10,7 +10,7 @@ import io.kotest.engine.names.WithDataTestName
 import io.kotest.extensions.system.OverrideMode
 import io.kotest.extensions.system.withEnvironment
 import io.kotest.matchers.shouldBe
-import org.testcontainers.containers.MySQLContainer
+import org.testcontainers.mysql.MySQLContainer
 import ulid.ULID
 import java.sql.DriverManager
 
