@@ -18,7 +18,7 @@ class UlidSequencerApplicationTest : FunSpec({
     }
     mysql.start()
 
-    test("ルートエンドポイントにアクセスすると、'Hello World!' が取得できる") {
+    test("health エンドポイントにアクセスすると、'Hello World!' が取得できる") {
         withEnvironment(
             environment = mapOf(
                 "ULID_SEQUENCER_DATASOURCE_URL" to mysql.jdbcUrl,
@@ -34,7 +34,7 @@ class UlidSequencerApplicationTest : FunSpec({
                 }
 
                 // execute
-                val actual = client.get("/")
+                val actual = client.get("/health")
 
                 // assert
                 actual shouldHaveStatus 200

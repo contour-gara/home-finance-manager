@@ -57,7 +57,7 @@ fun Application.module() {
     )
 
     routing {
-        route(path = "/") {
+        route(path = "/health") {
             get {
                 call.respondText { "Expenses API is running!" }
             }

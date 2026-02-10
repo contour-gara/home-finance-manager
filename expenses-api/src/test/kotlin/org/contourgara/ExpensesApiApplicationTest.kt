@@ -36,7 +36,7 @@ class ExpensesApiApplicationTest : FunSpec({
             .willReturn(ok("01KD27JEZQQY88RG18034YZHBV"))
     )
 
-    test("ルートエンドポイントにアクセスすると、'Expenses API is running!' が取得できる") {
+    test("health エンドポイントにアクセスすると、'Expenses API is running!' が取得できる") {
         testApplication {
             // setup
             application {
@@ -53,7 +53,7 @@ class ExpensesApiApplicationTest : FunSpec({
             }
 
             // execute
-            val actual = client.get("/")
+            val actual = client.get("/health")
 
             // assert
             actual shouldHaveStatus 200

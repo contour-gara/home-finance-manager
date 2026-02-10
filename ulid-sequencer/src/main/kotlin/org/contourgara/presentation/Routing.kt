@@ -9,7 +9,7 @@ import org.contourgara.repository.UlidSequenceRepository
 
 fun Application.configureRouting() {
     routing {
-        get("/") {
+        get("/health") {
             call.respondText("Hello World!")
         }
 
