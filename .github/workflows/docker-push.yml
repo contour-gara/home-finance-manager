@@ -63,12 +63,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Set up Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'corretto'
-          java-version: '21'
-          cache: 'gradle'
+      - name: mise install
+        uses: jdx/mise-action@v3
       - name: Build jar file
         run: ./gradlew clean ${{ matrix.module }}:build -x test
       - name: Upload Dockerfile and jar file
