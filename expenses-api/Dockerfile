@@ -1,4 +1,4 @@
-FROM amazoncorretto:21.0.9-al2023 AS build
+FROM amazoncorretto:21.0.10-al2023 AS build
 WORKDIR /jlink
 RUN jlink \
     --verbose \
