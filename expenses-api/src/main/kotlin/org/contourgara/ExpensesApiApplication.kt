@@ -3,6 +3,7 @@ package org.contourgara
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
+import io.ktor.server.http.content.singlePageApplication
 import io.ktor.server.netty.EngineMain
 import io.ktor.server.plugins.calllogging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
@@ -61,6 +62,12 @@ fun Application.module() {
             get {
                 call.respondText { "Expenses API is running!" }
             }
+        }
+
+        singlePageApplication {
+            useResources = true
+            filesPath = "frontend"
+            defaultPage = "index.html"
         }
     }
 }

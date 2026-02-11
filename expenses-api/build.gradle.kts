@@ -55,6 +55,24 @@ application {
     mainClass = "io.ktor.server.netty.EngineMain"
 }
 
+tasks.register("buildFrontend", Exec::class.java) {
+    workingDir = File("frontend")
+    executable = "sh"
+    args("-c", "npm install && npm run build")
+}
+
+tasks.processResources {
+    mustRunAfter("buildFrontend")
+}
+
+tasks.run {
+    dependsOn("buildFrontend")
+}
+
+tasks.build {
+    dependsOn("buildFrontend")
+}
+
 ktor {
     fatJar {
         archiveFileName.set("${project.name}.jar")
