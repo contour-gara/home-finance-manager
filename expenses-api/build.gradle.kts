@@ -74,10 +74,6 @@ tasks.shadowJar {
 
 tasks.test {
     useJUnitPlatform()
-}
-
-tasks.test {
-    useJUnitPlatform()
     enableAssertions = false
     finalizedBy(tasks.koverHtmlReport)
 
