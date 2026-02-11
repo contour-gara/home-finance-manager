@@ -62,7 +62,7 @@ jobs:
         module: ${{ fromJSON(needs.setup.outputs.modules) }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Set up Java
         uses: actions/setup-java@v5
         with:
@@ -86,7 +86,7 @@ jobs:
       tag-name: ${{ steps.create-tag.outputs.tag-name }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Create git tag
         id: create-tag
         run: |
