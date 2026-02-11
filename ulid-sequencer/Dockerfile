@@ -9,7 +9,7 @@ RUN jlink \
     --add-modules java.base,java.desktop,java.instrument,java.management,java.naming,java.security.sasl,java.sql,jdk.jfr,jdk.unsupported,jdk.crypto.ec \
     --output jre-min
 
-FROM gcr.io/distroless/java-base-debian12:nonroot
+FROM gcr.io/distroless/java-base-debian13:nonroot
 WORKDIR /deployments
 COPY --from=build --chown=nonroot:nonroot /jlink/jre-min /opt/jre-min
 ENV JAVA_HOME=/opt/jre-min
