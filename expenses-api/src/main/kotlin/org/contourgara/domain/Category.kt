@@ -15,7 +15,7 @@ enum class Category {
     ENTERTAINMENT,
     TRANSPORTATION,
     TRAVEL,
-    OTHER
+    OTHER,
     ;
 
     companion object {
