@@ -12,8 +12,11 @@
   },
   "dependencies": {
     "ky": "1.14.3",
+    "nuqs": "2.8.8",
     "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react-dom": "19.2.0",
+    "react-router": "7.13.0",
+    "swr": "2.4.0"
   },
   "devDependencies": {
     "@eslint/js": "9.39.1",
