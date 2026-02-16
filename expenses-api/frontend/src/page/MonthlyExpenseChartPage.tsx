@@ -1,4 +1,4 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Rectangle } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { useQueryState, parseAsInteger } from 'nuqs';
 import useSWR from 'swr';
 import { queryMonthlyExpense, ExpenseCategory } from '../monthly-expenses-client';
@@ -15,20 +15,13 @@ const categoryConfig: Record<ExpenseCategory, { label: string; color: string }> 
   OTHER: { label: 'その他', color: '#888888' },
 };
 
-const lightenColor = (hex: string, percent: number): string => {
-  const num = parseInt(hex.replace('#', ''), 16);
-  const r = Math.min(255, (num >> 16) + Math.round(255 * percent));
-  const g = Math.min(255, ((num >> 8) & 0x00ff) + Math.round(255 * percent));
-  const b = Math.min(255, (num & 0x0000ff) + Math.round(255 * percent));
-  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
-};
-
-const transformData = (breakdown: Record<ExpenseCategory, number>) => {
-  return Object.entries(breakdown).map(([category, amount]) => ({
-    category: categoryConfig[category as ExpenseCategory].label,
-    color: categoryConfig[category as ExpenseCategory].color,
-    amount,
-  }));
+const transformData = (year: number, month: number, breakdown: Record<ExpenseCategory, number>) => {
+  const date = `${year}/${String(month).padStart(2, '0')}`;
+  const entry: Record<string, string | number> = { date };
+  for (const [category, amount] of Object.entries(breakdown)) {
+    entry[category] = amount;
+  }
+  return [entry];
 };
 
 export const MonthlyExpenseChartPage = () => {
@@ -44,7 +37,10 @@ export const MonthlyExpenseChartPage = () => {
   if (error) return <div>Error: {error.message}</div>;
   if (!expense) return null;
 
-  const chartData = transformData(expense.breakdown);
+  const chartData = transformData(year, month, expense.breakdown);
+  const categories = Object.entries(categoryConfig).filter(
+    ([key]) => key in expense.breakdown,
+  );
 
   return (
     <div>
@@ -56,17 +52,13 @@ export const MonthlyExpenseChartPage = () => {
         margin={{ top: 5, right: 0, left: 0, bottom: 5 }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="category" />
+        <XAxis dataKey="date" />
         <YAxis width={80} />
         <Tooltip />
         <Legend />
-        <Bar
-          dataKey="amount"
-          name="支出額"
-          radius={[10, 10, 0, 0]}
-          shape={(props) => <Rectangle {...props} fill={props.payload.color} />}
-          activeBar={(props) => <Rectangle {...props} fill={lightenColor(props.payload.color, 0.2)} />}
-        />
+        {categories.map(([key, config]) => (
+          <Bar key={key} dataKey={key} name={config.label} fill={config.color} radius={[10, 10, 0, 0]} />
+        ))}
       </BarChart>
     </div>
   );
