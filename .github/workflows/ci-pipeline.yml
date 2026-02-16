@@ -28,3 +28,15 @@ jobs:
         uses: jdx/mise-action@v3
       - name: Run unit test
         run: ./gradlew clean ${{ matrix.module }}:test
+
+  front-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Run install dependencies
+        working-directory: ./expenses-api/frontend
+        run: npm ci
+      - name: Run unit test
+        working-directory: ./expenses-api/frontend
+        run: npm run test
