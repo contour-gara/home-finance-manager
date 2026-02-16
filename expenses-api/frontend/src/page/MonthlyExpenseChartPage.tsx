@@ -15,6 +15,22 @@ const categoryConfig: Record<ExpenseCategory, { label: string; color: string }> 
   OTHER: { label: 'その他', color: '#888888' },
 };
 
+const complementaryColor = (hex: string): string => {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const r = 255 - (num >> 16);
+  const g = 255 - ((num >> 8) & 0xff);
+  const b = 255 - (num & 0xff);
+  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+};
+
+const lightenColor = (hex: string, percent: number): string => {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const r = Math.min(255, (num >> 16) + Math.round(255 * percent));
+  const g = Math.min(255, ((num >> 8) & 0x00ff) + Math.round(255 * percent));
+  const b = Math.min(255, (num & 0x0000ff) + Math.round(255 * percent));
+  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+};
+
 const transformData = (year: number, month: number, breakdown: Record<ExpenseCategory, number>) => {
   const date = `${year}/${String(month).padStart(2, '0')}`;
   const entry: Record<string, string | number> = { date };
@@ -57,7 +73,7 @@ export const MonthlyExpenseChartPage = () => {
         <Tooltip />
         <Legend />
         {categories.map(([key, config]) => (
-          <Bar key={key} dataKey={key} name={config.label} fill={config.color} radius={[10, 10, 0, 0]} />
+          <Bar key={key} dataKey={key} name={config.label} fill={config.color} radius={[10, 10, 0, 0]} activeBar={{ fill: lightenColor(config.color, 0.2), stroke: complementaryColor(config.color) }} />
         ))}
       </BarChart>
     </div>
