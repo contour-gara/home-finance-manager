@@ -1,19 +1,16 @@
 package org.contourgara.infrastructure
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.badRequest
+import com.github.tomakehurst.wiremock.client.WireMock.created
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
-import com.github.tomakehurst.wiremock.client.WireMock.get
-import com.github.tomakehurst.wiremock.client.WireMock.ok
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import io.kotest.assertions.throwables.shouldNotThrowAny
-import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.wiremock.ListenerMode
 import io.kotest.extensions.wiremock.WireMockListener
 import io.kotest.koin.KoinExtension
-import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockkClass
 import kotlinx.serialization.json.Json
@@ -43,22 +40,13 @@ class KafkaInitTest : KoinTest, FunSpec() {
             }
 
             wireMockServer.stubFor(
-                get(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics"))
-                    .willReturn(
-                        ok()
-                            .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-                            .withBody(Json.encodeToString(KafkaInit.GetAllTopicsResponse(emptyList())))
-                    )
-            )
-
-            wireMockServer.stubFor(
                 post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics"))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
                     .withRequestBody(equalTo(Json.encodeToString(KafkaInit.CreateTopicRequest("register-bill"))))
                     .willReturn(
-                        aResponse()
-                            .withStatus(201)
+                        created()
                             .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                            .withBody("{\"topic_name\":\"register-bill\"}")
                     )
             )
 
@@ -67,9 +55,9 @@ class KafkaInitTest : KoinTest, FunSpec() {
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
                     .withRequestBody(equalTo(Json.encodeToString(KafkaInit.CreateTopicRequest("delete-bill"))))
                     .willReturn(
-                        aResponse()
-                            .withStatus(201)
+                        created()
                             .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                            .withBody("{\"topic_name\":\"delete-bill\"}")
                     )
             )
 
@@ -78,9 +66,9 @@ class KafkaInitTest : KoinTest, FunSpec() {
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
                     .withRequestBody(equalTo(Json.encodeToString(KafkaInit.CreateTopicRequest("show-balance"))))
                     .willReturn(
-                        aResponse()
-                            .withStatus(201)
+                        created()
                             .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                            .withBody("{\"topic_name\":\"show-balance\"}")
                     )
             )
 
@@ -88,7 +76,7 @@ class KafkaInitTest : KoinTest, FunSpec() {
             shouldNotThrowAny { KafkaInit.execute() }
         }
 
-        test("トピック作成でエラーになる場合、例外を投げる") {
+        test("トピックが存在する場合、400 が返るが例外を投げない") {
             // setup
             declareMock<DiscordBotConfig> {
                 every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
@@ -99,29 +87,40 @@ class KafkaInitTest : KoinTest, FunSpec() {
             }
 
             wireMockServer.stubFor(
-                get(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics"))
+                post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics"))
+                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
+                    .withRequestBody(equalTo(Json.encodeToString(KafkaInit.CreateTopicRequest("register-bill"))))
                     .willReturn(
-                        ok()
+                        badRequest()
                             .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-                            .withBody(Json.encodeToString(KafkaInit.GetAllTopicsResponse(emptyList())))
+                            .withBody("{\"error_code\":40002,\"message\":\"Topic 'register-bill' already exists.\"}")
                     )
             )
 
             wireMockServer.stubFor(
                 post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics"))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
-                    .withRequestBody(equalTo(Json.encodeToString(KafkaInit.CreateTopicRequest("register-bill"))))
+                    .withRequestBody(equalTo(Json.encodeToString(KafkaInit.CreateTopicRequest("delete-bill"))))
                     .willReturn(
-                        aResponse()
-                            .withStatus(400)
+                        badRequest()
                             .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-                            .withBody("{\"error_code\":400,\"message\":\"Cannot construct instance of `CreateTopicRequest`, problem: Null topicName\"}")
+                            .withBody("{\"error_code\":40002,\"message\":\"Topic 'delete-bill' already exists.\"}")
                     )
             )
 
-            // execute
-            shouldThrowExactly<RuntimeException> { KafkaInit.execute() }
-                .message shouldBe "Bad Request"
+            wireMockServer.stubFor(
+                post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics"))
+                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
+                    .withRequestBody(equalTo(Json.encodeToString(KafkaInit.CreateTopicRequest("show-balance"))))
+                    .willReturn(
+                        badRequest()
+                            .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                            .withBody("{\"error_code\":40002,\"message\":\"Topic 'show-balance' already exists.\"}")
+                    )
+            )
+
+            // execute & assert
+            shouldNotThrowAny { KafkaInit.execute() }
         }
     }
 }
