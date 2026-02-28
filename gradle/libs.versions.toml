@@ -6,6 +6,7 @@ kover = "0.9.6"
 ktor = "3.3.3"  # kord の問題で上げられない https://github.com/kordlib/kord/issues/1032
 spring-boot = "3.5.10"
 axon = "4.13.0"
+apache-kafka = "4.2.0"
 exposed = "1.0.0"
 mysql = "9.6.0"
 flyway = "12.0.0"
@@ -46,6 +47,7 @@ spring-boot-starter-data-jdbc = { module = "org.springframework.boot:spring-boot
 spring-kafka = { module = "org.springframework.kafka:spring-kafka" }
 axon-bom = { module = "org.axonframework:axon-bom", version.ref = "axon" }
 axon-spring-boot-starter = { module = "org.axonframework:axon-spring-boot-starter" }
+kafka-clients = { module = "org.apache.kafka:kafka-clients", version.ref = "apache-kafka" }
 exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
 exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
 mysql-connector-j = { module = "com.mysql:mysql-connector-j", version.ref = "mysql" }
@@ -83,7 +85,7 @@ database-rider-core = { module = "com.github.database-rider:rider-core", version
 db-setup-kotlin = { module = "com.ninja-squad:DbSetup-kotlin", version.ref = "db-setup-kotlin" }
 assertj-db = { module = "org.assertj:assertj-db", version.ref = "assertj-db" }
 testcontainers-mysql = { module = "org.testcontainers:testcontainers-mysql", version.ref = "testcontainers" }
-testcontainers-kafka = { module = "org.testcontainers:kafka" }
+testcontainers-kafka = { module = "org.testcontainers:testcontainers-kafka", version.ref = "testcontainers" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 awaitility-kotlin = { module = "org.awaitility:awaitility-kotlin" }
 
