@@ -16,6 +16,20 @@ services:
       KAFKA_REST_PROXY_BASE_URL: http://kafka-rest-proxy:8082
       EXPENSES_API_BASE_URL: http://expenses-api:8080
 
+  expenses-api-messaging-bridge:
+    build:
+      context: ./expenses-api-messaging-bridge
+      dockerfile: Dockerfile
+    depends_on:
+      kafka-broker:
+        condition: service_healthy
+  #      expenses-api:
+  #        condition: service_started
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka-broker:29092
+  #      BOT_TOKEN: ${BOT_TOKEN}
+  #      EXPENSES_API_BASE_URL: http://expenses-api:8080
+
   finance-core:
     build:
       context: ./finance-core
