@@ -27,6 +27,7 @@ services:
   #        condition: service_started
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka-broker:29092
+      CONSUMER_AUTO_OFFSET_RESET: latest
   #      BOT_TOKEN: ${BOT_TOKEN}
   #      EXPENSES_API_BASE_URL: http://expenses-api:8080
 

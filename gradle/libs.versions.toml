@@ -25,6 +25,7 @@ kotest = "6.1.3"
 database-rider = "1.44.0"
 db-setup-kotlin = "2.1.0"
 assertj-db = "3.0.1"
+awaitility = "4.3.0"
 mockk = "1.14.9"
 testcontainers = "2.0.3"
 
@@ -87,7 +88,7 @@ assertj-db = { module = "org.assertj:assertj-db", version.ref = "assertj-db" }
 testcontainers-mysql = { module = "org.testcontainers:testcontainers-mysql", version.ref = "testcontainers" }
 testcontainers-kafka = { module = "org.testcontainers:testcontainers-kafka", version.ref = "testcontainers" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
-awaitility-kotlin = { module = "org.awaitility:awaitility-kotlin" }
+awaitility-kotlin = { module = "org.awaitility:awaitility-kotlin", version.ref = "awaitility" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

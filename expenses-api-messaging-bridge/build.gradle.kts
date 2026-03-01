@@ -38,6 +38,7 @@ dependencies {
     testImplementation(libs.h2)
     testImplementation(libs.db.setup.kotlin)
     testImplementation(libs.assertj.db)
+    testImplementation(libs.awaitility.kotlin)
     testImplementation(libs.mockk)
 }
 
