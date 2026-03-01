@@ -23,6 +23,8 @@ services:
     depends_on:
       kafka-broker:
         condition: service_healthy
+      mysql-finance-core:
+        condition: service_healthy
       ulid-sequencer:
         condition: service_started
     environment:
