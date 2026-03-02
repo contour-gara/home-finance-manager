@@ -1,6 +1,7 @@
 package org.contourgara
 
 import org.contourgara.application.CreateExpenseUseCase
+import org.contourgara.application.DeleteExpenseUseCase
 import org.contourgara.eventlistener.Consumer
 
 fun main() {
@@ -9,6 +10,7 @@ fun main() {
 
     Consumer(
         createExpenseUseCase = CreateExpenseUseCase(),
+        deleteExpenseUseCase = DeleteExpenseUseCase(),
         expensesApiMessagingBridgeConfig = expensesApiMessagingBridgeConfig,
     )
         .listen()

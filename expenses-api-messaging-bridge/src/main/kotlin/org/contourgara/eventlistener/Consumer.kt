@@ -5,11 +5,13 @@ import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.contourgara.ExpensesApiMessagingBridgeConfig
 import org.contourgara.application.CreateExpenseUseCase
+import org.contourgara.application.DeleteExpenseUseCase
 import org.slf4j.LoggerFactory
 import java.time.Duration
 
 class Consumer(
     private val createExpenseUseCase: CreateExpenseUseCase,
+    private val deleteExpenseUseCase: DeleteExpenseUseCase,
     private val expensesApiMessagingBridgeConfig: ExpensesApiMessagingBridgeConfig,
 ) {
     private val log = LoggerFactory.getLogger(Consumer::class.java)
@@ -31,7 +33,12 @@ class Consumer(
                         .forEach { record ->
                             log.debug("header: ${record.headers()}")
                             log.debug("value: ${record.value()}")
-                            createExpenseUseCase.execute()
+
+                            when (val eventType = record.headers().lastHeader("event-type")?.value()?.let { String(bytes = it) }) {
+                                "create" -> createExpenseUseCase.execute()
+                                "delete" -> deleteExpenseUseCase.execute()
+                                else -> log.debug("Unknown event-type: $eventType")
+                            }
                         }
                 }
             }
