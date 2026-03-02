@@ -1,6 +1,6 @@
 package org.contourgara.application
 
 class CreateExpenseUseCase {
-    fun execute() {
+    fun execute(param: CreateExpenseParam) {
     }
 }

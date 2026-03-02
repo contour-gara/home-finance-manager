@@ -1,5 +1,7 @@
 package org.contourgara.eventlistener
 
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -31,11 +33,11 @@ class Consumer(
                 while (true) {
                     consumer.poll(Duration.ofMillis(1000))
                         .forEach { record ->
-                            log.debug("header: ${record.headers()}")
-                            log.debug("value: ${record.value()}")
-
                             when (val eventType = record.headers().lastHeader("event-type")?.value()?.let { String(bytes = it) }) {
-                                "create" -> createExpenseUseCase.execute()
+                                "create" -> createExpenseUseCase
+                                    .execute(
+                                        param = Json.decodeFromString<CreateExpenseRequest>(string = record.value()).toParam(),
+                                    )
                                 "delete" -> deleteExpenseUseCase.execute()
                                 else -> log.debug("Unknown event-type: $eventType")
                             }

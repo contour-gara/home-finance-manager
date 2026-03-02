@@ -18,6 +18,7 @@ import org.awaitility.kotlin.untilAsserted
 import org.awaitility.kotlin.withPollDelay
 import org.contourgara.ExpensesApiMessagingBridgeConfig
 import org.contourgara.KafkaInitializer
+import org.contourgara.application.CreateExpenseParam
 import org.contourgara.application.CreateExpenseUseCase
 import org.contourgara.application.DeleteExpenseUseCase
 import org.testcontainers.kafka.ConfluentKafkaContainer
@@ -41,7 +42,7 @@ class ConsumerTest : FunSpec({
     val deleteExpenseUseCase = mockk<DeleteExpenseUseCase>()
 
     beforeSpec {
-        every { createExpenseUseCase.execute() } returns Unit
+        every { createExpenseUseCase.execute(param = any()) } returns Unit
         every { deleteExpenseUseCase.execute() } returns Unit
 
         val sut = Consumer(
@@ -67,7 +68,18 @@ class ConsumerTest : FunSpec({
                 "expenses-api-messaging-bridge",
                 null,
                 "key",
-                "{\"billId\": \"01K9HSSXN6VYPGG5E10Q1TFAGF\"}",
+                """
+                    {
+                        "messageId": "1477993825762017321",
+                        "expenseId": "01K4MXEKC0PMTJ8FA055N4SH79",
+                        "amount": 1000,
+                        "payer":"DIRECT_DEBIT",
+                        "category":"RENT",
+                        "year":"2026",
+                        "month":"1",
+                        "memo":"test"
+                    }
+                """.trimIndent(),
                 listOf(
                     RecordHeader("event-type", "create".toByteArray()),
                 ),
@@ -76,7 +88,21 @@ class ConsumerTest : FunSpec({
 
         // assert
         await withPollDelay(Duration.ofSeconds(1)) atMost(Duration.ofSeconds(10)) untilAsserted {
-            verify(exactly = 1) { createExpenseUseCase.execute() }
+            verify(exactly = 1) {
+                createExpenseUseCase
+                    .execute(param =
+                        CreateExpenseParam(
+                            messageId = "1477993825762017321",
+                            expenseId = "01K4MXEKC0PMTJ8FA055N4SH79",
+                            amount = 1000,
+                            payer = "DIRECT_DEBIT",
+                            category = "RENT",
+                            year = 2026,
+                            month = 1,
+                            memo = "test",
+                        )
+                    )
+            }
             verify(exactly = 0) { deleteExpenseUseCase.execute() }
         }
     }
@@ -97,7 +123,7 @@ class ConsumerTest : FunSpec({
 
         // assert
         await withPollDelay(Duration.ofSeconds(1)) atMost(Duration.ofSeconds(10)) untilAsserted {
-            verify(exactly = 0) { createExpenseUseCase.execute() }
+            verify(exactly = 0) { createExpenseUseCase.execute(param = any()) }
             verify(exactly = 1) { deleteExpenseUseCase.execute() }
         }
     }
@@ -108,7 +134,7 @@ class ConsumerTest : FunSpec({
 
         // assert
         await withPollDelay(Duration.ofSeconds(1)) atMost(Duration.ofSeconds(10)) untilAsserted {
-            verify(exactly = 0) { createExpenseUseCase.execute() }
+            verify(exactly = 0) { createExpenseUseCase.execute(param = any()) }
             verify(exactly = 0) { deleteExpenseUseCase.execute() }
         }
     }
