@@ -27,7 +27,13 @@ import java.time.Duration
 class ConsumerTest : FunSpec({
     val confluentKafkaContainer = install(ext = TestContainerSpecExtension(container = ConfluentKafkaContainer("confluentinc/cp-kafka:8.0.1")))
 
-    val expensesApiMessagingBridgeConfig = ExpensesApiMessagingBridgeConfig(kafkaBootstrapServer = confluentKafkaContainer.bootstrapServers)
+    val expensesApiMessagingBridgeConfig = ExpensesApiMessagingBridgeConfig(
+        datasourceUrl = "test",
+        datasourceUser = "test",
+        datasourcePassword = "test",
+        kafkaBootstrapServer = confluentKafkaContainer.bootstrapServers,
+        consumerAutoOffsetReset = "earliest",
+    )
     KafkaInitializer(expensesApiMessagingBridgeConfig = expensesApiMessagingBridgeConfig).createTopics()
 
     val producer = KafkaProducer<String, String>(
