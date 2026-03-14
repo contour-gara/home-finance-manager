@@ -33,6 +33,7 @@ object DbTestHelper {
         ) {
             deleteAllFrom(
                 "processed_message_id",
+                "expense_id",
             )
         }.launch()
     }
