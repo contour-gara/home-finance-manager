@@ -32,8 +32,8 @@ object DbTestHelper {
             to = DriverManagerDestination(url, user, password),
         ) {
             deleteAllFrom(
-                "processed_message_id",
                 "expense_id",
+                "processed_message_id",
             )
         }.launch()
     }
