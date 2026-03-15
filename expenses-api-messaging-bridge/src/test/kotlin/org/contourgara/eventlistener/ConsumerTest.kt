@@ -20,6 +20,7 @@ import org.contourgara.ExpensesApiMessagingBridgeConfig
 import org.contourgara.KafkaInitializer
 import org.contourgara.application.CreateExpenseParam
 import org.contourgara.application.CreateExpenseUseCase
+import org.contourgara.application.DeleteExpenseParam
 import org.contourgara.application.DeleteExpenseUseCase
 import org.testcontainers.kafka.ConfluentKafkaContainer
 import java.time.Duration
@@ -52,7 +53,7 @@ class ConsumerTest : FunSpec({
 
     beforeSpec {
         every { createExpenseUseCase.execute(param = any()) } returns Unit
-        every { deleteExpenseUseCase.execute() } returns Unit
+        every { deleteExpenseUseCase.execute(param = any()) } returns Unit
 
         val sut = Consumer(
             createExpenseUseCase = createExpenseUseCase,
@@ -112,7 +113,7 @@ class ConsumerTest : FunSpec({
                         )
                     )
             }
-            verify(exactly = 0) { deleteExpenseUseCase.execute() }
+            verify(exactly = 0) { deleteExpenseUseCase.execute(param = any()) }
         }
     }
 
@@ -123,7 +124,7 @@ class ConsumerTest : FunSpec({
                 "expenses-api-messaging-bridge",
                 null,
                 "key",
-                "{\"billId\": \"01K9HSSXN6VYPGG5E10Q1TFAGF\"}",
+                "{\"messageId\": \"1477993825762017321\"}",
                 listOf(
                     RecordHeader("event-type", "delete".toByteArray()),
                 ),
@@ -133,7 +134,7 @@ class ConsumerTest : FunSpec({
         // assert
         await withPollDelay(Duration.ofSeconds(1)) atMost(Duration.ofSeconds(10)) untilAsserted {
             verify(exactly = 0) { createExpenseUseCase.execute(param = any()) }
-            verify(exactly = 1) { deleteExpenseUseCase.execute() }
+            verify(exactly = 1) { deleteExpenseUseCase.execute(param = DeleteExpenseParam(messageId = "1477993825762017321")) }
         }
     }
 
@@ -144,7 +145,7 @@ class ConsumerTest : FunSpec({
         // assert
         await withPollDelay(Duration.ofSeconds(1)) atMost(Duration.ofSeconds(10)) untilAsserted {
             verify(exactly = 0) { createExpenseUseCase.execute(param = any()) }
-            verify(exactly = 0) { deleteExpenseUseCase.execute() }
+            verify(exactly = 0) { deleteExpenseUseCase.execute(param = any()) }
         }
     }
 })

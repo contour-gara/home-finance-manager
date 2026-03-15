@@ -1,11 +1,14 @@
 package org.contourgara.eventlistener
 
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.contourgara.ExpensesApiMessagingBridgeConfig
+import org.contourgara.application.CreateExpenseParam
 import org.contourgara.application.CreateExpenseUseCase
+import org.contourgara.application.DeleteExpenseParam
 import org.contourgara.application.DeleteExpenseUseCase
 import org.slf4j.LoggerFactory
 import java.time.Duration
@@ -37,10 +40,47 @@ class Consumer(
                                     .execute(
                                         param = Json.decodeFromString<CreateExpenseRequest>(string = record.value()).toParam(),
                                     )
-                                "delete" -> deleteExpenseUseCase.execute()
+                                "delete" -> deleteExpenseUseCase
+                                    .execute(
+                                        param = Json.decodeFromString<DeleteExpenseRequest>(string = record.value()).toParam(),
+                                    )
                                 else -> log.debug("Unknown event-type: $eventType")
                             }
                         }
                 }
             }
+}
+
+@Serializable
+data class CreateExpenseRequest(
+    private val messageId: String,
+    private val expenseId: String,
+    private val amount: Int,
+    private val payer: String,
+    private val category: String,
+    private val year: Int,
+    private val month: Int,
+    private val memo: String,
+) {
+    fun toParam(): CreateExpenseParam =
+        CreateExpenseParam(
+            messageId = messageId,
+            expenseId = expenseId,
+            amount = amount,
+            payer = payer,
+            category = category,
+            year = year,
+            month = month,
+            memo = memo,
+        )
+}
+
+@Serializable
+data class DeleteExpenseRequest(
+    private val messageId: String,
+) {
+    fun toParam(): DeleteExpenseParam =
+        DeleteExpenseParam(
+            messageId = messageId,
+        )
 }
