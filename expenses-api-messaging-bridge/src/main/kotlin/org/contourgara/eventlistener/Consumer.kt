@@ -1,6 +1,5 @@
 package org.contourgara.eventlistener
 
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
