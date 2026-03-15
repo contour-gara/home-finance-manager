@@ -5,6 +5,8 @@ data class ExpensesApiMessagingBridgeConfig(
     val datasourceUser: String,
     val datasourcePassword: String,
     val expensesApiBaseUrl: String,
+    val discordBotToken: String,
+    val discordChannelId: String,
     val kafkaBootstrapServer: String,
     val consumerAutoOffsetReset: String,
     val topicName: String = "expenses-api-messaging-bridge",
@@ -17,6 +19,8 @@ data class ExpensesApiMessagingBridgeConfig(
                 datasourceUser = System.getenv("DATASOURCE_USERNAME"),
                 datasourcePassword = System.getenv("DATASOURCE_PASSWORD"),
                 expensesApiBaseUrl = System.getenv("EXPENSE_API_BASE_URL"),
+                discordBotToken = System.getenv("DISCORD_BOT_TOKEN"),
+                discordChannelId = System.getenv("DISCORD_CHANNEL_ID"),
                 kafkaBootstrapServer = System.getenv("KAFKA_BOOTSTRAP_SERVERS"),
                 consumerAutoOffsetReset = System.getenv("CONSUMER_AUTO_OFFSET_RESET"),
             )

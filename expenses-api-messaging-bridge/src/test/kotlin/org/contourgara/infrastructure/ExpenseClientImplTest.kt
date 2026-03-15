@@ -27,6 +27,8 @@ class ExpenseClientImplTest : FunSpec({
             datasourceUser = "test",
             datasourcePassword = "test",
             expensesApiBaseUrl = wireMockServer.baseUrl(),
+            discordBotToken = "test",
+            discordChannelId = "test",
             kafkaBootstrapServer = "test",
             consumerAutoOffsetReset = "test",
         )

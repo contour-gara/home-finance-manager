@@ -32,6 +32,8 @@ class ConsumerTest : FunSpec({
         datasourceUser = "test",
         datasourcePassword = "test",
         expensesApiBaseUrl = "test",
+        discordBotToken = "test",
+        discordChannelId = "test",
         kafkaBootstrapServer = confluentKafkaContainer.bootstrapServers,
         consumerAutoOffsetReset = "earliest",
     )
