@@ -19,7 +19,7 @@ class DiscordMessageClient(
         RestClient(requestHandler = KtorRequestHandler(expensesApiMessagingBridgeConfig.discordBotToken))
     }
 
-    override fun reply(
+    override fun replySuccessCreateExpense(
         messageId: MessageId,
         expenseId: ExpenseId,
         expenseEventId: ExpenseEventId,

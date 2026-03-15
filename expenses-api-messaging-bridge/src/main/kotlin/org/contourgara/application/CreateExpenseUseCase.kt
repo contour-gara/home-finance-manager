@@ -37,7 +37,7 @@ class CreateExpenseUseCase(
                 }
                 .also { (messageId, expenseId, expenseEventId) ->
                     messageClient
-                        .reply(messageId = messageId, expenseId = expenseId, expenseEventId = expenseEventId)
+                        .replySuccessCreateExpense(messageId = messageId, expenseId = expenseId, expenseEventId = expenseEventId)
                 }
                 .let { Unit }
         }
