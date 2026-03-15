@@ -21,15 +21,21 @@ services:
       context: ./expenses-api-messaging-bridge
       dockerfile: Dockerfile
     depends_on:
+      mysql-expenses-api-messaging-bridge:
+        condition: service_healthy
       kafka-broker:
         condition: service_healthy
-  #      expenses-api:
-  #        condition: service_started
+      expenses-api:
+        condition: service_started
     environment:
+      DATASOURCE_URL: jdbc:mysql://mysql-expenses-api-messaging-bridge:3306/home_finance_manager_expenses_api_messaging_bridge_db
+      DATASOURCE_USERNAME: user
+      DATASOURCE_PASSWORD: password
+      EXPENSES_API_BASE_URL: http://expenses-api:8080
+      DISCORD_BOT_TOKEN: ${BOT_TOKEN}
+      DISCORD_CHANNEL_ID: 1402331708459581591
       KAFKA_BOOTSTRAP_SERVERS: kafka-broker:29092
       CONSUMER_AUTO_OFFSET_RESET: latest
-  #      BOT_TOKEN: ${BOT_TOKEN}
-  #      EXPENSES_API_BASE_URL: http://expenses-api:8080
 
   finance-core:
     build:
@@ -96,6 +102,20 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
       MYSQL_DATABASE: home_finance_manager_core_db
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+
+  mysql-expenses-api-messaging-bridge:
+    image: mysql:8.0.43-oraclelinux9
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    environment:
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: home_finance_manager_expenses_api_messaging_bridge_db
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
 
   mysql-expenses-api:

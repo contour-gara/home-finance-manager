@@ -18,7 +18,7 @@ data class ExpensesApiMessagingBridgeConfig(
                 datasourceUrl = System.getenv("DATASOURCE_URL"),
                 datasourceUser = System.getenv("DATASOURCE_USERNAME"),
                 datasourcePassword = System.getenv("DATASOURCE_PASSWORD"),
-                expensesApiBaseUrl = System.getenv("EXPENSE_API_BASE_URL"),
+                expensesApiBaseUrl = System.getenv("EXPENSES_API_BASE_URL"),
                 discordBotToken = System.getenv("DISCORD_BOT_TOKEN"),
                 discordChannelId = System.getenv("DISCORD_CHANNEL_ID"),
                 kafkaBootstrapServer = System.getenv("KAFKA_BOOTSTRAP_SERVERS"),
