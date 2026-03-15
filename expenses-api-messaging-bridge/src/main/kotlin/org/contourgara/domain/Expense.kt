@@ -1,11 +1,11 @@
 package org.contourgara.domain
 
 data class Expense(
-    private val expenseId: ExpenseId,
-    private val amount: Int,
-    private val payer: String,
-    private val category: String,
-    private val year: Int,
-    private val month: Int,
-    private val memo: String,
+    val expenseId: ExpenseId,
+    val amount: Int,
+    val payer: String,
+    val category: String,
+    val year: Int,
+    val month: Int,
+    val memo: String,
 )

@@ -31,6 +31,7 @@ class ConsumerTest : FunSpec({
         datasourceUrl = "test",
         datasourceUser = "test",
         datasourcePassword = "test",
+        expensesApiBaseUrl = "test",
         kafkaBootstrapServer = confluentKafkaContainer.bootstrapServers,
         consumerAutoOffsetReset = "earliest",
     )
