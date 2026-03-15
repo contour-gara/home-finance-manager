@@ -43,4 +43,29 @@ class DiscordMessageClient(
             }
         }
     }
+
+    override fun replySuccessDeleteExpense(
+        messageId: MessageId,
+        expenseId: ExpenseId,
+        expenseEventId: ExpenseEventId,
+    ) {
+        runBlocking {
+            restClient.channel.createMessage(channelId = Snowflake(expensesApiMessagingBridgeConfig.discordChannelId)) {
+                messageReference = messageId.value
+                content = "支出を削除したっピ！"
+                embed {
+                    title = "詳細っピ"
+                    color = Color(0, 255, 0)
+                    field {
+                        name = "支出 ID"
+                        value = expenseId.value.toString()
+                    }
+                    field {
+                        name = "イベント ID"
+                        value = expenseEventId.value.toString()
+                    }
+                }
+            }
+        }
+    }
 }
