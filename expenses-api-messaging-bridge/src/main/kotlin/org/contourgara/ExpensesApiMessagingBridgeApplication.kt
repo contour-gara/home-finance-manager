@@ -20,7 +20,11 @@ fun main() {
             expenseIdRepository = ExpenseIdRepositoryImpl,
             messageClient = DiscordMessageClient(expensesApiMessagingBridgeConfig = expensesApiMessagingBridgeConfig),
         ),
-        deleteExpenseUseCase = DeleteExpenseUseCase(),
+        deleteExpenseUseCase = DeleteExpenseUseCase(
+            expenseIdRepository = ExpenseIdRepositoryImpl,
+            expenseClient = ExpenseClientImpl(expensesApiMessagingBridgeConfig = expensesApiMessagingBridgeConfig),
+            messageClient = DiscordMessageClient(expensesApiMessagingBridgeConfig = expensesApiMessagingBridgeConfig),
+        ),
         expensesApiMessagingBridgeConfig = expensesApiMessagingBridgeConfig,
     )
         .listen()
