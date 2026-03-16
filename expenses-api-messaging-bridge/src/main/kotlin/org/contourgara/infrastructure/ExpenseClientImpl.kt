@@ -71,7 +71,7 @@ class ExpenseClientImpl(
                 }
         }
 
-    override fun delete(expenseId: ExpenseId): Pair<ExpenseId, ExpenseEventId> =
+    override fun delete(expenseId: ExpenseId): ExpenseEventId =
         runBlocking {
             httpClient
                 .delete(urlString = "/expense/${expenseId.value}")
@@ -80,12 +80,7 @@ class ExpenseClientImpl(
                 }
                 .body<DeleteExpenseResponse>()
                 .let {
-                    Pair(
-                        first = expenseId,
-                        second = ExpenseEventId(
-                            value = ULID.parseULID(ulidString = it.expenseEventId)
-                        )
-                    )
+                    ExpenseEventId(value = ULID.parseULID(ulidString = it.expenseEventId))
                 }
         }
 }

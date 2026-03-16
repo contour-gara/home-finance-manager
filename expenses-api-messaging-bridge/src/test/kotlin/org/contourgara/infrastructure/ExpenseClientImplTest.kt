@@ -102,10 +102,7 @@ class ExpenseClientImplTest : FunSpec({
         val actual = sut.delete(expenseId = expenseId)
 
         // assert
-        val expected = Pair(
-            first = expenseId,
-            second = ExpenseEventId(value = ULID.parseULID(ulidString = "01KD27JEZQQY88RG18034YZHBV")),
-        )
+        val expected = ExpenseEventId(value = ULID.parseULID(ulidString = "01KD27JEZQQY88RG18034YZHBV"))
         actual shouldBe expected
     }
 
