@@ -5,6 +5,7 @@ import org.contourgara.domain.ExpenseClient
 import org.contourgara.domain.ExpenseIdRepository
 import org.contourgara.domain.MessageClient
 import org.contourgara.domain.MessageId
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 class DeleteExpenseUseCase(
     private val expenseIdRepository: ExpenseIdRepository,
@@ -12,24 +13,27 @@ class DeleteExpenseUseCase(
     private val messageClient: MessageClient,
 ) {
     fun execute(param: DeleteExpenseParam) =
-        param
-            .toModel()
-            .let { messageId ->
-                Pair(
-                    first = messageId,
-                    second = expenseIdRepository.findByMessageId(messageId = messageId),
-                )
-            }
-            .let { (messageId, expenseId) ->
-                Triple(
-                    first = messageId,
-                    second = expenseId,
-                    third = expenseClient.delete(expenseId = expenseId),
-                )
-            }
-            .let { (messageId, expenseId, expenseEventId) ->
-                messageClient.replySuccessDeleteExpense(messageId = messageId, expenseId = expenseId, expenseEventId = expenseEventId)
-            }
+        transaction {
+            param
+                .toModel()
+                .let { messageId ->
+                    Pair(
+                        first = messageId,
+                        second = expenseIdRepository.findByMessageId(messageId = messageId),
+                    )
+                }
+                .let { (messageId, expenseId) ->
+                    Triple(
+                        first = messageId,
+                        second = expenseId,
+                        third = expenseClient.delete(expenseId = expenseId),
+                    )
+                }
+                .let { (messageId, expenseId, expenseEventId) ->
+                    messageClient.replySuccessDeleteExpense(messageId = messageId, expenseId = expenseId, expenseEventId = expenseEventId)
+                }
+                .let { Unit }
+        }
 }
 
 data class DeleteExpenseParam(
