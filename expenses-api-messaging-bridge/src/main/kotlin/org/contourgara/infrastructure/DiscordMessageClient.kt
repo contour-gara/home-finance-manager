@@ -24,24 +24,7 @@ class DiscordMessageClient(
         expenseId: ExpenseId,
         expenseEventId: ExpenseEventId,
     ) {
-        runBlocking {
-            restClient.channel.createMessage(channelId = Snowflake(expensesApiMessagingBridgeConfig.discordChannelId)) {
-                messageReference = messageId.value
-                content = "支出を登録したっピ！"
-                embed {
-                    title = "詳細っピ"
-                    color = Color(0, 255, 0)
-                    field {
-                        name = "支出 ID"
-                        value = expenseId.value.toString()
-                    }
-                    field {
-                        name = "イベント ID"
-                        value = expenseEventId.value.toString()
-                    }
-                }
-            }
-        }
+        reply(messageId = messageId, expenseId = expenseId, expenseEventId = expenseEventId, messageContent = "支出を登録したっピ！")
     }
 
     override fun replySuccessDeleteExpense(
@@ -49,23 +32,34 @@ class DiscordMessageClient(
         expenseId: ExpenseId,
         expenseEventId: ExpenseEventId,
     ) {
+        reply(messageId = messageId, expenseId = expenseId, expenseEventId = expenseEventId, messageContent = "支出を削除したっピ！")
+    }
+
+    private fun reply(
+        messageId: MessageId,
+        expenseId: ExpenseId,
+        expenseEventId: ExpenseEventId,
+        messageContent: String,
+    ) {
         runBlocking {
-            restClient.channel.createMessage(channelId = Snowflake(expensesApiMessagingBridgeConfig.discordChannelId)) {
-                messageReference = messageId.value
-                content = "支出を削除したっピ！"
-                embed {
-                    title = "詳細っピ"
-                    color = Color(0, 255, 0)
-                    field {
-                        name = "支出 ID"
-                        value = expenseId.value.toString()
-                    }
-                    field {
-                        name = "イベント ID"
-                        value = expenseEventId.value.toString()
+            restClient
+                .channel
+                .createMessage(channelId = Snowflake(value = expensesApiMessagingBridgeConfig.discordChannelId)) {
+                    messageReference = messageId.value
+                    content = messageContent
+                    embed {
+                        title = "詳細っピ"
+                        color = Color(0, 255, 0)
+                        field {
+                            name = "支出 ID"
+                            value = expenseId.value.toString()
+                        }
+                        field {
+                            name = "イベント ID"
+                            value = expenseEventId.value.toString()
+                        }
                     }
                 }
-            }
         }
     }
 }
