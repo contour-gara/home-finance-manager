@@ -2,5 +2,5 @@ package org.contourgara.domain
 
 interface ExpenseClient {
     fun create(expense: Expense): Pair<ExpenseId, ExpenseEventId>
-    fun delete(expenseId: ExpenseId)
+    fun delete(expenseId: ExpenseId): Pair<ExpenseId, ExpenseEventId>
 }

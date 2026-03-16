@@ -8,6 +8,7 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.delete
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -70,9 +71,23 @@ class ExpenseClientImpl(
                 }
         }
 
-    override fun delete(expenseId: ExpenseId) {
-        TODO("Not yet implemented")
-    }
+    override fun delete(expenseId: ExpenseId): Pair<ExpenseId, ExpenseEventId> =
+        runBlocking {
+            httpClient
+                .delete(urlString = "/expense/${expenseId.value}")
+                .also {
+                    if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
+                }
+                .body<DeleteExpenseResponse>()
+                .let {
+                    Pair(
+                        first = expenseId,
+                        second = ExpenseEventId(
+                            value = ULID.parseULID(ulidString = it.expenseEventId)
+                        )
+                    )
+                }
+        }
 }
 
 @Serializable
@@ -102,5 +117,10 @@ data class CreateExpenseRequest(
 @Serializable
 data class CreateExpenseResponse(
     val expenseId: String,
+    val expenseEventId: String,
+)
+
+@Serializable
+data class DeleteExpenseResponse(
     val expenseEventId: String,
 )
