@@ -16,7 +16,7 @@ class CreateExpenseUseCase(
     fun execute(createExpenseParam: CreateExpenseParam): CreateExpenseDto =
         ExpenseId(value = ulidGenerator.nextUlid())
             .let { createExpenseParam.toModel(expenseId = it) }
-            .let { expenseClient.create(it) }
+            .let { expenseClient.create(it.second) }
             .let { (expense, expenseEventId) ->
                 CreateExpenseDto.from(expense = expense, expenseEventId = expenseEventId)
             }
@@ -31,15 +31,18 @@ data class CreateExpenseParam(
     val month: Int,
     val memo: String,
 ) {
-    fun toModel(expenseId: ExpenseId): Expense =
-        Expense(
-            expenseId = expenseId,
-            amount = amount,
-            category = category,
-            payer = payer,
-            year = year,
-            month = month,
-            memo = memo,
+    fun toModel(expenseId: ExpenseId): Pair<Snowflake, Expense> =
+        Pair(
+            first = messageId,
+            second = Expense(
+                expenseId = expenseId,
+                amount = amount,
+                category = category,
+                payer = payer,
+                year = year,
+                month = month,
+                memo = memo,
+            )
         )
 }
 

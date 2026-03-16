@@ -1,5 +1,6 @@
 package org.contourgara.application
 
+import dev.kord.common.entity.Snowflake
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.koin.KoinExtension
 import io.kotest.matchers.shouldBe
@@ -52,6 +53,7 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
             }
 
             val createExpenseParam = CreateExpenseParam(
+                messageId = Snowflake(value = 0),
                 amount = 1000,
                 category = "FOOD",
                 payer = "gara",
