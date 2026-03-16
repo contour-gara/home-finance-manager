@@ -1,5 +1,6 @@
 package org.contourgara.application
 
+import dev.kord.common.entity.Snowflake
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseClient
 import org.contourgara.domain.ExpenseEventId
@@ -22,6 +23,7 @@ class CreateExpenseUseCase(
 }
 
 data class CreateExpenseParam(
+    val messageId: Snowflake,
     val amount: Int,
     val category: String,
     val payer: String,

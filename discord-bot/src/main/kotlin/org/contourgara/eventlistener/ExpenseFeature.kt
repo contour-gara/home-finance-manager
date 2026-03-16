@@ -214,7 +214,7 @@ object ExpenseFeature : KoinComponent {
             .first()
             .data
             .let { CreateExpenseRequest.fromEmbedData(embedData = it) }
-            .toParam()
+            .toParam(messageId = interaction.message.id)
             .let { createExpenseUseCase.execute(createExpenseParam = it) }
             .let { CreateExpenseResponse.fromDto(createExpenseDto = it) }
             .let {
@@ -370,8 +370,9 @@ data class CreateExpenseRequest(
         }
     }
 
-    fun toParam(): CreateExpenseParam =
+    fun toParam(messageId: Snowflake): CreateExpenseParam =
         CreateExpenseParam(
+            messageId = messageId,
             amount = amount,
             payer = payer!!,
             category = category!!,
