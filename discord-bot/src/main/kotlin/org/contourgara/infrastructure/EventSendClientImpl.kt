@@ -80,8 +80,8 @@ class EventSendClientImpl(
         sendEvent(topicName = discordBotConfig.expensesApiMessagingBridgeTopicName, request = RecordRequest.from(messageId = messageId, expense = expense))
     }
 
-    override fun deleteExpense(messageId: Snowflake) {
-        sendEvent(topicName = discordBotConfig.expensesApiMessagingBridgeTopicName, request = RecordRequest.from(messageId = messageId))
+    override fun deleteExpense(createMessageId: Snowflake, deleteMessageId: Snowflake) {
+        sendEvent(topicName = discordBotConfig.expensesApiMessagingBridgeTopicName, request = RecordRequest.from(createMessageId = createMessageId, deleteMessageId = deleteMessageId))
     }
 
     private fun sendEvent(topicName: String, request: RecordRequest) {
@@ -129,11 +129,11 @@ class EventSendClientImpl(
                 value = RecordValue.from(messageId = messageId, expense = expense),
             )
 
-            fun from(messageId: Snowflake): RecordRequest = RecordRequest(
+            fun from(createMessageId: Snowflake, deleteMessageId: Snowflake): RecordRequest = RecordRequest(
                 headers = listOf(
                     RecordHeader.of(name = "event-type", value = "delete"),
                 ),
-                value = RecordValue.from(messageId = messageId),
+                value = RecordValue.from(createMessageId = createMessageId, deleteMessageId = deleteMessageId),
             )
         }
     }
@@ -175,9 +175,9 @@ class EventSendClientImpl(
                     data = RecordData.CreateExpenseData.from(messageId = messageId, expense = expense),
                 )
 
-            fun from(messageId: Snowflake): RecordValue =
+            fun from(createMessageId: Snowflake, deleteMessageId: Snowflake): RecordValue =
                 RecordValue(
-                    data = RecordData.DeleteExpenseData.from(messageId = messageId),
+                    data = RecordData.DeleteExpenseData.from(createMessageId = createMessageId, deleteMessageId = deleteMessageId),
                 )
         }
     }
@@ -256,12 +256,14 @@ class EventSendClientImpl(
 
         @Serializable
         data class DeleteExpenseData(
-            private val messageId: String,
+            private val createMessageId: String,
+            private val deleteMessageId: String,
         ) : RecordData {
             companion object {
-                fun from(messageId: Snowflake): DeleteExpenseData =
+                fun from(createMessageId: Snowflake, deleteMessageId: Snowflake): DeleteExpenseData =
                     DeleteExpenseData(
-                        messageId = messageId.value.toString(),
+                        createMessageId = createMessageId.value.toString(),
+                        deleteMessageId = deleteMessageId.value.toString(),
                     )
             }
         }

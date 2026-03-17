@@ -23,13 +23,13 @@ class DeleteExpenseUseCaseTest : KoinTest, FunSpec() {
         test(name = "支出を削除できる") {
             // setup
             declareMock<EventSendClient> {
-                every { deleteExpense(messageId = Snowflake(value = 0)) } returns Unit
+                every { deleteExpense(createMessageId = Snowflake(value = 0), deleteMessageId = Snowflake(value = 1)) } returns Unit
             }
 
             val sut: DeleteExpenseUseCase by inject()
 
             // execute
-            val actual = sut.execute(messageId = Snowflake(value = 0))
+            val actual = sut.execute(createMessageId = Snowflake(value = 0), deleteMessageId = Snowflake(value = 1))
 
             // assert
             val expected = Snowflake(value = 0)

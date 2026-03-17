@@ -9,8 +9,9 @@ class DeleteExpenseUseCase(
     private val eventSendClient: EventSendClient,
 ) {
     fun execute(
-        messageId: Snowflake,
+        createMessageId: Snowflake,
+        deleteMessageId: Snowflake,
     ): Snowflake =
-        messageId
-            .also { eventSendClient.deleteExpense(messageId = it) }
+        createMessageId
+            .also { eventSendClient.deleteExpense(createMessageId = it, deleteMessageId = deleteMessageId) }
 }

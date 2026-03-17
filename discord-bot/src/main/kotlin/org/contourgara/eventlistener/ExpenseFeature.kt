@@ -103,7 +103,7 @@ object ExpenseFeature : KoinComponent {
                     .strings
                     .let {
                         DeleteExpenseRequest(
-                            messageId = Snowflake(value = it[DELETE_COMMAND_ARGUMENT_NAME_MESSAGE_ID]!!),
+                            createMessageId = Snowflake(value = it[DELETE_COMMAND_ARGUMENT_NAME_MESSAGE_ID]!!),
                         )
                     }
                     .also {
@@ -226,8 +226,8 @@ object ExpenseFeature : KoinComponent {
             .first()
             .data
             .let { DeleteExpenseRequest.fromEmbedData(embedData = it) }
-            .let { deleteExpenseUseCase.execute(messageId = it.messageId) }
-            .let { DeleteExpenseResponse(messageId = it) }
+            .let { deleteExpenseUseCase.execute(createMessageId = it.createMessageId, deleteMessageId = interaction.message.id) }
+            .let { DeleteExpenseResponse(createMessageId = it) }
             .let {
                 interaction
                     .deferPublicMessageUpdate()
@@ -459,7 +459,7 @@ enum class Category(
 }
 
 data class DeleteExpenseRequest(
-    val messageId: Snowflake,
+    val createMessageId: Snowflake,
 ) {
     companion object {
         fun fromEmbedData(embedData: EmbedData): DeleteExpenseRequest =
@@ -469,13 +469,13 @@ data class DeleteExpenseRequest(
                 .associate { it.name to it.value }
                 .let {
                     DeleteExpenseRequest(
-                        messageId = Snowflake(value = it[ExpenseFeature.EMBED_FIELD_KEY_CREATE_EXPENSE_MESSAGE_ID]!!),
+                        createMessageId = Snowflake(value = it[ExpenseFeature.EMBED_FIELD_KEY_CREATE_EXPENSE_MESSAGE_ID]!!),
                     )
                 }
     }
 
     fun toInteractionResponseModifyBuilder(channelId: String): InteractionResponseModifyBuilder.() -> Unit = {
-        content = "削除する支出は https://discord.com/channels/889318150615744523/$channelId/$messageId で間違いないっピか？"
+        content = "削除する支出は https://discord.com/channels/889318150615744523/$channelId/$createMessageId で間違いないっピか？"
         embed(builder = toEmbedBuilder())
         actionRow(builder = toSubmitActionRowBuilder())
     }
@@ -483,7 +483,7 @@ data class DeleteExpenseRequest(
     private fun toEmbedBuilder(): EmbedBuilder.() -> Unit = {
         title = "入力情報だっピ"
         color = Color(red = 255, green = 255, blue = 50)
-        field(name = ExpenseFeature.EMBED_FIELD_KEY_CREATE_EXPENSE_MESSAGE_ID, inline = true, value = { messageId.value.toString() })
+        field(name = ExpenseFeature.EMBED_FIELD_KEY_CREATE_EXPENSE_MESSAGE_ID, inline = true, value = { createMessageId.value.toString() })
     }
 
     private fun toSubmitActionRowBuilder(): ActionRowBuilder.() -> Unit = {
@@ -498,14 +498,14 @@ data class DeleteExpenseRequest(
 }
 
 data class DeleteExpenseResponse(
-    val messageId: Snowflake,
+    val createMessageId: Snowflake,
 ) {
     fun toInteractionResponseModifyBuilder(channelId: String): InteractionResponseModifyBuilder.() -> Unit = {
-        content = "https://discord.com/channels/889318150615744523/$channelId/$messageId の支出が削除されたっピ"
+        content = "https://discord.com/channels/889318150615744523/$channelId/$createMessageId の支出が削除されたっピ"
         embed {
             title = "入力情報だっピ"
             color = Color(red = 0, green = 255, blue = 0)
-            field(name = ExpenseFeature.EMBED_FIELD_KEY_CREATE_EXPENSE_MESSAGE_ID, inline = true, value = { messageId.value.toString() })
+            field(name = ExpenseFeature.EMBED_FIELD_KEY_CREATE_EXPENSE_MESSAGE_ID, inline = true, value = { createMessageId.value.toString() })
         }
         actionRow {
             interactionButton(

@@ -439,7 +439,7 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
             wireMockServer.stubFor(
                 post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics/expenses-api-messaging-bridge/records"))
                     .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
-                    .withRequestBody(equalTo("{\"headers\":[{\"name\":\"event-type\",\"value\":[100,101,108,101,116,101]}],\"value\":{\"type\":\"JSON\",\"data\":{\"messageId\":\"1478034413110427842\"}}}"))
+                    .withRequestBody(equalTo("{\"headers\":[{\"name\":\"event-type\",\"value\":[100,101,108,101,116,101]}],\"value\":{\"type\":\"JSON\",\"data\":{\"createMessageId\":\"0\",\"deleteMessageId\":\"1\"}}}"))
                     .willReturn(
                         aResponse()
                             .withStatus(200)
@@ -448,13 +448,11 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
                     )
             )
 
-            val messageId = Snowflake(value = 1478034413110427842)
-
             val sut: EventSendClientImpl by inject()
 
             // execute & assert
             shouldNotThrowAny {
-                sut.deleteExpense(messageId = messageId)
+                sut.deleteExpense(createMessageId = Snowflake(value = 0), deleteMessageId = Snowflake(value = 1))
             }
         }
     }
