@@ -1,23 +1,16 @@
 package org.contourgara.application
 
-import org.contourgara.domain.ExpenseClient
-import org.contourgara.domain.ExpenseId
+import dev.kord.common.entity.Snowflake
+import org.contourgara.domain.EventSendClient
 import org.koin.core.annotation.Single
-import ulid.ULID
 
 @Single
 class DeleteExpenseUseCase(
-    private val expenseClient: ExpenseClient,
+    private val eventSendClient: EventSendClient,
 ) {
     fun execute(
-        expenseId: String,
-    ): Pair<String, String> =
-        ExpenseId(value = ULID.parseULID(ulidString = expenseId))
-            .let { expenseClient.delete(expenseId = it) }
-            .let { (expenseId, expenseEventId) ->
-                Pair(
-                    first = expenseId.value.toString(),
-                    second = expenseEventId.value.toString(),
-                )
-            }
+        messageId: Snowflake,
+    ): Snowflake =
+        messageId
+            .also { eventSendClient.deleteExpense(messageId = it) }
 }

@@ -427,5 +427,35 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
                 }.message shouldBe "Bad Request"
             }
         }
+
+        test("支出トピックへの削除イベント送信で 200 が返った場合、例外を投げない") {
+            // setup
+            declareMock<DiscordBotConfig> {
+                every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                every { kafkaClusterId } returns "home-finance-manager-kafka"
+                every { expensesApiMessagingBridgeTopicName } returns "expenses-api-messaging-bridge"
+            }
+
+            wireMockServer.stubFor(
+                post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics/expenses-api-messaging-bridge/records"))
+                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
+                    .withRequestBody(equalTo("{\"headers\":[{\"name\":\"event-type\",\"value\":[100,101,108,101,116,101]}],\"value\":{\"type\":\"JSON\",\"data\":{\"messageId\":\"1478034413110427842\"}}}"))
+                    .willReturn(
+                        aResponse()
+                            .withStatus(200)
+                            .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                            .withBody("{\"error_code\":200,\"cluster_id\":\"home_finance_manager_kafka\",\"topic_name\":\"expenses-api-messaging-bridge\",\"partition_id\":0,\"offset\":0,\"timestamp\":\"2025-09-28T22:54:48.379Z\",\"value\":{\"type\":\"JSON\",\"size\":98}}")
+                    )
+            )
+
+            val messageId = Snowflake(value = 1478034413110427842)
+
+            val sut: EventSendClientImpl by inject()
+
+            // execute & assert
+            shouldNotThrowAny {
+                sut.deleteExpense(messageId = messageId)
+            }
+        }
     }
 }

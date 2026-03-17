@@ -81,7 +81,7 @@ class EventSendClientImpl(
     }
 
     override fun deleteExpense(messageId: Snowflake) {
-        TODO("Not yet implemented")
+        sendEvent(topicName = discordBotConfig.expensesApiMessagingBridgeTopicName, request = RecordRequest.from(messageId = messageId))
     }
 
     private fun sendEvent(topicName: String, request: RecordRequest) {
@@ -128,6 +128,13 @@ class EventSendClientImpl(
                 ),
                 value = RecordValue.from(messageId = messageId, expense = expense),
             )
+
+            fun from(messageId: Snowflake): RecordRequest = RecordRequest(
+                headers = listOf(
+                    RecordHeader.of(name = "event-type", value = "delete"),
+                ),
+                value = RecordValue.from(messageId = messageId),
+            )
         }
     }
 
@@ -165,7 +172,12 @@ class EventSendClientImpl(
 
             fun from(messageId: Snowflake, expense: Expense): RecordValue =
                 RecordValue(
-                    data = RecordData.ExpenseData.from(messageId = messageId, expense = expense),
+                    data = RecordData.CreateExpenseData.from(messageId = messageId, expense = expense),
+                )
+
+            fun from(messageId: Snowflake): RecordValue =
+                RecordValue(
+                    data = RecordData.DeleteExpenseData.from(messageId = messageId),
                 )
         }
     }
@@ -217,7 +229,7 @@ class EventSendClientImpl(
         }
 
         @Serializable
-        data class ExpenseData(
+        data class CreateExpenseData(
             private val messageId: String,
             private val expenseId: String,
             private val amount: Int,
@@ -228,8 +240,8 @@ class EventSendClientImpl(
             private val memo: String,
         ) : RecordData {
             companion object {
-                fun from(messageId: Snowflake, expense: Expense): ExpenseData =
-                    ExpenseData(
+                fun from(messageId: Snowflake, expense: Expense): CreateExpenseData =
+                    CreateExpenseData(
                         messageId = messageId.value.toString(),
                         expenseId = expense.expenseId.value.toString(),
                         amount = expense.amount,
@@ -238,6 +250,18 @@ class EventSendClientImpl(
                         year = expense.year,
                         month = expense.month,
                         memo = expense.memo,
+                    )
+            }
+        }
+
+        @Serializable
+        data class DeleteExpenseData(
+            private val messageId: String,
+        ) : RecordData {
+            companion object {
+                fun from(messageId: Snowflake): DeleteExpenseData =
+                    DeleteExpenseData(
+                        messageId = messageId.value.toString(),
                     )
             }
         }
