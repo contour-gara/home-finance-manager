@@ -65,61 +65,31 @@ class EventSendClientImpl(
     }
 
     override fun registerBill(bill: Bill) {
-        runBlocking {
-            httpClient
-                .post(urlString = "/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.registerBillTopicName}/records") {
-                    setBody(RecordRequest.from(bill))
-                }
-                    .also {
-                        if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
-                    }
-                    .body<ProduceRecordResponse>()
-                    .also {
-                        if (it.isFailure()) throw RuntimeException("Bad Request")
-                    }
-        }
+        sendEvent(topicName = discordBotConfig.registerBillTopicName, request = RecordRequest.from(bill = bill))
     }
 
     override fun deleteBill(billId: BillId) {
-        runBlocking {
-            httpClient
-                .post(urlString = "/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.deleteBillTopicName}/records") {
-                    contentType(ContentType.Application.Json)
-                    setBody(RecordRequest.from(billId))
-                }
-                    .also {
-                        if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
-                    }
-                    .body<ProduceRecordResponse>()
-                    .also {
-                        if (it.isFailure()) throw RuntimeException("Bad Request")
-                    }
-        }
+        sendEvent(topicName = discordBotConfig.deleteBillTopicName, request = RecordRequest.from(billId = billId))
     }
 
     override fun showBalance(lender: User, borrower: User) {
-        runBlocking {
-            httpClient
-                .post("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.showBalanceTopicName}/records") {
-                        contentType(ContentType.Application.Json)
-                        setBody(RecordRequest.from(lender, borrower))
-                }
-                    .also {
-                        if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
-                    }
-                    .body<ProduceRecordResponse>()
-                    .also {
-                        if (it.isFailure()) throw RuntimeException("Bad Request")
-                    }
-        }
+        sendEvent(topicName = discordBotConfig.showBalanceTopicName, request = RecordRequest.from(lender = lender, borrower = borrower))
     }
 
     override fun createExpense(messageId: Snowflake, expense: Expense) {
+        sendEvent(topicName = discordBotConfig.expensesApiMessagingBridgeTopicName, request = RecordRequest.from(messageId = messageId, expense = expense))
+    }
+
+    override fun deleteExpense(messageId: Snowflake) {
+        TODO("Not yet implemented")
+    }
+
+    private fun sendEvent(topicName: String, request: RecordRequest) {
         runBlocking {
             httpClient
-                .post("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.expensesApiMessagingBridgeTopicName}/records") {
-                    contentType(ContentType.Application.Json)
-                    setBody(RecordRequest.from(messageId = messageId, expense = expense))
+                .post(urlString = "${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/$topicName/records") {
+                    contentType(type = ContentType.Application.Json)
+                    setBody(body = request)
                 }
                 .also {
                     if (!it.status.isSuccess()) throw RuntimeException("Bad Request")

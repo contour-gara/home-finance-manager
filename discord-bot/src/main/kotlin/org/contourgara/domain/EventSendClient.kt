@@ -7,4 +7,5 @@ interface EventSendClient {
     fun deleteBill(billId: BillId)
     fun showBalance(lender: User, borrower: User)
     fun createExpense(messageId: Snowflake, expense: Expense)
+    fun deleteExpense(messageId: Snowflake)
 }
