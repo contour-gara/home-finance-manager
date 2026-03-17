@@ -16,9 +16,7 @@ services:
       EXPENSES_API_BASE_URL: http://expenses-api:8080
 
   expenses-api-messaging-bridge:
-    build:
-      context: ./expenses-api-messaging-bridge
-      dockerfile: Dockerfile
+    image: ghcr.io/contour-gara/home-finance-manager-expenses-api-messaging-bridge:latest
     depends_on:
       kafka-broker:
         condition: service_healthy
