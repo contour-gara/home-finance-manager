@@ -115,7 +115,20 @@ class EventSendClientImpl(
     }
 
     override fun createExpense(messageId: Snowflake, expense: Expense) {
-        TODO("Not yet implemented")
+        runBlocking {
+            httpClient
+                .post("${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/${discordBotConfig.expensesApiMessagingBridgeTopicName}/records") {
+                    contentType(ContentType.Application.Json)
+                    setBody(RecordRequest.from(messageId = messageId, expense = expense))
+                }
+                .also {
+                    if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
+                }
+                .body<ProduceRecordResponse>()
+                .also {
+                    if (it.isFailure()) throw RuntimeException("Bad Request")
+                }
+        }
     }
 
     @Serializable

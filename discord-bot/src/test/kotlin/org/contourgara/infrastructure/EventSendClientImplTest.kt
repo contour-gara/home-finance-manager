@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
+import dev.kord.common.entity.Snowflake
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.core.spec.style.FunSpec
@@ -17,6 +18,8 @@ import io.mockk.mockkClass
 import org.contourgara.DiscordBotConfig
 import org.contourgara.domain.Bill
 import org.contourgara.domain.BillId
+import org.contourgara.domain.Expense
+import org.contourgara.domain.ExpenseId
 import org.contourgara.domain.User
 import org.koin.ksp.generated.org_contourgara_DiscordBotModule
 import org.koin.test.KoinTest
@@ -305,6 +308,124 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
             shouldThrowExactly<RuntimeException> {
                 sut.showBalance(User.GARA, User.YUKI)
             }.message shouldBe "Bad Request"
+        }
+
+        context("支出作成トピックへのイベント送信") {
+            test("200 が返った場合、例外を投げない") {
+                // setup
+                declareMock<DiscordBotConfig> {
+                    every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                    every { kafkaClusterId } returns "home-finance-manager-kafka"
+                    every { expensesApiMessagingBridgeTopicName } returns "expenses-api-messaging-bridge"
+                }
+
+                wireMockServer.stubFor(
+                    post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics/expenses-api-messaging-bridge/records"))
+                        .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
+                        .withRequestBody(equalTo("{\"headers\":[{\"name\":\"event-type\",\"value\":[99,114,101,97,116,101]}],\"value\":{\"type\":\"JSON\",\"data\":{\"messageId\":\"1478034413110427842\",\"expenseId\":\"01K4MXEKC0PMTJ8FA055N4SH79\",\"amount\":100,\"category\":\"RENT\",\"payer\":\"DIRECT_DEBIT\",\"year\":2026,\"month\":1,\"memo\":\"test\"}}}"))
+                        .willReturn(
+                            aResponse()
+                                .withStatus(200)
+                                .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                                .withBody("{\"error_code\":200,\"cluster_id\":\"home_finance_manager_kafka\",\"topic_name\":\"expenses-api-messaging-bridge\",\"partition_id\":0,\"offset\":0,\"timestamp\":\"2025-09-28T22:54:48.379Z\",\"value\":{\"type\":\"JSON\",\"size\":98}}")
+                        )
+                )
+
+                val messageId = Snowflake(value = 1478034413110427842)
+                val expense = Expense(
+                    expenseId = ExpenseId(value = ULID.parseULID(ulidString = "01K4MXEKC0PMTJ8FA055N4SH79")),
+                    amount = 100,
+                    payer = "DIRECT_DEBIT",
+                    category = "RENT",
+                    year = 2026,
+                    month = 1,
+                    memo = "test",
+                )
+
+                val sut: EventSendClientImpl by inject()
+
+                // execute & assert
+                shouldNotThrowAny {
+                    sut.createExpense(messageId = messageId, expense = expense)
+                }
+            }
+
+            test("200 以外が返った場合、例外を投げる") {
+                // setup
+                declareMock<DiscordBotConfig> {
+                    every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                    every { kafkaClusterId } returns "home-finance-manager-kafka"
+                    every { expensesApiMessagingBridgeTopicName } returns "expenses-api-messaging-bridge"
+                }
+
+                wireMockServer.stubFor(
+                    post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics/expenses-api-messaging-bridge/records"))
+                        .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
+                        .withRequestBody(equalTo("{\"headers\":[{\"name\":\"event-type\",\"value\":[99,114,101,97,116,101]}],\"value\":{\"type\":\"JSON\",\"data\":{\"messageId\":\"1478034413110427842\",\"expenseId\":\"01K4MXEKC0PMTJ8FA055N4SH79\",\"amount\":100,\"category\":\"RENT\",\"payer\":\"DIRECT_DEBIT\",\"year\":2026,\"month\":1,\"memo\":\"test\"}}}"))
+                        .willReturn(
+                            aResponse()
+                                .withStatus(405)
+                                .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                        )
+                )
+
+                val messageId = Snowflake(value = 1478034413110427842)
+                val expense = Expense(
+                    expenseId = ExpenseId(value = ULID.parseULID(ulidString = "01K4MXEKC0PMTJ8FA055N4SH79")),
+                    amount = 100,
+                    payer = "DIRECT_DEBIT",
+                    category = "RENT",
+                    year = 2026,
+                    month = 1,
+                    memo = "test",
+                )
+
+                val sut: EventSendClientImpl by inject()
+
+                // execute & assert
+                shouldThrowExactly<RuntimeException> {
+                    sut.createExpense(messageId = messageId, expense = expense)
+                }.message shouldBe "Bad Request"
+            }
+
+            test("200 が返ったが 200 以外の error_code が返却された場合、例外を投げる") {
+                // setup
+                declareMock<DiscordBotConfig> {
+                    every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                    every { kafkaClusterId } returns "home-finance-manager-kafka"
+                    every { expensesApiMessagingBridgeTopicName } returns "expenses-api-messaging-bridge"
+                }
+
+                wireMockServer.stubFor(
+                    post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics/expenses-api-messaging-bridge/records"))
+                        .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
+                        .withRequestBody(equalTo("{\"headers\":[{\"name\":\"event-type\",\"value\":[99,114,101,97,116,101]}],\"value\":{\"type\":\"JSON\",\"data\":{\"messageId\":\"1478034413110427842\",\"expenseId\":\"01K4MXEKC0PMTJ8FA055N4SH79\",\"amount\":100,\"category\":\"RENT\",\"payer\":\"DIRECT_DEBIT\",\"year\":2026,\"month\":1,\"memo\":\"test\"}}}"))
+                        .willReturn(
+                            aResponse()
+                                .withStatus(200)
+                                .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                                .withBody("{\"error_code\":400,\"message\":\"Cannot deserialize value of type `byte[]` from String \\\"\\\": Unexpected end of base64-encoded String: base64 variant 'MIME-NO-LINEFEEDS' expects padding (one or more '=' characters) at the end. This Base64Variant might have been incorrectly configured\"}")
+                        )
+                )
+
+                val messageId = Snowflake(value = 1478034413110427842)
+                val expense = Expense(
+                    expenseId = ExpenseId(value = ULID.parseULID(ulidString = "01K4MXEKC0PMTJ8FA055N4SH79")),
+                    amount = 100,
+                    payer = "DIRECT_DEBIT",
+                    category = "RENT",
+                    year = 2026,
+                    month = 1,
+                    memo = "test",
+                )
+
+                val sut: EventSendClientImpl by inject()
+
+                // execute & assert
+                shouldThrowExactly<RuntimeException> {
+                    sut.createExpense(messageId = messageId, expense = expense)
+                }.message shouldBe "Bad Request"
+            }
         }
     }
 }
