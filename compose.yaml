@@ -10,6 +10,8 @@ services:
         condition: service_healthy
       expenses-api:
         condition: service_started
+      expenses-api-messaging-bridge:
+        condition: service_started
     environment:
       BOT_TOKEN: ${BOT_TOKEN}
       ULID_SEQUENCER_BASE_URL: http://ulid-sequencer:8080

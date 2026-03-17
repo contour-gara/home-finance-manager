@@ -6,9 +6,8 @@ import io.kotest.koin.KoinExtension
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockkClass
+import org.contourgara.domain.EventSendClient
 import org.contourgara.domain.Expense
-import org.contourgara.domain.ExpenseClient
-import org.contourgara.domain.ExpenseEventId
 import org.contourgara.domain.ExpenseId
 import org.contourgara.domain.UlidGenerator
 import org.koin.ksp.generated.org_contourgara_DiscordBotModule
@@ -41,15 +40,9 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
                 month = 1,
                 memo = "test",
             )
-            declareMock<ExpenseClient> {
-                every {
-                    create(
-                        expense = expense
-                    )
-                } returns Pair(
-                    first = expense,
-                    second = ExpenseEventId(value = ULID.parseULID(ulidString = "01KD27JEZQQY88RG18034YZHBV"))
-                )
+            val messageId = Snowflake(value = 0)
+            declareMock<EventSendClient> {
+                every { createExpense(messageId = messageId, expense = expense) } returns Unit
             }
 
             val createExpenseParam = CreateExpenseParam(
@@ -70,7 +63,6 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
             // assert
             val expected = CreateExpenseDto(
                 expenseId = "01K5EZVS4SQ695EMPX61GM7KHW",
-                expenseEventId = "01KD27JEZQQY88RG18034YZHBV",
                 amount = 1000,
                 category = "FOOD",
                 payer = "gara",

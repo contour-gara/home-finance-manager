@@ -390,7 +390,6 @@ data class CreateExpenseResponse(
     val month: Int,
     val memo: String,
     val expenseId: String,
-    val expenseEventId: String,
 ) {
     companion object {
         fun fromDto(createExpenseDto: CreateExpenseDto): CreateExpenseResponse =
@@ -402,7 +401,6 @@ data class CreateExpenseResponse(
                 month = createExpenseDto.month,
                 memo = createExpenseDto.memo,
                 expenseId = createExpenseDto.expenseId,
-                expenseEventId = createExpenseDto.expenseEventId,
             )
     }
 
@@ -418,7 +416,6 @@ data class CreateExpenseResponse(
             field(name = ExpenseFeature.EMBED_FIELD_KEY_MONTH, inline = true, value = { month.toString() })
             field(name = ExpenseFeature.EMBED_FIELD_KEY_MEMO, inline = true, value = { memo })
             field(name = ExpenseFeature.EMBED_FIELD_KEY_EXPENSE_ID, inline = true, value = { expenseId })
-            field(name = ExpenseFeature.EMBED_FIELD_KEY_EXPENSE_EVENT_ID, inline = true, value = { expenseEventId })
         }
         actionRow {
             stringSelect(customId = ExpenseFeature.SELECT_PAYER_ID) {

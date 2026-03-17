@@ -1,9 +1,8 @@
 package org.contourgara.application
 
 import dev.kord.common.entity.Snowflake
+import org.contourgara.domain.EventSendClient
 import org.contourgara.domain.Expense
-import org.contourgara.domain.ExpenseClient
-import org.contourgara.domain.ExpenseEventId
 import org.contourgara.domain.ExpenseId
 import org.contourgara.domain.UlidGenerator
 import org.koin.core.annotation.Single
@@ -11,14 +10,16 @@ import org.koin.core.annotation.Single
 @Single
 class CreateExpenseUseCase(
     private val ulidGenerator: UlidGenerator,
-    private val expenseClient: ExpenseClient,
+    private val eventSendClient: EventSendClient,
 ) {
     fun execute(createExpenseParam: CreateExpenseParam): CreateExpenseDto =
         ExpenseId(value = ulidGenerator.nextUlid())
             .let { createExpenseParam.toModel(expenseId = it) }
-            .let { expenseClient.create(it.second) }
-            .let { (expense, expenseEventId) ->
-                CreateExpenseDto.from(expense = expense, expenseEventId = expenseEventId)
+            .also { (messageId, expense) ->
+                eventSendClient.createExpense(messageId = messageId, expense = expense)
+            }
+            .let { (_, expense) ->
+                CreateExpenseDto.from(expense = expense)
             }
 }
 
@@ -48,7 +49,6 @@ data class CreateExpenseParam(
 
 data class CreateExpenseDto(
     val expenseId: String,
-    val expenseEventId: String,
     val amount: Int,
     val category: String,
     val payer: String,
@@ -57,10 +57,9 @@ data class CreateExpenseDto(
     val memo: String,
 ) {
     companion object {
-        fun from(expense: Expense, expenseEventId: ExpenseEventId): CreateExpenseDto =
+        fun from(expense: Expense): CreateExpenseDto =
             CreateExpenseDto(
                 expenseId = expense.expenseId.value.toString(),
-                expenseEventId = expenseEventId.value.toString(),
                 amount = expense.amount,
                 category = expense.category,
                 payer = expense.payer,
