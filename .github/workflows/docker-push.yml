@@ -8,6 +8,11 @@ on:
         type: boolean
         required: true
         default: false
+      expenses-api-messaging-bridge:
+        description: 'expenses-api-messaging-bridge を push する場合は選択'
+        type: boolean
+        required: true
+        default: false
       finance-core:
         description: 'finance-core を push する場合は選択'
         type: boolean
@@ -42,6 +47,9 @@ jobs:
             const modules = []
             if (${{ inputs.discord-bot }}) {
               modules[modules.length] = "discord-bot"
+            }
+            if (${{ inputs.expenses-api-messaging-bridge }}) {
+              modules[modules.length] = "expenses-api-messaging-bridge"
             }
             if (${{ inputs.finance-core }}) {
               modules[modules.length] = "finance-core"
