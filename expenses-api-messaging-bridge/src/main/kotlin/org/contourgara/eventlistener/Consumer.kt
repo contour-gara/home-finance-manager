@@ -77,10 +77,12 @@ data class CreateExpenseRequest(
 
 @Serializable
 data class DeleteExpenseRequest(
-    private val messageId: String,
+    private val createMessageId: String,
+    private val deleteMessageId: String,
 ) {
     fun toParam(): DeleteExpenseParam =
         DeleteExpenseParam(
-            messageId = messageId,
+            createMessageId = createMessageId,
+            deleteMessageId = deleteMessageId,
         )
 }

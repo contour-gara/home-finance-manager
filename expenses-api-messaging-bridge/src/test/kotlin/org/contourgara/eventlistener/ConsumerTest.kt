@@ -124,7 +124,7 @@ class ConsumerTest : FunSpec({
                 "expenses-api-messaging-bridge",
                 null,
                 "key",
-                "{\"messageId\": \"1477993825762017321\"}",
+                "{\"createMessageId\": \"1477993825762017321\", \"deleteMessageId\": \"1\"}",
                 listOf(
                     RecordHeader("event-type", "delete".toByteArray()),
                 ),
@@ -134,7 +134,7 @@ class ConsumerTest : FunSpec({
         // assert
         await withPollDelay(Duration.ofSeconds(1)) atMost(Duration.ofSeconds(10)) untilAsserted {
             verify(exactly = 0) { createExpenseUseCase.execute(param = any()) }
-            verify(exactly = 1) { deleteExpenseUseCase.execute(param = DeleteExpenseParam(messageId = "1477993825762017321")) }
+            verify(exactly = 1) { deleteExpenseUseCase.execute(param = DeleteExpenseParam(createMessageId = "1477993825762017321", deleteMessageId = "1")) }
         }
     }
 

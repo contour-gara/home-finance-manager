@@ -16,28 +16,33 @@ class DeleteExpenseUseCase(
         transaction {
             param
                 .toModel()
-                .let { messageId ->
+                .let { (createMessageId, deleteMessageId) ->
                     Pair(
-                        first = messageId,
-                        second = expenseIdRepository.findByMessageId(messageId = messageId),
+                        first = deleteMessageId,
+                        second = expenseIdRepository.findByMessageId(messageId = createMessageId),
                     )
                 }
-                .let { (messageId, expenseId) ->
+                .let { (deleteMessageId, expenseId) ->
                     Triple(
-                        first = messageId,
+                        first = deleteMessageId,
                         second = expenseId,
                         third = expenseClient.delete(expenseId = expenseId),
                     )
                 }
-                .let { (messageId, expenseId, expenseEventId) ->
-                    messageClient.replySuccessDeleteExpense(messageId = messageId, expenseId = expenseId, expenseEventId = expenseEventId)
+                .let { (deleteMessageId, expenseId, expenseEventId) ->
+                    messageClient.replySuccessDeleteExpense(messageId = deleteMessageId, expenseId = expenseId, expenseEventId = expenseEventId)
                 }
                 .let { Unit }
         }
 }
 
 data class DeleteExpenseParam(
-    private val messageId: String,
+    private val createMessageId: String,
+    private val deleteMessageId: String,
 ) {
-    fun toModel(): MessageId = MessageId(value = Snowflake(value = messageId))
+    fun toModel(): Pair<MessageId, MessageId> =
+        Pair(
+            first = MessageId(value = Snowflake(value = createMessageId)),
+            second = MessageId(value = Snowflake(value = deleteMessageId)),
+        )
 }
