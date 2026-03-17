@@ -5,7 +5,6 @@ import org.contourgara.application.CreateExpenseParam
 
 @Serializable
 data class CreateExpenseRequest(
-    private val expenseId: String,
     private val amount: Int,
     private val payer: String,
     private val category: String,
@@ -15,7 +14,6 @@ data class CreateExpenseRequest(
 ) {
     fun toParam(): CreateExpenseParam =
         CreateExpenseParam(
-            expenseId = expenseId,
             amount = amount,
             payer = payer,
             category = category,

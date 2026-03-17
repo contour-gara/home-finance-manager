@@ -5,7 +5,6 @@ import org.contourgara.domain.Error
 import org.contourgara.domain.Expense
 
 data class CreateExpenseParam(
-    private val expenseId: String,
     private val amount: Int,
     private val payer: String,
     private val category: String,
@@ -13,7 +12,7 @@ data class CreateExpenseParam(
     private val month: Int,
     private val memo: String,
 ) {
-    fun toModel(): EitherNel<Error, Expense> =
+    fun toModel(expenseId: String): EitherNel<Error, Expense> =
         Expense.of(
             expenseId = expenseId,
             amount = amount,

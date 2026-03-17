@@ -41,7 +41,6 @@ class GlobalExceptionHandlerTest : FunSpec({
                 contentType(ContentType.Application.Json)
                 setBody("""
                     {
-                      "expenseId": "01K4MXEKC0PMTJ8FA055N4SH79",
                       "amount": 1000,
                       "payer":"DIRECT_DEBIT",
                       "category":"RENT",
@@ -76,7 +75,6 @@ class GlobalExceptionHandlerTest : FunSpec({
                 contentType(ContentType.Application.Json)
                 setBody("""
                     {
-                      "expenseId": "01K4MXEKC0PMTJ8FA055N4SH79",
                       "amount": 1000,
                       "payer":"DIRECT_DEBIT",
                       "category":"RENT",
@@ -91,7 +89,7 @@ class GlobalExceptionHandlerTest : FunSpec({
             // assert
             actual shouldHaveStatus 400
             actual.bodyAsText() shouldBe
-                    """{"type":"kotlinx.serialization.json.internal.JsonDecodingException","title":"Serialization Error","errors":[{"detail":"Encountered an unknown key 'test' at offset 165 at path: $\nUse 'ignoreUnknownKeys = true' in 'Json {}' builder or '@JsonIgnoreUnknownKeys' annotation to ignore unknown keys.\nJSON input: {\n  \"expenseId\": \"01K4MXEKC0PMTJ8FA055N4SH79\",\n  \"amount\": 1000,\n  \"payer\":\"DIRECT_DEBIT\",\n  \"category\":\"RENT\",\n  \"year\":\"2026\",\n  \"month\": \"5\",\n  \"memo\":\"test\",\n  \"test\":\"test\n}"}]}"""
+                    """{"type":"kotlinx.serialization.json.internal.JsonDecodingException","title":"Serialization Error","errors":[{"detail":"Encountered an unknown key 'test' at offset 120 at path: $\nUse 'ignoreUnknownKeys = true' in 'Json {}' builder or '@JsonIgnoreUnknownKeys' annotation to ignore unknown keys.\nJSON input: {\n  \"amount\": 1000,\n  \"payer\":\"DIRECT_DEBIT\",\n  \"category\":\"RENT\",\n  \"year\":\"2026\",\n  \"month\": \"5\",\n  \"memo\":\"test\",\n  \"test\":\"test\n}"}]}"""
         }
     }
 
@@ -119,7 +117,6 @@ class GlobalExceptionHandlerTest : FunSpec({
                 contentType(ContentType.Application.Json)
                 setBody("""
                     {
-                      "expenseId": "01K4MXEKC0PMTJ8FA055N4SH79",
                       "amount": 1000,
                       "payer":"DIRECT_DEBIT",
                       "category":"RENT",
@@ -207,7 +204,6 @@ class GlobalExceptionHandlerTest : FunSpec({
                 contentType(ContentType.Application.Json)
                 setBody("""
                     {
-                      "expenseId": "01K4MXEKC0PMTJ8FA055N4SH79",
                       "amount": 1000,
                       "payer":"DIRECT_DEBIT",
                       "category":"RENT",

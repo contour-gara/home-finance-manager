@@ -15,7 +15,6 @@ class CreateExpenseRequestTest : FunSpec({
         // setup
         val json = """
             {
-                "expenseId": "01K4MXEKC0PMTJ8FA055N4SH79",
                 "amount": 1000,
                 "payer":"DIRECT_DEBIT",
                 "category":"RENT",
@@ -35,7 +34,6 @@ class CreateExpenseRequestTest : FunSpec({
         // setup
         val json = """
             {
-                "expenseId": "01K4MXEKC0PMTJ8FA055N4SH79",
                 "amount": "a",
                 "payer":"DIRECT_DEBIT",
                 "category":"RENT",
@@ -50,9 +48,8 @@ class CreateExpenseRequestTest : FunSpec({
             Json.decodeFromString<CreateExpenseRequest>(string = json)
         }
         e.message shouldBe """
-            Unexpected JSON token at offset 63: Unexpected symbol 'a' in numeric literal at path: $.amount
+            Unexpected JSON token at offset 16: Unexpected symbol 'a' in numeric literal at path: $.amount
             JSON input: {
-                "expenseId": "01K4MXEKC0PMTJ8FA055N4SH79",
                 "amount": "a",
                 "payer":"DIRECT_DEBIT",
                 "category":"RENT",
@@ -67,7 +64,6 @@ class CreateExpenseRequestTest : FunSpec({
         // setup
         val json = """
             {
-                "expenseId": "01K4MXEKC0PMTJ8FA055N4SH79",
                 "amount": 1000,
                 "payer":"DIRECT_DEBIT",
                 "category":"RENT",
@@ -83,10 +79,9 @@ class CreateExpenseRequestTest : FunSpec({
             Json.decodeFromString<CreateExpenseRequest>(string = json)
         }
         e.message shouldBe """
-            Encountered an unknown key 'test' at offset 181 at path: $
+            Encountered an unknown key 'test' at offset 134 at path: $
             Use 'ignoreUnknownKeys = true' in 'Json {}' builder or '@JsonIgnoreUnknownKeys' annotation to ignore unknown keys.
             JSON input: {
-                "expenseId": "01K4MXEKC0PMTJ8FA055N4SH79",
                 "amount": 1000,
                 "payer":"DIRECT_DEBIT",
                 "category":"RENT",

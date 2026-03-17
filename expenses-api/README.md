@@ -8,7 +8,6 @@
 curl -v -X POST http://localhost:28080/expense \
   -H "Content-Type: application/json" \
   -d '{
-    "expenseId":"01K4MXEKC0PMTJ8FA055N4SH79",
     "amount":"100",
     "payer":"DIRECT_DEBIT",
     "category":"RENT",

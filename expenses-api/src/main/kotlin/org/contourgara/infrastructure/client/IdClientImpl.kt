@@ -11,13 +11,14 @@ import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.runBlocking
 import org.contourgara.AppConfig
 import org.contourgara.domain.ExpenseEventId
-import org.contourgara.domain.infrastructure.ExpenseEventIdClient
+import org.contourgara.domain.ExpenseId
+import org.contourgara.domain.infrastructure.IdClient
 import org.slf4j.LoggerFactory
 import ulid.ULID
 
-class ExpenseEventIdClientImpl(
+class IdClientImpl(
     private val appConfig: AppConfig,
-) : ExpenseEventIdClient {
+) : IdClient {
     private val httpClient: HttpClient by lazy {
         HttpClient(engineFactory = CIO) {
             install(plugin = Logging) {
@@ -33,6 +34,15 @@ class ExpenseEventIdClientImpl(
             }
         }
     }
+
+    override fun nextExpensesId(): ExpenseId =
+        runBlocking {
+            httpClient
+                .get(urlString = "/next-ulid")
+                .bodyAsText()
+                .let { ULID.parseULID(it) }
+                .let { ExpenseId(value = it) }
+        }
 
     override fun nextExpensesEventId(): ExpenseEventId =
         runBlocking {

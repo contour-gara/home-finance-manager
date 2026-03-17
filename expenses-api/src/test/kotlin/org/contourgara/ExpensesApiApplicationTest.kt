@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.ok
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
+import com.github.tomakehurst.wiremock.stubbing.Scenario
 import io.kotest.assertions.ktor.client.shouldHaveStatus
 import io.kotest.core.extensions.install
 import io.kotest.core.spec.style.FunSpec
@@ -31,10 +32,23 @@ class ExpensesApiApplicationTest : FunSpec({
         WireMockListener(wireMockServer, ListenerMode.PER_SPEC),
     )
 
-    wireMockServer.stubFor(
-        WireMock.get(urlPathEqualTo("/next-ulid"))
-            .willReturn(ok("01KD27JEZQQY88RG18034YZHBV"))
-    )
+    wireMockServer
+        .stubFor(
+            WireMock
+                .get(urlPathEqualTo("/next-ulid"))
+                .inScenario("ulid")
+                .whenScenarioStateIs(Scenario.STARTED)
+                .willSetStateTo("next")
+                .willReturn(ok("01K4MXEKC0PMTJ8FA055N4SH79"))
+        )
+    wireMockServer
+        .stubFor(
+            WireMock
+                .get(urlPathEqualTo("/next-ulid"))
+                .inScenario("ulid")
+                .whenScenarioStateIs("next")
+                .willReturn(ok("01KD27JEZQQY88RG18034YZHBV"))
+        )
 
     test("health エンドポイントにアクセスすると、'Expenses API is running!' が取得できる") {
         testApplication {
@@ -82,7 +96,6 @@ class ExpensesApiApplicationTest : FunSpec({
                 contentType(ContentType.Application.Json)
                 setBody("""
                     {
-                      "expenseId": "01K4MXEKC0PMTJ8FA055N4SH79",
                       "amount": 1000,
                       "payer":"DIRECT_DEBIT",
                       "category":"RENT",

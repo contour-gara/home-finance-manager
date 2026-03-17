@@ -20,7 +20,7 @@ import org.contourgara.domain.Year
 import org.contourgara.domain.infrastructure.ExpenseEventRepository
 import org.contourgara.domain.infrastructure.ExpenseRepository
 import org.contourgara.domain.infrastructure.ExpensesRepository
-import org.contourgara.domain.infrastructure.ExpenseEventIdClient
+import org.contourgara.domain.infrastructure.IdClient
 import org.jetbrains.exposed.v1.jdbc.Database
 import ulid.ULID
 
@@ -37,7 +37,6 @@ class CreateExpenseUseCaseTest : FunSpec({
     test("支出作成メソッドが、支出とイベントを保存し、支出に該当する合計支出が存在しなかった場合は合計支出を作成して保存し、支出 ID とイベント ID を返す") {
         // setup
         val param = CreateExpenseParam(
-            expenseId = "01K4MXEKC0PMTJ8FA055N4SH79",
             amount = 1000,
             payer = "DIRECT_DEBIT",
             category = "RENT",
@@ -77,8 +76,9 @@ class CreateExpenseUseCaseTest : FunSpec({
         val expenseRepository = mockk<ExpenseRepository>()
         every { expenseRepository.create(expense) } returns expense
 
-        val expenseEventIdClient = mockk<ExpenseEventIdClient>()
-        every { expenseEventIdClient.nextExpensesEventId() } returns expenseEventId
+        val idClient = mockk<IdClient>()
+        every { idClient.nextExpensesId() } returns expenseId
+        every { idClient.nextExpensesEventId() } returns expenseEventId
 
         val expenseEventRepository = mockk<ExpenseEventRepository>()
         every { expenseEventRepository.save(expenseEvent) } returns expenseEvent
@@ -89,7 +89,7 @@ class CreateExpenseUseCaseTest : FunSpec({
 
         val sut = CreateExpenseUseCase(
             expenseRepository = expenseRepository,
-            expenseEventIdClient = expenseEventIdClient,
+            idClient = idClient,
             expenseEventRepository = expenseEventRepository,
             expensesRepository = expensesRepository,
         )
@@ -111,7 +111,6 @@ class CreateExpenseUseCaseTest : FunSpec({
     test("支出作成メソッドが、支出とイベントを保存し、その支出に該当する合計支出が存在した場合は合計支出を更新して保存し、支出 ID とイベント ID を返す") {
         // setup
         val param = CreateExpenseParam(
-            expenseId = "01K4MXEKC0PMTJ8FA055N4SH79",
             amount = 1000,
             payer = "DIRECT_DEBIT",
             category = "RENT",
@@ -160,8 +159,9 @@ class CreateExpenseUseCaseTest : FunSpec({
         val expenseRepository = mockk<ExpenseRepository>()
         every { expenseRepository.create(expense) } returns expense
 
-        val expenseEventIdClient = mockk<ExpenseEventIdClient>()
-        every { expenseEventIdClient.nextExpensesEventId() } returns expenseEventId
+        val idClient = mockk<IdClient>()
+        every { idClient.nextExpensesId() } returns expenseId
+        every { idClient.nextExpensesEventId() } returns expenseEventId
 
         val expenseEventRepository = mockk<ExpenseEventRepository>()
         every { expenseEventRepository.save(expenseEvent) } returns expenseEvent
@@ -172,7 +172,7 @@ class CreateExpenseUseCaseTest : FunSpec({
 
         val sut = CreateExpenseUseCase(
             expenseRepository = expenseRepository,
-            expenseEventIdClient = expenseEventIdClient,
+            idClient = idClient,
             expenseEventRepository = expenseEventRepository,
             expensesRepository = expensesRepository,
         )

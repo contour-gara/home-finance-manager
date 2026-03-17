@@ -14,7 +14,7 @@ import io.ktor.server.routing.routing
 import org.contourgara.application.CreateExpenseUseCase
 import org.contourgara.application.DeleteExpenseUseCase
 import org.contourgara.application.MonthlyExpensesQueryService
-import org.contourgara.infrastructure.client.ExpenseEventIdClientImpl
+import org.contourgara.infrastructure.client.IdClientImpl
 import org.contourgara.infrastructure.repository.ExpenseEventRepositoryImpl
 import org.contourgara.infrastructure.repository.ExpenseRepositoryImpl
 import org.contourgara.infrastructure.repository.ExpensesRepositoryImpl
@@ -40,7 +40,7 @@ fun Application.module() {
     configureExpenseRouting(
         createExpenseUseCase = CreateExpenseUseCase(
             expenseRepository = ExpenseRepositoryImpl,
-            expenseEventIdClient = ExpenseEventIdClientImpl(appConfig = appConfig),
+            idClient = IdClientImpl(appConfig = appConfig),
             expenseEventRepository = ExpenseEventRepositoryImpl,
             expensesRepository = ExpensesRepositoryImpl,
         ),
@@ -48,7 +48,7 @@ fun Application.module() {
             expenseRepository = ExpenseRepositoryImpl,
             expenseEventRepository = ExpenseEventRepositoryImpl,
             expensesRepository = ExpensesRepositoryImpl,
-            expenseEventIdClient = ExpenseEventIdClientImpl(appConfig = appConfig),
+            idClient = IdClientImpl(appConfig = appConfig),
         ),
     )
     configureExpensesRouting(

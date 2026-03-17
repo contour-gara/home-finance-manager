@@ -14,14 +14,46 @@ import io.mockk.every
 import io.mockk.mockk
 import org.contourgara.AppConfig
 import org.contourgara.domain.ExpenseEventId
+import org.contourgara.domain.ExpenseId
 import ulid.ULID
 
-class ExpenseEventIdClientImplTest : FunSpec({
+class IdClientImplTest : FunSpec({
     val wireMockServer = WireMockServer(28080)
 
     extensions(
         WireMockListener(wireMockServer, ListenerMode.PER_SPEC),
     )
+
+    context("ulid-sequencer から ExpenseId を取得できる") {
+        data class TestCase(val ulid: String) : WithDataTestName {
+            override fun dataTestName(): String = "ulid-sequencer から $ulid が返る場合"
+        }
+
+        withData(
+            TestCase("01KD27JEZQQY88RG18034YZHBV"),
+            TestCase("01KDHVD5XTTR9XR4ZAFSSETGXS"),
+        ) { (ulid) ->
+            test("同じ ULID を返す") {
+                // setup
+                val appConfig = mockk<AppConfig>()
+                every { appConfig.ulidSequencerBaseUrl } returns "http://localhost:28080"
+
+                val sut = IdClientImpl(appConfig = appConfig)
+
+                wireMockServer.stubFor(
+                    get(urlPathEqualTo("/next-ulid"))
+                        .willReturn(ok(ulid))
+                )
+
+                // execute
+                val actual = sut.nextExpensesId()
+
+                // assert
+                val expected = ExpenseId(value = ULID.parseULID(ulid))
+                actual shouldBe expected
+            }
+        }
+    }
 
     context("ulid-sequencer から ExpenseEventId を取得できる") {
         data class TestCase(val ulid: String) : WithDataTestName {
@@ -37,7 +69,7 @@ class ExpenseEventIdClientImplTest : FunSpec({
                 val appConfig = mockk<AppConfig>()
                 every { appConfig.ulidSequencerBaseUrl } returns "http://localhost:28080"
 
-                val sut = ExpenseEventIdClientImpl(appConfig = appConfig)
+                val sut = IdClientImpl(appConfig = appConfig)
 
                 wireMockServer.stubFor(
                     get(urlPathEqualTo("/next-ulid"))

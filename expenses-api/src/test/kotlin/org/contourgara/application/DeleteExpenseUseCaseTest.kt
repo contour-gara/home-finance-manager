@@ -21,7 +21,7 @@ import org.contourgara.domain.Memo
 import org.contourgara.domain.Month
 import org.contourgara.domain.Payer
 import org.contourgara.domain.Year
-import org.contourgara.domain.infrastructure.ExpenseEventIdClient
+import org.contourgara.domain.infrastructure.IdClient
 import org.contourgara.domain.infrastructure.ExpenseEventRepository
 import org.contourgara.domain.infrastructure.ExpenseRepository
 import org.contourgara.domain.infrastructure.ExpensesRepository
@@ -43,12 +43,12 @@ class DeleteExpenseUseCaseTest : FunSpec({
         val expenseRepository = mockk<ExpenseRepository>()
         val expenseEventRepository = mockk<ExpenseEventRepository>()
         val expensesRepository = mockk<ExpensesRepository>()
-        val expenseEventIdClient = mockk<ExpenseEventIdClient>()
+        val idClient = mockk<IdClient>()
         val sut = DeleteExpenseUseCase(
             expenseRepository = expenseRepository,
             expenseEventRepository = expenseEventRepository,
             expensesRepository = expensesRepository,
-            expenseEventIdClient = expenseEventIdClient,
+            idClient = idClient,
         )
 
         val expenseId = ExpenseId(value = "01K4MXEKC0PMTJ8FA055N4SH79")
@@ -90,7 +90,7 @@ class DeleteExpenseUseCaseTest : FunSpec({
             amount = Amount(value = 500),
         )
         every { expenseEventRepository.findByExpenseId(expenseId = expenseId) } returns Either.Right(value = expenseEvent)
-        every { expenseEventIdClient.nextExpensesEventId() } returns deleteEventId
+        every { idClient.nextExpensesEventId() } returns deleteEventId
         every { expenseEventRepository.save(expenseEvent = deleteExpenseEvent) } returns deleteExpenseEvent
         every { expenseRepository.findById(expenseId = expenseId) } returns expense
         every { expensesRepository.findLatestExpenses(year = expense.year, month = expense.month, payer = expense.payer, category = expense.category) } returns beforeExpenses
@@ -109,12 +109,12 @@ class DeleteExpenseUseCaseTest : FunSpec({
         val expenseRepository = mockk<ExpenseRepository>()
         val expenseEventRepository = mockk<ExpenseEventRepository>()
         val expensesRepository = mockk<ExpensesRepository>()
-        val expenseEventIdClient = mockk<ExpenseEventIdClient>()
+        val idClient = mockk<IdClient>()
         val sut = DeleteExpenseUseCase(
             expenseRepository = expenseRepository,
             expenseEventRepository = expenseEventRepository,
             expensesRepository = expensesRepository,
-            expenseEventIdClient = expenseEventIdClient,
+            idClient = idClient,
         )
 
         val expenseId = ExpenseId(value = "01K4MXEKC0PMTJ8FA055N4SH79")
@@ -131,12 +131,12 @@ class DeleteExpenseUseCaseTest : FunSpec({
         val expenseRepository = mockk<ExpenseRepository>()
         val expenseEventRepository = mockk<ExpenseEventRepository>()
         val expensesRepository = mockk<ExpensesRepository>()
-        val expenseEventIdClient = mockk<ExpenseEventIdClient>()
+        val idClient = mockk<IdClient>()
         val sut = DeleteExpenseUseCase(
             expenseRepository = expenseRepository,
             expenseEventRepository = expenseEventRepository,
             expensesRepository = expensesRepository,
-            expenseEventIdClient = expenseEventIdClient,
+            idClient = idClient,
         )
 
         val expenseId = ExpenseId(value = "01K4MXEKC0PMTJ8FA055N4SH79")
@@ -148,7 +148,7 @@ class DeleteExpenseUseCaseTest : FunSpec({
             eventCategory = EventCategory.DELETE,
         )
         every { expenseEventRepository.findByExpenseId(expenseId = expenseId) } returns Either.Right(value = expenseEvent)
-        every { expenseEventIdClient.nextExpensesEventId() } returns deleteEventId
+        every { idClient.nextExpensesEventId() } returns deleteEventId
 
         // execute & assert
         shouldThrowExactly<ExpenseAlreadyDeletedException> {

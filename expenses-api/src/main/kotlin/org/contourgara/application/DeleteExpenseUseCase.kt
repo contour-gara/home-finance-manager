@@ -4,7 +4,7 @@ import arrow.core.Either
 import arrow.core.flatMap
 import arrow.core.toEitherNel
 import org.contourgara.domain.ExpenseId
-import org.contourgara.domain.infrastructure.ExpenseEventIdClient
+import org.contourgara.domain.infrastructure.IdClient
 import org.contourgara.domain.infrastructure.ExpenseEventRepository
 import org.contourgara.domain.infrastructure.ExpenseRepository
 import org.contourgara.domain.infrastructure.ExpensesRepository
@@ -16,7 +16,7 @@ class DeleteExpenseUseCase(
     private val expenseRepository: ExpenseRepository,
     private val expenseEventRepository: ExpenseEventRepository,
     private val expensesRepository: ExpensesRepository,
-    private val expenseEventIdClient: ExpenseEventIdClient,
+    private val idClient: IdClient,
 ) {
     fun execute(expenseId: String): ULID =
         transaction {
@@ -30,7 +30,7 @@ class DeleteExpenseUseCase(
                 .flatMap {
                     it
                         .delete(
-                            deleteEventId = expenseEventIdClient.nextExpensesEventId(),
+                            deleteEventId = idClient.nextExpensesEventId(),
                         )
                         .toEitherNel()
                 }

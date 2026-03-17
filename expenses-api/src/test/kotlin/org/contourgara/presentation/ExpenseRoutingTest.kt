@@ -31,7 +31,6 @@ class ExpenseRoutingTest : FunSpec({
                 createExpenseUseCase
                     .execute(
                         param = CreateExpenseParam(
-                            expenseId = "01K4MXEKC0PMTJ8FA055N4SH79",
                             amount = 1000,
                             payer = "DIRECT_DEBIT",
                             category = "RENT",
@@ -60,7 +59,6 @@ class ExpenseRoutingTest : FunSpec({
                 contentType(ContentType.Application.Json)
                 setBody("""
                     {
-                      "expenseId": "01K4MXEKC0PMTJ8FA055N4SH79",
                       "amount": 1000,
                       "payer":"DIRECT_DEBIT",
                       "category":"RENT",

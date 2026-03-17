@@ -8,27 +8,27 @@ import org.contourgara.domain.Expenses
 import org.contourgara.domain.infrastructure.ExpenseEventRepository
 import org.contourgara.domain.infrastructure.ExpenseRepository
 import org.contourgara.domain.infrastructure.ExpensesRepository
-import org.contourgara.domain.infrastructure.ExpenseEventIdClient
+import org.contourgara.domain.infrastructure.IdClient
 import org.contourgara.domain.toException
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 class CreateExpenseUseCase(
     private val expenseRepository: ExpenseRepository,
-    private val expenseEventIdClient: ExpenseEventIdClient,
+    private val idClient: IdClient,
     private val expenseEventRepository: ExpenseEventRepository,
     private val expensesRepository: ExpensesRepository,
 ) {
     fun execute(param: CreateExpenseParam): CreateExpenseDto =
         transaction {
             param
-                .toModel()
+                .toModel(expenseId = idClient.nextExpensesId().value.toString())
                 // TODO: Expenses の重複確認
                 .map {
                     Pair(
                         first = expenseRepository.create(it),
                         second = expenseEventRepository.save(
                             ExpenseEvent(
-                                expenseEventId = expenseEventIdClient.nextExpensesEventId(),
+                                expenseEventId = idClient.nextExpensesEventId(),
                                 expenseId = it.expenseId,
                                 eventCategory = EventCategory.CREATE,
                             ),
