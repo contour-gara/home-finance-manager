@@ -63,10 +63,8 @@ class ExpenseClientImpl(
                 .body<CreateExpenseResponse>()
                 .let {
                     Pair(
-                        first = expense.expenseId,
-                        second = ExpenseEventId(
-                            value = ULID.parseULID(ulidString = it.expenseEventId)
-                        )
+                        first = ExpenseId(value = ULID.parseULID(ulidString = it.expenseId)),
+                        second = ExpenseEventId(value = ULID.parseULID(ulidString = it.expenseEventId)),
                     )
                 }
         }
@@ -87,7 +85,6 @@ class ExpenseClientImpl(
 
 @Serializable
 data class CreateExpenseRequest(
-    val expenseId: String,
     val amount: Int,
     val category: String,
     val payer: String,
@@ -98,7 +95,6 @@ data class CreateExpenseRequest(
     companion object {
         fun from(expense: Expense): CreateExpenseRequest =
             CreateExpenseRequest(
-                expenseId = expense.expenseId.value.toString(),
                 amount = expense.amount,
                 category = expense.category,
                 payer = expense.payer,

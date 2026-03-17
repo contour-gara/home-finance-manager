@@ -54,7 +54,6 @@ class Consumer(
 @Serializable
 data class CreateExpenseRequest(
     private val messageId: String,
-    private val expenseId: String,
     private val amount: Int,
     private val payer: String,
     private val category: String,
@@ -65,7 +64,6 @@ data class CreateExpenseRequest(
     fun toParam(): CreateExpenseParam =
         CreateExpenseParam(
             messageId = messageId,
-            expenseId = expenseId,
             amount = amount,
             payer = payer,
             category = category,

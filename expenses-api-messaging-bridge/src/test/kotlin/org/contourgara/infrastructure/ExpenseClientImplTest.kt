@@ -38,7 +38,7 @@ class ExpenseClientImplTest : FunSpec({
         wireMockServer.stubFor(
             post(urlPathEqualTo("/expense"))
                 .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
-                .withRequestBody(equalTo("{\"expenseId\":\"01K5EZVS4SQ695EMPX61GM7KHW\",\"amount\":1000,\"category\":\"FOOD\",\"payer\":\"YUKI\",\"year\":2026,\"month\":1,\"memo\":\"memo\"}"))
+                .withRequestBody(equalTo("{\"amount\":1000,\"category\":\"FOOD\",\"payer\":\"YUKI\",\"year\":2026,\"month\":1,\"memo\":\"memo\"}"))
                 .willReturn(
                     aResponse()
                         .withStatus(201)
@@ -47,9 +47,7 @@ class ExpenseClientImplTest : FunSpec({
                 )
         )
 
-        val expenseId = ExpenseId(value = ULID.parseULID(ulidString = "01K5EZVS4SQ695EMPX61GM7KHW"))
         val expense = Expense(
-            expenseId = expenseId,
             amount = 1000,
             category = "FOOD",
             payer = "YUKI",
@@ -65,7 +63,7 @@ class ExpenseClientImplTest : FunSpec({
 
         // assert
         val expected = Pair(
-            first = expenseId,
+            first = ExpenseId(value = ULID.parseULID(ulidString = "01K5EZVS4SQ695EMPX61GM7KHW")),
             second = ExpenseEventId(value = ULID.parseULID(ulidString = "01KD27JEZQQY88RG18034YZHBV")),
         )
         actual shouldBe expected

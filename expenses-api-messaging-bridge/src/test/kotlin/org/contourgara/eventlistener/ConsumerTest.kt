@@ -81,7 +81,6 @@ class ConsumerTest : FunSpec({
                 """
                     {
                         "messageId": "1477993825762017321",
-                        "expenseId": "01K4MXEKC0PMTJ8FA055N4SH79",
                         "amount": 1000,
                         "payer":"DIRECT_DEBIT",
                         "category":"RENT",
@@ -103,7 +102,6 @@ class ConsumerTest : FunSpec({
                     .execute(param =
                         CreateExpenseParam(
                             messageId = "1477993825762017321",
-                            expenseId = "01K4MXEKC0PMTJ8FA055N4SH79",
                             amount = 1000,
                             payer = "DIRECT_DEBIT",
                             category = "RENT",
