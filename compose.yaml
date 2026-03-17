@@ -8,8 +8,6 @@ services:
         condition: service_started
       kafka-rest-proxy:
         condition: service_healthy
-      expenses-api:
-        condition: service_started
       expenses-api-messaging-bridge:
         condition: service_started
     environment:
