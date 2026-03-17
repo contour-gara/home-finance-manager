@@ -72,7 +72,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
       - name: mise install
-        uses: jdx/mise-action@v3
+        uses: jdx/mise-action@v4
       - name: Build jar file
         run: ./gradlew clean ${{ matrix.module }}:build -x test
       - name: Upload Dockerfile and jar file
