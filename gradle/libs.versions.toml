@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.3.20"
-ksp = "2.3.4"  # 問題があったため 2.3.5 から戻した https://github.com/google/ksp/issues/2763
+ksp = "2.3.6"
 kover = "0.9.7"
 
 ktor = "3.4.1"
