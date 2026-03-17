@@ -24,6 +24,8 @@ data class DiscordBotConfig(
     val deleteBillTopicName: String,
     @Property("SHOW_BALANCE_TOPIC_NAME")
     val showBalanceTopicName: String,
+    @Property("EXPENSES_API_MESSAGING_BRIDGE_TOPIC_NAME")
+    val expensesApiMessagingBridgeTopicName: String,
     @Property("EXPENSES_API_BASE_URL")
     val expensesApiBaseUrl: String,
 ) {
@@ -40,5 +42,7 @@ data class DiscordBotConfig(
         const val DELETE_BILL_TOPIC_NAME = "delete-bill"
         @PropertyValue("SHOW_BALANCE_TOPIC_NAME")
         const val SHOW_BALANCE_TOPIC_NAME = "show-balance"
+        @PropertyValue("EXPENSES_API_MESSAGING_BRIDGE_TOPIC_NAME")
+        const val EXPENSES_API_MESSAGING_BRIDGE_TOPIC_NAME = "expenses-api-messaging-bridge"
     }
 }

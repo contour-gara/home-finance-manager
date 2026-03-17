@@ -37,6 +37,7 @@ class KafkaInitTest : KoinTest, FunSpec() {
                 every { registerBillTopicName } returns "register-bill"
                 every { deleteBillTopicName } returns "delete-bill"
                 every { showBalanceTopicName } returns "show-balance"
+                every { expensesApiMessagingBridgeTopicName } returns "expenses-api-messaging-bridge"
             }
 
             wireMockServer.stubFor(
@@ -72,6 +73,17 @@ class KafkaInitTest : KoinTest, FunSpec() {
                     )
             )
 
+            wireMockServer.stubFor(
+                post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics"))
+                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
+                    .withRequestBody(equalTo(Json.encodeToString(KafkaInit.CreateTopicRequest("expenses-api-messaging-bridge"))))
+                    .willReturn(
+                        created()
+                            .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                            .withBody("{\"topic_name\":\"expenses-api-messaging-bridge\"}")
+                    )
+            )
+
             // execute & assert
             shouldNotThrowAny { KafkaInit.execute() }
         }
@@ -84,6 +96,7 @@ class KafkaInitTest : KoinTest, FunSpec() {
                 every { registerBillTopicName } returns "register-bill"
                 every { deleteBillTopicName } returns "delete-bill"
                 every { showBalanceTopicName } returns "show-balance"
+                every { expensesApiMessagingBridgeTopicName } returns "expenses-api-messaging-bridge"
             }
 
             wireMockServer.stubFor(
@@ -116,6 +129,17 @@ class KafkaInitTest : KoinTest, FunSpec() {
                         badRequest()
                             .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
                             .withBody("{\"error_code\":40002,\"message\":\"Topic 'show-balance' already exists.\"}")
+                    )
+            )
+
+            wireMockServer.stubFor(
+                post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics"))
+                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
+                    .withRequestBody(equalTo(Json.encodeToString(KafkaInit.CreateTopicRequest("expenses-api-messaging-bridge"))))
+                    .willReturn(
+                        badRequest()
+                            .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                            .withBody("{\"error_code\":40002,\"message\":\"Topic 'expenses-api-messaging-bridge' already exists.\"}")
                     )
             )
 

@@ -53,6 +53,7 @@ object KafkaInit : KoinComponent {
         REGISTER_BILL(discordBotConfig.registerBillTopicName),
         DELETE_BILL(discordBotConfig.deleteBillTopicName),
         OFFSET_BALANCE(discordBotConfig.showBalanceTopicName),
+        EXPENSES_API_MESSAGING_BRIDGE(discordBotConfig.expensesApiMessagingBridgeTopicName),
         ;
 
         companion object {
