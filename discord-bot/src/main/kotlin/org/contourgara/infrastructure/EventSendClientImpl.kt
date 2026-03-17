@@ -1,5 +1,6 @@
 package org.contourgara.infrastructure
 
+import dev.kord.common.entity.Snowflake
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -27,6 +28,7 @@ import org.contourgara.DiscordBotConfig
 import org.contourgara.domain.Bill
 import org.contourgara.domain.BillId
 import org.contourgara.domain.EventSendClient
+import org.contourgara.domain.Expense
 import org.contourgara.domain.User
 import org.koin.core.annotation.Single
 import org.slf4j.LoggerFactory
@@ -51,6 +53,7 @@ class EventSendClientImpl(
                     Json {
                         classDiscriminatorMode = ClassDiscriminatorMode.NONE
                         encodeDefaults = true
+                        explicitNulls = false
                     }
                 )
             }
@@ -111,22 +114,51 @@ class EventSendClientImpl(
         }
     }
 
+    override fun createExpense(messageId: Snowflake, expense: Expense) {
+        TODO("Not yet implemented")
+    }
+
     @Serializable
     data class RecordRequest(
+        private val headers: List<RecordHeader>?,
         private val value: RecordValue,
     ) {
         companion object {
             fun from(bill: Bill) = RecordRequest(
+                headers = null,
                 value = RecordValue.from(bill)
             )
 
             fun from(billId: BillId) = RecordRequest(
+                headers = null,
                 value = RecordValue.from(billId)
             )
 
             fun from(lender: User, borrower: User) = RecordRequest(
+                headers = null,
                 value = RecordValue.from(lender, borrower)
             )
+
+            fun from(messageId: Snowflake, expense: Expense): RecordRequest = RecordRequest(
+                headers = listOf(
+                    RecordHeader.of(name = "event-type", value = "create"),
+                ),
+                value = RecordValue.from(messageId = messageId, expense = expense),
+            )
+        }
+    }
+
+    @Serializable
+    data class RecordHeader(
+        private val name: String,
+        private val value: ByteArray,
+    ) {
+        companion object {
+            fun of(name: String, value: String): RecordHeader =
+                RecordHeader(
+                    name = name,
+                    value = value.toByteArray()
+                )
         }
     }
 
@@ -147,6 +179,11 @@ class EventSendClientImpl(
             fun from(lender: User, borrower: User) = RecordValue(
                 data = RecordData.ShowBalanceData.from(lender, borrower)
             )
+
+            fun from(messageId: Snowflake, expense: Expense): RecordValue =
+                RecordValue(
+                    data = RecordData.ExpenseData.from(messageId = messageId, expense = expense),
+                )
         }
     }
 
@@ -192,6 +229,32 @@ class EventSendClientImpl(
                     ShowBalanceData(
                         lender = lender.name,
                         borrower = borrower.name,
+                    )
+            }
+        }
+
+        @Serializable
+        data class ExpenseData(
+            private val messageId: String,
+            private val expenseId: String,
+            private val amount: Int,
+            private val category: String,
+            private val payer: String,
+            private val year: Int,
+            private val month: Int,
+            private val memo: String,
+        ) : RecordData {
+            companion object {
+                fun from(messageId: Snowflake, expense: Expense): ExpenseData =
+                    ExpenseData(
+                        messageId = messageId.value.toString(),
+                        expenseId = expense.expenseId.value.toString(),
+                        amount = expense.amount,
+                        category = expense.category,
+                        payer = expense.payer,
+                        year = expense.year,
+                        month = expense.month,
+                        memo = expense.memo,
                     )
             }
         }
