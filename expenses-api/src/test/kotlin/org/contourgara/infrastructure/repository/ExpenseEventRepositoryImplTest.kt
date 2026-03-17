@@ -5,7 +5,9 @@ import com.ninja_squad.dbsetup_kotlin.dbSetup
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.assertions.assertSoftly
+import io.kotest.core.extensions.install
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.extensions.testcontainers.TestContainerSpecExtension
 import io.kotest.matchers.shouldBe
 import org.assertj.db.api.Assertions.assertThat
 import org.assertj.db.type.AssertDbConnection
@@ -22,14 +24,12 @@ import ulid.ULID
 class ExpenseEventRepositoryImplTest : FunSpec({
     lateinit var assertDbConnection: AssertDbConnection
 
-    val mysql = MySQLContainer("mysql:8.0.43-oraclelinux9").apply {
-        startupAttempts = 1
-    }
+    val mysql = install(ext = TestContainerSpecExtension(container = MySQLContainer("mysql:8.0.43-oraclelinux9")))
+        .apply { startupAttempts = 1 }
 
     val sut = ExpenseEventRepositoryImpl
 
     beforeSpec {
-        mysql.start()
         DbTestHelper.migrateAndConnect(mysql)
         assertDbConnection = AssertDbConnectionFactory.of(mysql.jdbcUrl, mysql.username, mysql.password).create()
     }

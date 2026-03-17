@@ -5,7 +5,9 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.ok
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import io.kotest.assertions.ktor.client.shouldHaveStatus
+import io.kotest.core.extensions.install
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.extensions.testcontainers.TestContainerSpecExtension
 import io.kotest.extensions.wiremock.ListenerMode
 import io.kotest.extensions.wiremock.WireMockListener
 import io.kotest.matchers.shouldBe
@@ -20,10 +22,8 @@ import io.ktor.server.testing.testApplication
 import org.testcontainers.mysql.MySQLContainer
 
 class ExpensesApiApplicationTest : FunSpec({
-    val mysql = MySQLContainer("mysql:8.0.43-oraclelinux9").apply {
-        startupAttempts = 1
-    }
-    mysql.start()
+    val mysql = install(ext = TestContainerSpecExtension(container = MySQLContainer("mysql:8.0.43-oraclelinux9")))
+        .apply { startupAttempts = 1 }
 
     val wireMockServer = WireMockServer(28080)
 

@@ -38,6 +38,7 @@ dependencies {
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.extensions.ktor)
     testImplementation(libs.kotest.extensions.wiremock)
+    testImplementation(libs.kotest.extensions.testcontainers)
     testImplementation(libs.kotest.assertions.arrow)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.testcontainers.mysql)

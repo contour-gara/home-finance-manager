@@ -2,7 +2,9 @@ package org.contourgara.infrastructure.repository
 
 import com.ninja_squad.dbsetup.destination.DriverManagerDestination
 import com.ninja_squad.dbsetup_kotlin.dbSetup
+import io.kotest.core.extensions.install
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.extensions.testcontainers.TestContainerSpecExtension
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.assertj.db.api.Assertions.assertThat
@@ -23,14 +25,12 @@ import ulid.ULID
 class ExpenseRepositoryImplTest : FunSpec({
     lateinit var assertDbConnection: AssertDbConnection
 
-    val mysql = MySQLContainer("mysql:8.0.43-oraclelinux9").apply {
-        startupAttempts = 1
-    }
+    val mysql = install(ext = TestContainerSpecExtension(container = MySQLContainer("mysql:8.0.43-oraclelinux9")))
+        .apply { startupAttempts = 1 }
 
     val sut = ExpenseRepositoryImpl
 
     beforeSpec {
-        mysql.start()
         DbTestHelper.migrateAndConnect(mysql)
         assertDbConnection = AssertDbConnectionFactory.of(mysql.jdbcUrl, mysql.username, mysql.password).create()
     }
