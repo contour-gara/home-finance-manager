@@ -19,7 +19,6 @@ import org.contourgara.DiscordBotConfig
 import org.contourgara.domain.Bill
 import org.contourgara.domain.BillId
 import org.contourgara.domain.Expense
-import org.contourgara.domain.ExpenseId
 import org.contourgara.domain.User
 import org.koin.ksp.generated.org_contourgara_DiscordBotModule
 import org.koin.test.KoinTest
@@ -322,7 +321,7 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
                 wireMockServer.stubFor(
                     post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics/expenses-api-messaging-bridge/records"))
                         .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
-                        .withRequestBody(equalTo("{\"headers\":[{\"name\":\"event-type\",\"value\":[99,114,101,97,116,101]}],\"value\":{\"type\":\"JSON\",\"data\":{\"messageId\":\"1478034413110427842\",\"expenseId\":\"01K4MXEKC0PMTJ8FA055N4SH79\",\"amount\":100,\"category\":\"RENT\",\"payer\":\"DIRECT_DEBIT\",\"year\":2026,\"month\":1,\"memo\":\"test\"}}}"))
+                        .withRequestBody(equalTo("{\"headers\":[{\"name\":\"event-type\",\"value\":[99,114,101,97,116,101]}],\"value\":{\"type\":\"JSON\",\"data\":{\"messageId\":\"1478034413110427842\",\"amount\":100,\"category\":\"RENT\",\"payer\":\"DIRECT_DEBIT\",\"year\":2026,\"month\":1,\"memo\":\"test\"}}}"))
                         .willReturn(
                             aResponse()
                                 .withStatus(200)
@@ -333,7 +332,6 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
 
                 val messageId = Snowflake(value = 1478034413110427842)
                 val expense = Expense(
-                    expenseId = ExpenseId(value = ULID.parseULID(ulidString = "01K4MXEKC0PMTJ8FA055N4SH79")),
                     amount = 100,
                     payer = "DIRECT_DEBIT",
                     category = "RENT",
@@ -361,7 +359,7 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
                 wireMockServer.stubFor(
                     post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics/expenses-api-messaging-bridge/records"))
                         .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
-                        .withRequestBody(equalTo("{\"headers\":[{\"name\":\"event-type\",\"value\":[99,114,101,97,116,101]}],\"value\":{\"type\":\"JSON\",\"data\":{\"messageId\":\"1478034413110427842\",\"expenseId\":\"01K4MXEKC0PMTJ8FA055N4SH79\",\"amount\":100,\"category\":\"RENT\",\"payer\":\"DIRECT_DEBIT\",\"year\":2026,\"month\":1,\"memo\":\"test\"}}}"))
+                        .withRequestBody(equalTo("{\"headers\":[{\"name\":\"event-type\",\"value\":[99,114,101,97,116,101]}],\"value\":{\"type\":\"JSON\",\"data\":{\"messageId\":\"1478034413110427842\",\"amount\":100,\"category\":\"RENT\",\"payer\":\"DIRECT_DEBIT\",\"year\":2026,\"month\":1,\"memo\":\"test\"}}}"))
                         .willReturn(
                             aResponse()
                                 .withStatus(405)
@@ -371,7 +369,6 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
 
                 val messageId = Snowflake(value = 1478034413110427842)
                 val expense = Expense(
-                    expenseId = ExpenseId(value = ULID.parseULID(ulidString = "01K4MXEKC0PMTJ8FA055N4SH79")),
                     amount = 100,
                     payer = "DIRECT_DEBIT",
                     category = "RENT",
@@ -399,7 +396,7 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
                 wireMockServer.stubFor(
                     post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics/expenses-api-messaging-bridge/records"))
                         .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
-                        .withRequestBody(equalTo("{\"headers\":[{\"name\":\"event-type\",\"value\":[99,114,101,97,116,101]}],\"value\":{\"type\":\"JSON\",\"data\":{\"messageId\":\"1478034413110427842\",\"expenseId\":\"01K4MXEKC0PMTJ8FA055N4SH79\",\"amount\":100,\"category\":\"RENT\",\"payer\":\"DIRECT_DEBIT\",\"year\":2026,\"month\":1,\"memo\":\"test\"}}}"))
+                        .withRequestBody(equalTo("{\"headers\":[{\"name\":\"event-type\",\"value\":[99,114,101,97,116,101]}],\"value\":{\"type\":\"JSON\",\"data\":{\"messageId\":\"1478034413110427842\",\"amount\":100,\"category\":\"RENT\",\"payer\":\"DIRECT_DEBIT\",\"year\":2026,\"month\":1,\"memo\":\"test\"}}}"))
                         .willReturn(
                             aResponse()
                                 .withStatus(200)
@@ -410,7 +407,6 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
 
                 val messageId = Snowflake(value = 1478034413110427842)
                 val expense = Expense(
-                    expenseId = ExpenseId(value = ULID.parseULID(ulidString = "01K4MXEKC0PMTJ8FA055N4SH79")),
                     amount = 100,
                     payer = "DIRECT_DEBIT",
                     category = "RENT",

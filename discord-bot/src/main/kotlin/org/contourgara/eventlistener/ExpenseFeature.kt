@@ -57,7 +57,6 @@ object ExpenseFeature : KoinComponent {
     const val EMBED_FIELD_KEY_YEAR = "年"
     const val EMBED_FIELD_KEY_MONTH = "月"
     const val EMBED_FIELD_KEY_MEMO = "メモ"
-    const val EMBED_FIELD_KEY_EXPENSE_ID = "支出 ID"
     const val EMBED_FIELD_KEY_CREATE_EXPENSE_MESSAGE_ID = "支出作成メッセージ ID"
     const val BUTTON_LABEL_MEMO = "メモを入力"
     const val BUTTON_LABEL_SUBMIT_CREATE = "送信"
@@ -361,7 +360,6 @@ data class CreateExpenseResponse(
     val year: Int,
     val month: Int,
     val memo: String,
-    val expenseId: String,
 ) {
     companion object {
         fun fromDto(createExpenseDto: CreateExpenseDto): CreateExpenseResponse =
@@ -372,7 +370,6 @@ data class CreateExpenseResponse(
                 year = createExpenseDto.year,
                 month = createExpenseDto.month,
                 memo = createExpenseDto.memo,
-                expenseId = createExpenseDto.expenseId,
             )
     }
 
@@ -387,7 +384,6 @@ data class CreateExpenseResponse(
             field(name = ExpenseFeature.EMBED_FIELD_KEY_YEAR, inline = true, value = { year.toString() })
             field(name = ExpenseFeature.EMBED_FIELD_KEY_MONTH, inline = true, value = { month.toString() })
             field(name = ExpenseFeature.EMBED_FIELD_KEY_MEMO, inline = true, value = { memo })
-            field(name = ExpenseFeature.EMBED_FIELD_KEY_EXPENSE_ID, inline = true, value = { expenseId })
         }
         actionRow {
             stringSelect(customId = ExpenseFeature.SELECT_PAYER_ID) {

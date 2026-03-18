@@ -32,7 +32,6 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
             }
 
             val expense = Expense(
-                expenseId = ExpenseId(value = ULID.parseULID(ulidString = "01K5EZVS4SQ695EMPX61GM7KHW")),
                 amount = 1000,
                 category = "FOOD",
                 payer = "gara",
@@ -62,7 +61,6 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
 
             // assert
             val expected = CreateExpenseDto(
-                expenseId = "01K5EZVS4SQ695EMPX61GM7KHW",
                 amount = 1000,
                 category = "FOOD",
                 payer = "gara",

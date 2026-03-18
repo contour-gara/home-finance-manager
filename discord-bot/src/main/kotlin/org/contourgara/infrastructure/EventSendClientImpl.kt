@@ -231,7 +231,6 @@ class EventSendClientImpl(
         @Serializable
         data class CreateExpenseData(
             private val messageId: String,
-            private val expenseId: String,
             private val amount: Int,
             private val category: String,
             private val payer: String,
@@ -243,7 +242,6 @@ class EventSendClientImpl(
                 fun from(messageId: Snowflake, expense: Expense): CreateExpenseData =
                     CreateExpenseData(
                         messageId = messageId.value.toString(),
-                        expenseId = expense.expenseId.value.toString(),
                         amount = expense.amount,
                         category = expense.category,
                         payer = expense.payer,
