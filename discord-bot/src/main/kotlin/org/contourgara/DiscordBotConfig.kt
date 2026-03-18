@@ -26,8 +26,6 @@ data class DiscordBotConfig(
     val showBalanceTopicName: String,
     @Property("EXPENSES_API_MESSAGING_BRIDGE_TOPIC_NAME")
     val expensesApiMessagingBridgeTopicName: String,
-    @Property("EXPENSES_API_BASE_URL")
-    val expensesApiBaseUrl: String,
 ) {
     companion object {
         @PropertyValue("CHANNEL_ID")

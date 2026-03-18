@@ -13,7 +13,6 @@ services:
       CHANNEL_ID: ${CHANNEL_ID}
       ULID_SEQUENCER_BASE_URL: http://ulid-sequencer:8080
       KAFKA_REST_PROXY_BASE_URL: http://kafka-rest-proxy:8082
-      EXPENSES_API_BASE_URL: http://expenses-api:8080
 
   expenses-api-messaging-bridge:
     image: ghcr.io/contour-gara/home-finance-manager-expenses-api-messaging-bridge:latest
