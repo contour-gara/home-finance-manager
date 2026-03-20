@@ -28,6 +28,7 @@ dependencies {
     implementation(libs.jackson.module.kotlin)
     implementation(libs.kord.rest)
     runtimeOnly(libs.mysql.connector.j)
+    runtimeOnly(libs.spring.boot.starter.flyway)
     runtimeOnly(libs.flyway.mysql.spring)
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.spring.boot.testcontainers)

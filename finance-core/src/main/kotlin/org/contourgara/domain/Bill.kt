@@ -1,11 +1,11 @@
 package org.contourgara.domain
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
+import tools.jackson.core.JsonParser
+import tools.jackson.databind.DeserializationContext
+import tools.jackson.databind.ValueDeserializer
+import tools.jackson.databind.annotation.JsonDeserialize
+import tools.jackson.databind.annotation.JsonSerialize
+import tools.jackson.databind.ser.std.ToStringSerializer
 import ulid.ULID
 
 data class BillId(
@@ -45,7 +45,7 @@ enum class User {
     ;
 }
 
-class UlidDeserializer : JsonDeserializer<ULID>() {
+class UlidDeserializer : ValueDeserializer<ULID>() {
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): ULID =
         ULID.parseULID(p.valueAsString)
 }

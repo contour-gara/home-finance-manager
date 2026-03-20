@@ -1,7 +1,6 @@
 package org.contourgara.eventlithner
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import tools.jackson.databind.ObjectMapper
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.contourgara.application.DeleteBillUseCase
 import org.contourgara.application.ShowBalanceUseCase
@@ -11,11 +10,11 @@ import org.springframework.stereotype.Component
 
 @Component
 class Consumer(
+    private val objectMapper: ObjectMapper,
     private val registerBillUseCase: RegisterBillUseCase,
     private val deleteBillUseCase: DeleteBillUseCase,
     private val showBalanceUseCase: ShowBalanceUseCase,
 ) {
-    private val objectMapper: ObjectMapper by lazy { ObjectMapper().registerKotlinModule() }
 
     @KafkaListener(topics = ["\${application.bill.topic.register}"])
     fun listenRegisterBillTopic(record: ConsumerRecord<String, String>) {

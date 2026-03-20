@@ -23,5 +23,5 @@ class UlidGeneratorImpl(
             .uri("/next-ulid")
             .retrieve()
             .body(String::class.java)
-            .let { ULID.parseULID(it) }
+            .let { ULID.parseULID(it!!) }
 }

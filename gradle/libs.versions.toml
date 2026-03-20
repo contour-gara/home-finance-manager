@@ -4,7 +4,7 @@ ksp = "2.3.6"
 kover = "0.9.7"
 
 ktor = "3.4.1"
-spring-boot = "3.5.11"
+spring-boot = "4.0.3"
 axon = "4.13.0"
 apache-kafka = "4.2.0"
 exposed = "1.1.1"
@@ -45,7 +45,8 @@ spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-start
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
 spring-boot-starter-data-jdbc = { module = "org.springframework.boot:spring-boot-starter-data-jdbc" }
-spring-kafka = { module = "org.springframework.kafka:spring-kafka" }
+spring-boot-starter-flyway = { module = "org.springframework.boot:spring-boot-starter-flyway" }
+spring-kafka = { module = "org.springframework.boot:spring-boot-starter-kafka" }
 axon-bom = { module = "org.axonframework:axon-bom", version.ref = "axon" }
 axon-spring-boot-starter = { module = "org.axonframework:axon-spring-boot-starter" }
 kafka-clients = { module = "org.apache.kafka:kafka-clients", version.ref = "apache-kafka" }
@@ -67,7 +68,8 @@ kord-core = { module = "dev.kord:kord-core", version.ref = "kord" }
 kord-rest = { module = "dev.kord:kord-rest", version.ref = "kord" }
 ulid-kotlin = { module = "com.aallam.ulid:ulid-kotlin", version.ref = "ulid-kotlin" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
-jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin" }
+jackson-module-kotlin = { module = "tools.jackson.module:jackson-module-kotlin" }
+#jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310" }
 
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 kotest-extensions-ktor = { module = "io.kotest:kotest-assertions-ktor", version.ref = "kotest" }
