@@ -12,6 +12,7 @@ import io.kotest.extensions.system.OverrideMode
 import io.kotest.extensions.system.withEnvironment
 import io.kotest.extensions.testcontainers.TestContainerSpecExtension
 import io.kotest.matchers.shouldBe
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.testcontainers.mysql.MySQLContainer
 import ulid.ULID
 import java.sql.DriverManager
@@ -55,7 +56,7 @@ class UlidSequenceRepositoryTest : FunSpec({
                 .createDataSet()
 
             // execute
-            val actual = UlidSequenceRepository.findLatestUlid()
+            val actual = transaction { UlidSequenceRepository.findLatestUlid() }
 
             // assert
             actual shouldBe expected
@@ -88,7 +89,7 @@ class UlidSequenceRepositoryTest : FunSpec({
                 .createDataSet()
 
             // execute
-            UlidSequenceRepository.insert(ulid)
+            transaction { UlidSequenceRepository.insert(ulid) }
 
             // assert
             RiderDSL.DataSetConfigDSL

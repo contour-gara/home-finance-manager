@@ -1,9 +1,11 @@
 package org.contourgara
 
 import io.kotest.assertions.ktor.client.shouldHaveStatus
+import io.kotest.core.extensions.install
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.system.OverrideMode
 import io.kotest.extensions.system.withEnvironment
+import io.kotest.extensions.testcontainers.TestContainerSpecExtension
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.ktor.client.request.get
@@ -13,10 +15,8 @@ import org.testcontainers.mysql.MySQLContainer
 import ulid.ULID
 
 class UlidSequencerApplicationTest : FunSpec({
-    val mysql = MySQLContainer("mysql:8.0.43-oraclelinux9").apply {
-        startupAttempts = 1
-    }
-    mysql.start()
+    val mysql = install(ext = TestContainerSpecExtension(container = MySQLContainer("mysql:8.0.43-oraclelinux9")))
+        .apply { startupAttempts = 1 }
 
     test("health エンドポイントにアクセスすると、'Hello World!' が取得できる") {
         withEnvironment(
