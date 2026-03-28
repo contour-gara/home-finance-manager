@@ -1,17 +1,18 @@
 package org.contourgara.repository
 
+import io.kotest.core.extensions.install
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.system.OverrideMode
 import io.kotest.extensions.system.withEnvironment
+import io.kotest.extensions.testcontainers.TestContainerSpecExtension
 import io.kotest.matchers.shouldBe
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.testcontainers.mysql.MySQLContainer
 
 class MigrationTest : FunSpec({
-    val mysql = MySQLContainer("mysql:8.0.43-oraclelinux9").apply {
-        startupAttempts = 1
-    }
+    val mysql = install(ext = TestContainerSpecExtension(container = MySQLContainer("mysql:8.0.43-oraclelinux9")))
+        .apply { startupAttempts = 1 }
 
     beforeSpec {
         mysql.start()

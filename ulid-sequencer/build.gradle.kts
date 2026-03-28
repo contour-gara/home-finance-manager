@@ -27,6 +27,7 @@ dependencies {
     runtimeOnly(libs.mysql.connector.j)
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.extensions.ktor)
+    testImplementation(libs.kotest.extensions.testcontainers)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.testcontainers.mysql)
     testImplementation(libs.database.rider.core)
