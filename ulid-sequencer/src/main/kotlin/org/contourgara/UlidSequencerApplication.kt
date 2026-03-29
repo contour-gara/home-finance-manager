@@ -5,6 +5,7 @@ import io.ktor.server.application.install
 import io.ktor.server.netty.EngineMain
 import io.ktor.server.plugins.calllogging.CallLogging
 import org.contourgara.presentation.configureRouting
+import org.contourgara.repository.UlidSequenceRepository
 import org.contourgara.repository.migration
 import org.slf4j.event.Level
 
@@ -14,6 +15,9 @@ fun Application.module() {
     install(plugin = CallLogging) {
         level = Level.DEBUG
     }
-    configureRouting()
+    configureRouting(
+        findLatestUlid = { UlidSequenceRepository.findLatestUlid() },
+        saveUlid = { ulid -> UlidSequenceRepository.insert(ulid) },
+    )
     migration()
 }

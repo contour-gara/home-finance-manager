@@ -5,9 +5,9 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import org.contourgara.application.nextUlid
-import org.contourgara.repository.UlidSequenceRepository
+import ulid.ULID
 
-fun Application.configureRouting() {
+fun Application.configureRouting(findLatestUlid: () -> ULID, saveUlid: (ULID) -> Unit) {
     routing {
         get("/health") {
             call.respondText("Hello World!")
@@ -16,8 +16,8 @@ fun Application.configureRouting() {
         get("/next-ulid") {
             call.respondText(
                 nextUlid(
-                    { UlidSequenceRepository.findLatestUlid() },
-                    { ulid -> UlidSequenceRepository.insert(ulid) }
+                    findLatestUlid = findLatestUlid,
+                    saveUlid = saveUlid,
                 ).toString()
             )
         }
