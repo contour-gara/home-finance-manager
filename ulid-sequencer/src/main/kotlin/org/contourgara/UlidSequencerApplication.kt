@@ -4,6 +4,7 @@ import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.netty.EngineMain
 import io.ktor.server.plugins.calllogging.CallLogging
+import org.contourgara.generator.generateNextUlid
 import org.contourgara.presentation.configureRouting
 import org.contourgara.repository.UlidSequenceRepository
 import org.contourgara.repository.migration
@@ -17,6 +18,7 @@ fun Application.module() {
     }
     configureRouting(
         findLatestUlid = { UlidSequenceRepository.findLatestUlid() },
+        generateNextUlid = { ulid -> generateNextUlid(previous = ulid) },
         saveUlid = { ulid -> UlidSequenceRepository.insert(ulid) },
     )
     migration()

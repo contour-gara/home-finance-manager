@@ -7,7 +7,7 @@ import io.ktor.server.routing.routing
 import org.contourgara.application.nextUlid
 import ulid.ULID
 
-fun Application.configureRouting(findLatestUlid: () -> ULID, saveUlid: (ULID) -> Unit) {
+fun Application.configureRouting(findLatestUlid: () -> ULID, generateNextUlid: (ULID) -> ULID, saveUlid: (ULID) -> Unit) {
     routing {
         get("/health") {
             call.respondText("Hello World!")
@@ -17,6 +17,7 @@ fun Application.configureRouting(findLatestUlid: () -> ULID, saveUlid: (ULID) ->
             call.respondText(
                 nextUlid(
                     findLatestUlid = findLatestUlid,
+                    generateNextUlid = generateNextUlid,
                     saveUlid = saveUlid,
                 ).toString()
             )
