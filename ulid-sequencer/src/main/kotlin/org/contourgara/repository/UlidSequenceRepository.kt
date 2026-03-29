@@ -10,6 +10,7 @@ object UlidSequenceRepository {
         UlidSequence.select(UlidSequence.ulid)
             .orderBy(UlidSequence.ulid to SortOrder.DESC)
             .limit(1)
+            .forUpdate()
             .single()
             .let { it[UlidSequence.ulid] }
             .let { ULID.parseULID(it) }
