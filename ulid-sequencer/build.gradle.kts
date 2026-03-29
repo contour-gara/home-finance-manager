@@ -21,6 +21,7 @@ dependencies {
     implementation(libs.logback.classic)
     implementation(libs.ktor.server.config.yaml)
     implementation(libs.ktor.server.call.logging)
+    implementation(libs.ktor.server.status.pages)
     implementation(libs.ulid.kotlin)
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
