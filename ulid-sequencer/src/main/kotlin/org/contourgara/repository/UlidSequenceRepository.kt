@@ -7,7 +7,8 @@ import ulid.ULID
 
 object UlidSequenceRepository {
     fun findLatestUlid(): ULID =
-        UlidSequence.select(UlidSequence.ulid)
+        UlidSequence
+            .select(UlidSequence.ulid)
             .orderBy(UlidSequence.ulid to SortOrder.DESC)
             .limit(1)
             .forUpdate()

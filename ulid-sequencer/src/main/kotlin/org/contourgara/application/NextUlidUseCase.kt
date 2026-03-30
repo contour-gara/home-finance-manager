@@ -1,18 +1,22 @@
 package org.contourgara.application
 
-import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
 import ulid.ULID
 
-fun nextUlid(findLatestUlid: () -> ULID, generateNextUlid: (ULID) -> ULID, saveUlid: (ULID) -> Unit): ULID =
-    transaction {
-        runCatching {
-            generateNextUlid(findLatestUlid())
+suspend fun nextUlid(findLatestUlid: () -> ULID, generateNextUlid: (ULID) -> ULID, saveUlid: (ULID) -> Unit): ULID =
+    withContext(context = Dispatchers.IO) {
+        suspendTransaction {
+            runCatching {
+                generateNextUlid(findLatestUlid())
+            }
+                .fold(
+                    onSuccess = { it },
+                    onFailure = { throw ApplicationException(message = it.message, cause = it) },
+                )
+                .also { saveUlid(it) }
         }
-            .fold(
-                onSuccess = { it },
-                onFailure = { throw ApplicationException(message = it.message, cause = it) },
-            )
-            .also { saveUlid(it) }
     }
 
 class ApplicationException(override val message: String?, override val cause: Throwable?) : RuntimeException(message, cause)
