@@ -14,9 +14,9 @@ import dev.kord.core.event.interaction.GuildChatInputCommandInteractionCreateEve
 import dev.kord.core.event.interaction.ModalSubmitInteractionCreateEvent
 import dev.kord.core.event.interaction.SelectMenuInteractionCreateEvent
 import dev.kord.rest.builder.component.ActionRowBuilder
+import dev.kord.rest.builder.component.actionRow
 import dev.kord.rest.builder.component.option
 import dev.kord.rest.builder.message.EmbedBuilder
-import dev.kord.rest.builder.message.actionRow
 import dev.kord.rest.builder.message.embed
 import dev.kord.rest.builder.message.modify.InteractionResponseModifyBuilder
 import org.contourgara.DiscordBotConfig
