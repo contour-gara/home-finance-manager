@@ -32,10 +32,12 @@ object ExpenseFeature : KoinComponent {
     const val CREATE_COMMAND_DESCRIPTION = "支出を作成するっピ"
     const val CREATE_COMMAND_ARGUMENT_NAME_AMOUNT = "amount"
     const val CREATE_COMMAND_ARGUMENT_DESCRIPTION_AMOUNT = "金額を入力してっピ"
-    const val CREATE_COMMAND_ARGUMENT_NAME_YEAR = "select-year"
+    const val CREATE_COMMAND_ARGUMENT_NAME_YEAR = "year"
     const val CREATE_COMMAND_ARGUMENT_DESCRIPTION_YEAR = "年を入力してっピ"
-    const val CREATE_COMMAND_ARGUMENT_NAME_MONTH = "select-month"
+    const val CREATE_COMMAND_ARGUMENT_NAME_MONTH = "month"
     const val CREATE_COMMAND_ARGUMENT_DESCRIPTION_MONTH = "月を入力してっピ"
+    const val CREATE_COMMAND_ARGUMENT_NAME_DAY = "day"
+    const val CREATE_COMMAND_ARGUMENT_DESCRIPTION_DAY = "月を入力してっピ"
     const val DELETE_COMMAND_NAME = "delete-expense"
     const val DELETE_COMMAND_DESCRIPTION = "支出を削除するっピ"
     const val DELETE_COMMAND_ARGUMENT_NAME_MESSAGE_ID = "message-id"
@@ -46,7 +48,6 @@ object ExpenseFeature : KoinComponent {
     const val SELECT_CATEGORY_PLACEHOLDER = "支出カテゴリーを選択してっピ"
     const val MEMO_BUTTON_ID = "memo-button"
     const val MEMO_MODAL_ID = "memo-modal"
-    const val MEMO_MODAL_DAY_INPUT_ID = "memo-modal-day-input"
     const val MEMO_MODAL_MEMO_INPUT_ID = "memo-modal-memo-input"
     const val SUBMIT_BUTTON_ID = "submit-button"
     const val DELETE_BUTTON_ID = "delete-expense-button"
@@ -56,6 +57,7 @@ object ExpenseFeature : KoinComponent {
     const val EMBED_FIELD_KEY_CATEGORY = "支出カテゴリー"
     const val EMBED_FIELD_KEY_YEAR = "年"
     const val EMBED_FIELD_KEY_MONTH = "月"
+    const val EMBED_FIELD_KEY_DAY = "日"
     const val EMBED_FIELD_KEY_MEMO = "メモ"
     const val EMBED_FIELD_KEY_CREATE_EXPENSE_MESSAGE_ID = "支出作成メッセージ ID"
     const val BUTTON_LABEL_MEMO = "メモを入力"
@@ -78,6 +80,7 @@ object ExpenseFeature : KoinComponent {
                             category = null,
                             year = it[CREATE_COMMAND_ARGUMENT_NAME_YEAR]!!.toInt(),
                             month = it[CREATE_COMMAND_ARGUMENT_NAME_MONTH]!!.toInt(),
+                            day = it[CREATE_COMMAND_ARGUMENT_NAME_DAY]!!.toInt(),
                             memo = null,
                         )
                     }
@@ -160,17 +163,6 @@ object ExpenseFeature : KoinComponent {
             ) {
                 actionRow {
                     textInput(
-                        style = TextInputStyle.Short,
-                        customId = MEMO_MODAL_DAY_INPUT_ID,
-                        label = "日"
-                    ) {
-                        placeholder = "日を入力してっピ"
-                        allowedLength = 1..2
-                        required = true
-                    }
-                }
-                actionRow {
-                    textInput(
                         style = TextInputStyle.Paragraph,
                         customId = MEMO_MODAL_MEMO_INPUT_ID,
                         label = "メモ",
@@ -192,7 +184,6 @@ object ExpenseFeature : KoinComponent {
                 CreateExpenseRequest
                     .fromEmbedData(embedData = it)
                     .copyMemo(
-                        day = interaction.textInputs[MEMO_MODAL_DAY_INPUT_ID]!!.value!!,
                         memo = interaction.textInputs[MEMO_MODAL_MEMO_INPUT_ID]!!.value!!,
                     )
             }
@@ -240,6 +231,7 @@ data class CreateExpenseRequest(
     val category: String?,
     val year: Int,
     val month: Int,
+    val day: Int,
     val memo: String?,
 ) {
     companion object {
@@ -255,25 +247,19 @@ data class CreateExpenseRequest(
                         category = it[ExpenseFeature.EMBED_FIELD_KEY_CATEGORY],
                         year = it[ExpenseFeature.EMBED_FIELD_KEY_YEAR]!!.toInt(),
                         month = it[ExpenseFeature.EMBED_FIELD_KEY_MONTH]!!.toInt(),
+                        day = it[ExpenseFeature.EMBED_FIELD_KEY_DAY]!!.toInt(),
                         memo = it[ExpenseFeature.EMBED_FIELD_KEY_MEMO],
                     )
                 }
     }
 
-    fun copyMemo(day: String, memo: String): CreateExpenseRequest =
-        Pair(first = day, second = memo)
-            .let { (day, memo) ->
-                Pair(first = day.toInt(), second = memo)
-            }
-            .also { (day, _) ->
-                if (day !in 1..31) throw IllegalArgumentException("日の値が不正です: $day")
-            }
-            .let { (day, memo) ->
-                this.copy(memo = """
-                    $month/$day
-                    $memo
-                """.trimIndent())
-            }
+    fun copyMemo(memo: String): CreateExpenseRequest =
+        copy(
+            memo = """
+                $month/$day
+                $memo
+            """.trimIndent(),
+        )
 
     fun toInteractionResponseModifyBuilder(): InteractionResponseModifyBuilder.() -> Unit = {
         content = "支出の情報を入力してっピ"
@@ -292,6 +278,7 @@ data class CreateExpenseRequest(
         category?.let { field(name = ExpenseFeature.EMBED_FIELD_KEY_CATEGORY, inline = true, value = { it }) }
         field(name = ExpenseFeature.EMBED_FIELD_KEY_YEAR, inline = true, value = { year.toString() })
         field(name = ExpenseFeature.EMBED_FIELD_KEY_MONTH, inline = true, value = { month.toString() })
+        field(name = ExpenseFeature.EMBED_FIELD_KEY_DAY, inline = true, value = { day.toString() })
         memo?.let { field(name = ExpenseFeature.EMBED_FIELD_KEY_MEMO, inline = true, value = { it }) }
     }
 
@@ -349,6 +336,7 @@ data class CreateExpenseRequest(
             category = category!!,
             year = year,
             month = month,
+            day = day,
             memo = memo!!,
         )
 }
@@ -359,6 +347,7 @@ data class CreateExpenseResponse(
     val category: String,
     val year: Int,
     val month: Int,
+    val day: Int,
     val memo: String,
 ) {
     companion object {
@@ -369,6 +358,7 @@ data class CreateExpenseResponse(
                 category = createExpenseDto.category,
                 year = createExpenseDto.year,
                 month = createExpenseDto.month,
+                day = createExpenseDto.day,
                 memo = createExpenseDto.memo,
             )
     }
@@ -383,6 +373,7 @@ data class CreateExpenseResponse(
             field(name = ExpenseFeature.EMBED_FIELD_KEY_CATEGORY, inline = true, value = { category })
             field(name = ExpenseFeature.EMBED_FIELD_KEY_YEAR, inline = true, value = { year.toString() })
             field(name = ExpenseFeature.EMBED_FIELD_KEY_MONTH, inline = true, value = { month.toString() })
+            field(name = ExpenseFeature.EMBED_FIELD_KEY_DAY, inline = true, value = { day.toString() })
             field(name = ExpenseFeature.EMBED_FIELD_KEY_MEMO, inline = true, value = { memo })
         }
         actionRow {

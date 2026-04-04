@@ -8,7 +8,6 @@ import io.mockk.every
 import io.mockk.mockkClass
 import org.contourgara.domain.EventSendClient
 import org.contourgara.domain.Expense
-import org.contourgara.domain.ExpenseId
 import org.contourgara.domain.UlidGenerator
 import org.koin.ksp.generated.org_contourgara_DiscordBotModule
 import org.koin.test.KoinTest
@@ -51,6 +50,7 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
                 payer = "gara",
                 year = 2026,
                 month = 1,
+                day = 1,
                 memo = "test",
             )
 
@@ -66,6 +66,7 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
                 payer = "gara",
                 year = 2026,
                 month = 1,
+                day = 1,
                 memo = "test",
             )
             actual shouldBe expected

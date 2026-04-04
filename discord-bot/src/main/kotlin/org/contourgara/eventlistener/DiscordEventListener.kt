@@ -127,6 +127,14 @@ object DiscordEventListener : KoinComponent {
                 minValue = 1
                 maxValue = 12
             }
+            integer(
+                name = ExpenseFeature.CREATE_COMMAND_ARGUMENT_NAME_DAY,
+                description = ExpenseFeature.CREATE_COMMAND_ARGUMENT_DESCRIPTION_DAY,
+            ) {
+                required = true
+                minValue = 1
+                maxValue = 31
+            }
         }
 
         kord.createGuildChatInputCommand(

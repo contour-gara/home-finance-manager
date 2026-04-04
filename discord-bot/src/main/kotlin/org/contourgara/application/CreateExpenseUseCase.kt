@@ -15,7 +15,7 @@ class CreateExpenseUseCase(
                 eventSendClient.createExpense(messageId = messageId, expense = expense)
             }
             .let { (_, expense) ->
-                CreateExpenseDto.from(expense = expense)
+                CreateExpenseDto.from(expense = expense, day = createExpenseParam.day)
             }
 }
 
@@ -26,6 +26,7 @@ data class CreateExpenseParam(
     val payer: String,
     val year: Int,
     val month: Int,
+    val day: Int,
     val memo: String,
 ) {
     fun toModel(): Pair<Snowflake, Expense> =
@@ -48,16 +49,18 @@ data class CreateExpenseDto(
     val payer: String,
     val year: Int,
     val month: Int,
+    val day: Int,
     val memo: String,
 ) {
     companion object {
-        fun from(expense: Expense): CreateExpenseDto =
+        fun from(expense: Expense, day: Int): CreateExpenseDto =
             CreateExpenseDto(
                 amount = expense.amount,
                 category = expense.category,
                 payer = expense.payer,
                 year = expense.year,
                 month = expense.month,
+                day = day,
                 memo = expense.memo,
             )
     }
