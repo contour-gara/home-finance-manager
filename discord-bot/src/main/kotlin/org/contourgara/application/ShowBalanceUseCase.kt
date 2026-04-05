@@ -7,7 +7,7 @@ import org.koin.core.annotation.Single
 class ShowBalanceUseCase(
     private val eventSendClient: EventSendClient,
 ) {
-    fun execute(param: ShowBalanceParam) {
+    suspend fun execute(param: ShowBalanceParam) {
         param
             .toModel()
             .also { eventSendClient.showBalance(it.first, it.second) }

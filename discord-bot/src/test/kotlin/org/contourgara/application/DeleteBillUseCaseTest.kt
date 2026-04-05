@@ -3,8 +3,8 @@ package org.contourgara.application
 import dev.kord.common.entity.Snowflake
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.koin.KoinExtension
+import io.mockk.coVerify
 import io.mockk.mockkClass
-import io.mockk.verify
 import org.contourgara.domain.BillId
 import org.contourgara.domain.EventSendClient
 import org.koin.ksp.generated.org_contourgara_DiscordBotModule
@@ -36,7 +36,7 @@ class DeleteBillUseCaseTest :  KoinTest, FunSpec() {
             sut.execute(param)
 
             // assert
-            verify(exactly = 1) {
+            coVerify(exactly = 1) {
                 eventSendClient.deleteBill(
                     BillId(ulid)
                 )

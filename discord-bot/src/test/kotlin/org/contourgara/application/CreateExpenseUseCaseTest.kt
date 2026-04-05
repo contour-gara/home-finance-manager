@@ -4,6 +4,7 @@ import dev.kord.common.entity.Snowflake
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.koin.KoinExtension
 import io.kotest.matchers.shouldBe
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockkClass
 import org.contourgara.domain.EventSendClient
@@ -40,7 +41,7 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
             )
             val messageId = Snowflake(value = 0)
             declareMock<EventSendClient> {
-                every { createExpense(messageId = messageId, expense = expense) } returns Unit
+                coEvery { createExpense(messageId = messageId, expense = expense) } returns Unit
             }
 
             val createExpenseParam = CreateExpenseParam(

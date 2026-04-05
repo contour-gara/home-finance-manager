@@ -8,7 +8,7 @@ import org.koin.core.annotation.Single
 class DeleteExpenseUseCase(
     private val eventSendClient: EventSendClient,
 ) {
-    fun execute(
+    suspend fun execute(
         createMessageId: Snowflake,
         deleteMessageId: Snowflake,
     ): Snowflake =

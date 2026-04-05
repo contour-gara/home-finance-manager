@@ -3,9 +3,9 @@ package org.contourgara.application
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.koin.KoinExtension
 import io.kotest.matchers.shouldBe
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockkClass
-import io.mockk.verify
 import org.contourgara.domain.Bill
 import org.contourgara.domain.EventSendClient
 import org.contourgara.domain.UlidGenerator
@@ -42,7 +42,7 @@ class RegisterBillUseCaseTest : KoinTest, StringSpec() {
 
             // assert
             val expected = RegisterBillDto("01K5EZVS4SQ695EMPX61GM7KHW", 1, "yuki", "gara", "memo")
-            verify(exactly = 1) {
+            coVerify(exactly = 1) {
                 eventSendClient.registerBill(
                     Bill.of(ulid, 1, "yuki", "gara", "memo")
                 )
@@ -69,7 +69,7 @@ class RegisterBillUseCaseTest : KoinTest, StringSpec() {
 
             // assert
             val expected = RegisterBillDto("01K5C11Z3TPPZ5H95MMTQV77RP", 1, "yuki", "gara", "memo")
-            verify(exactly = 1) {
+            coVerify(exactly = 1) {
                 eventSendClient.registerBill(
                     Bill.of(ulid, 1, "yuki", "gara", "memo")
                 )

@@ -4,7 +4,7 @@ import dev.kord.common.entity.Snowflake
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.koin.KoinExtension
 import io.kotest.matchers.shouldBe
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.mockkClass
 import org.contourgara.domain.EventSendClient
 import org.koin.ksp.generated.org_contourgara_DiscordBotModule
@@ -23,7 +23,7 @@ class DeleteExpenseUseCaseTest : KoinTest, FunSpec() {
         test(name = "支出を削除できる") {
             // setup
             declareMock<EventSendClient> {
-                every { deleteExpense(createMessageId = Snowflake(value = 0), deleteMessageId = Snowflake(value = 1)) } returns Unit
+                coEvery { deleteExpense(createMessageId = Snowflake(value = 0), deleteMessageId = Snowflake(value = 1)) } returns Unit
             }
 
             val sut: DeleteExpenseUseCase by inject()

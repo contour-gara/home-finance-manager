@@ -10,7 +10,7 @@ class RegisterBillUseCase(
     private val ulidGenerator: UlidGenerator,
     private val eventSendClient: EventSendClient,
 ) {
-    fun execute(param: RegisterBillParam): RegisterBillDto =
+    suspend fun execute(param: RegisterBillParam): RegisterBillDto =
         ulidGenerator.nextUlid()
             .let {
                 Bill.of(

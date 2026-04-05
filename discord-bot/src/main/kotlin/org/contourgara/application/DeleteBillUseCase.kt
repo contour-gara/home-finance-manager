@@ -7,7 +7,7 @@ import org.koin.core.annotation.Single
 class DeleteBillUseCase(
     private val eventSendClient: EventSendClient,
 ) {
-    fun execute(param: DeleteBillParam): DeleteBillDto =
+    suspend fun execute(param: DeleteBillParam): DeleteBillDto =
         param
             .toModel()
             .also { eventSendClient.deleteBill(it) }

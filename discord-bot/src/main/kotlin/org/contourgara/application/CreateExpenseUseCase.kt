@@ -9,7 +9,7 @@ import org.koin.core.annotation.Single
 class CreateExpenseUseCase(
     private val eventSendClient: EventSendClient,
 ) {
-    fun execute(createExpenseParam: CreateExpenseParam): CreateExpenseDto =
+    suspend fun execute(createExpenseParam: CreateExpenseParam): CreateExpenseDto =
         createExpenseParam.toModel()
             .also { (messageId, expense) ->
                 eventSendClient.createExpense(messageId = messageId, expense = expense)

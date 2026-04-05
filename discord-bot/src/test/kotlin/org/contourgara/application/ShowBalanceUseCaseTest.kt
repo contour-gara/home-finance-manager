@@ -2,8 +2,8 @@ package org.contourgara.application
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.koin.KoinExtension
+import io.mockk.coVerify
 import io.mockk.mockkClass
-import io.mockk.verify
 import org.contourgara.domain.EventSendClient
 import org.contourgara.domain.User
 import org.koin.ksp.generated.org_contourgara_DiscordBotModule
@@ -29,7 +29,7 @@ class ShowBalanceUseCaseTest : KoinTest, FunSpec() {
             sut.execute(param)
 
             // assert
-            verify(exactly = 1) {
+            coVerify(exactly = 1) {
                 eventSendClient.showBalance(
                     User.GARA,
                     User.YUKI,

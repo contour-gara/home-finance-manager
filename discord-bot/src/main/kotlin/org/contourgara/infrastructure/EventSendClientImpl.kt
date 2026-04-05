@@ -17,7 +17,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -64,41 +63,39 @@ class EventSendClientImpl(
         }
     }
 
-    override fun registerBill(bill: Bill) {
+    override suspend fun registerBill(bill: Bill) {
         sendEvent(topicName = discordBotConfig.registerBillTopicName, request = RecordRequest.from(bill = bill))
     }
 
-    override fun deleteBill(billId: BillId) {
+    override suspend fun deleteBill(billId: BillId) {
         sendEvent(topicName = discordBotConfig.deleteBillTopicName, request = RecordRequest.from(billId = billId))
     }
 
-    override fun showBalance(lender: User, borrower: User) {
+    override suspend fun showBalance(lender: User, borrower: User) {
         sendEvent(topicName = discordBotConfig.showBalanceTopicName, request = RecordRequest.from(lender = lender, borrower = borrower))
     }
 
-    override fun createExpense(messageId: Snowflake, expense: Expense) {
+    override suspend fun createExpense(messageId: Snowflake, expense: Expense) {
         sendEvent(topicName = discordBotConfig.expensesApiMessagingBridgeTopicName, request = RecordRequest.from(messageId = messageId, expense = expense))
     }
 
-    override fun deleteExpense(createMessageId: Snowflake, deleteMessageId: Snowflake) {
+    override suspend fun deleteExpense(createMessageId: Snowflake, deleteMessageId: Snowflake) {
         sendEvent(topicName = discordBotConfig.expensesApiMessagingBridgeTopicName, request = RecordRequest.from(createMessageId = createMessageId, deleteMessageId = deleteMessageId))
     }
 
-    private fun sendEvent(topicName: String, request: RecordRequest) {
-        runBlocking {
-            httpClient
-                .post(urlString = "${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/$topicName/records") {
-                    contentType(type = ContentType.Application.Json)
-                    setBody(body = request)
-                }
-                .also {
-                    if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
-                }
-                .body<ProduceRecordResponse>()
-                .also {
-                    if (it.isFailure()) throw RuntimeException("Bad Request")
-                }
-        }
+    private suspend fun sendEvent(topicName: String, request: RecordRequest) {
+        httpClient
+            .post(urlString = "${discordBotConfig.kafkaRestProxyBaseUrl}/v3/clusters/${discordBotConfig.kafkaClusterId}/topics/$topicName/records") {
+                contentType(type = ContentType.Application.Json)
+                setBody(body = request)
+            }
+            .also {
+                if (!it.status.isSuccess()) throw RuntimeException("Bad Request")
+            }
+            .body<ProduceRecordResponse>()
+            .also {
+                if (it.isFailure()) throw RuntimeException("Bad Request")
+            }
     }
 
     @Serializable
