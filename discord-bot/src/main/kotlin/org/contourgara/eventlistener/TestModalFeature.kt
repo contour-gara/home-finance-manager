@@ -15,8 +15,8 @@ object TestModalFeature {
 
     suspend fun GuildChatInputCommandInteractionCreateEvent.openTestModal() = when (interaction.channel.id) {
         Snowflake(1402331708459581591) -> interaction.modal("テストモーダル", TEST_MODAL_MODAL_ID) {
-            actionRow {
-                textInput(TextInputStyle.Short, TEST_MODAL_MODAL_TEXT_INPUT_ID, "メモ") {
+            label(label = "メモ") {
+                textInput(TextInputStyle.Short, TEST_MODAL_MODAL_TEXT_INPUT_ID) {
                     placeholder = "メモを入力"
                     allowedLength = 1..100
                 }

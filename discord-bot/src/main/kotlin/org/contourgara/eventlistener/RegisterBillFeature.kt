@@ -45,14 +45,20 @@ object RegisterBillFeature : KoinComponent {
     }
 
     suspend fun SelectMenuInteractionCreateEvent.openBillMemoModal() = interaction.modal("請求情報を入力するっピ", REGISTER_BILL_MODAL_ID) {
-        actionRow {
-            textInput(TextInputStyle.Short, REGISTER_BILL_MODAL_AMOUNT_ID, "請求金額") {
+        label(label = "請求金額") {
+            textInput(
+                style = TextInputStyle.Short,
+                customId = REGISTER_BILL_MODAL_AMOUNT_ID,
+            ) {
                 placeholder = "請求金額を入力するっピ (半角数字)"
                 allowedLength = 1..10
             }
         }
-        actionRow {
-            textInput(TextInputStyle.Paragraph, interaction.values.first(), "メモ") {
+        label(label = "メモ") {
+            textInput(
+                style = TextInputStyle.Paragraph,
+                customId = interaction.values.first(),
+            ) {
                 placeholder = "メモを入力するっピ"
                 allowedLength = 1..999
             }

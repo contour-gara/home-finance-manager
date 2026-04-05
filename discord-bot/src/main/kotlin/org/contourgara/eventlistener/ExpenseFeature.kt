@@ -161,11 +161,10 @@ object ExpenseFeature : KoinComponent {
                 title = "メモを入力するっピ",
                 customId = MEMO_MODAL_ID,
             ) {
-                actionRow {
+                label(label = "メモ") {
                     textInput(
                         style = TextInputStyle.Paragraph,
                         customId = MEMO_MODAL_MEMO_INPUT_ID,
-                        label = "メモ",
                     ) {
                         placeholder = "メモを入力してっピ"
                         allowedLength = 1..999
