@@ -5,7 +5,6 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.koin.KoinExtension
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockkClass
 import org.contourgara.domain.EventSendClient
 import org.contourgara.domain.Expense
@@ -28,7 +27,7 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
         test(name = "ULID を生成し、支出を登録できる") {
             // setup
             declareMock<UlidGenerator> {
-                every { nextUlid() } returns ULID.parseULID(ulidString = "01K5EZVS4SQ695EMPX61GM7KHW")
+                coEvery { nextUlid() } returns ULID.parseULID(ulidString = "01K5EZVS4SQ695EMPX61GM7KHW")
             }
 
             val expense = Expense(

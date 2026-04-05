@@ -3,8 +3,8 @@ package org.contourgara.application
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.koin.KoinExtension
 import io.kotest.matchers.shouldBe
+import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.every
 import io.mockk.mockkClass
 import org.contourgara.domain.Bill
 import org.contourgara.domain.EventSendClient
@@ -28,7 +28,7 @@ class RegisterBillUseCaseTest : KoinTest, StringSpec() {
             val ulid = ULID.parseULID("01K5EZVS4SQ695EMPX61GM7KHW")
 
             declareMock<UlidGenerator> {
-                every { nextUlid() } returns ulid
+                coEvery { nextUlid() } returns ulid
             }
 
             val eventSendClient = declareMock<EventSendClient> {}
@@ -55,7 +55,7 @@ class RegisterBillUseCaseTest : KoinTest, StringSpec() {
             val ulid = ULID.parseULID("01K5C11Z3TPPZ5H95MMTQV77RP")
 
             declareMock<UlidGenerator> {
-                every { nextUlid() } returns ulid
+                coEvery { nextUlid() } returns ulid
             }
 
             val eventSendClient = declareMock<EventSendClient> {}

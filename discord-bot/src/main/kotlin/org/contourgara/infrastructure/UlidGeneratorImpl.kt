@@ -8,7 +8,6 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
-import kotlinx.coroutines.runBlocking
 import org.contourgara.DiscordBotConfig
 import org.contourgara.domain.UlidGenerator
 import org.koin.core.annotation.Single
@@ -33,11 +32,9 @@ class UlidGeneratorImpl(private val discordBotConfig: DiscordBotConfig) : UlidGe
         }
     }
 
-    override fun nextUlid(): ULID =
-        runBlocking {
-            httpClient
-                .get(urlString = "/next-ulid")
-                .bodyAsText()
-                .let { ULID.parseULID(ulidString = it) }
-        }
+    override suspend fun nextUlid(): ULID =
+        httpClient
+            .get(urlString = "/next-ulid")
+            .bodyAsText()
+            .let { ULID.parseULID(ulidString = it) }
 }
