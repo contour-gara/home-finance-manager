@@ -20,6 +20,8 @@ import dev.kord.rest.builder.component.option
 import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.embed
 import dev.kord.rest.builder.message.modify.InteractionResponseModifyBuilder
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 import org.contourgara.DiscordBotConfig
 import org.contourgara.application.CreateExpenseDto
 import org.contourgara.application.CreateExpenseParam
@@ -60,9 +62,7 @@ object ExpenseFeature : KoinComponent {
     const val EMBED_FIELD_KEY_AMOUNT = "支出金額"
     const val EMBED_FIELD_KEY_PAYER = "支払い者"
     const val EMBED_FIELD_KEY_CATEGORY = "支出カテゴリー"
-    const val EMBED_FIELD_KEY_YEAR = "年"
-    const val EMBED_FIELD_KEY_MONTH = "月"
-    const val EMBED_FIELD_KEY_DAY = "日"
+    const val EMBED_FIELD_KEY_LOCAL_DATE = "日付"
     const val EMBED_FIELD_KEY_MEMO = "メモ"
     const val EMBED_FIELD_KEY_CREATE_EXPENSE_MESSAGE_ID = "支出作成メッセージ ID"
     const val BUTTON_LABEL_MEMO = "メモを入力"
@@ -222,9 +222,7 @@ data class CreateExpenseRequest(
     val amount: Int,
     val payer: String?,
     val category: String?,
-    val year: Int,
-    val month: Int,
-    val day: Int,
+    val localDate: LocalDate,
     val memo: String?,
 ) {
     companion object {
@@ -233,9 +231,11 @@ data class CreateExpenseRequest(
                 amount = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_AMOUNT]!!.toInt(),
                 payer = null,
                 category = null,
-                year = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_YEAR]!!.toInt(),
-                month = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_MONTH]!!.toInt(),
-                day = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_DAY]!!.toInt(),
+                localDate = LocalDate(
+                    year = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_YEAR]!!.toInt(),
+                    month = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_MONTH]!!.toInt(),
+                    day = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_DAY]!!.toInt(),
+                ),
                 memo = null,
             )
 
@@ -249,9 +249,7 @@ data class CreateExpenseRequest(
                         amount = it[ExpenseFeature.EMBED_FIELD_KEY_AMOUNT]!!.parseAmount().toInt(),
                         payer = it[ExpenseFeature.EMBED_FIELD_KEY_PAYER],
                         category = it[ExpenseFeature.EMBED_FIELD_KEY_CATEGORY],
-                        year = it[ExpenseFeature.EMBED_FIELD_KEY_YEAR]!!.toInt(),
-                        month = it[ExpenseFeature.EMBED_FIELD_KEY_MONTH]!!.toInt(),
-                        day = it[ExpenseFeature.EMBED_FIELD_KEY_DAY]!!.toInt(),
+                        localDate = LocalDate.parse(input = it[ExpenseFeature.EMBED_FIELD_KEY_LOCAL_DATE]!!),
                         memo = it[ExpenseFeature.EMBED_FIELD_KEY_MEMO],
                     )
                 }
@@ -260,7 +258,7 @@ data class CreateExpenseRequest(
     fun copyMemo(memo: String): CreateExpenseRequest =
         copy(
             memo = """
-                $month/$day
+                ${localDate.month.number}/${localDate.day}
                 $memo
             """.trimIndent(),
         )
@@ -280,9 +278,7 @@ data class CreateExpenseRequest(
         field(name = ExpenseFeature.EMBED_FIELD_KEY_AMOUNT, inline = true, value = { amount.formatAmount() })
         payer?.let { field(name = ExpenseFeature.EMBED_FIELD_KEY_PAYER, inline = true, value = { it }) }
         category?.let { field(name = ExpenseFeature.EMBED_FIELD_KEY_CATEGORY, inline = true, value = { it }) }
-        field(name = ExpenseFeature.EMBED_FIELD_KEY_YEAR, inline = true, value = { year.toString() })
-        field(name = ExpenseFeature.EMBED_FIELD_KEY_MONTH, inline = true, value = { month.toString() })
-        field(name = ExpenseFeature.EMBED_FIELD_KEY_DAY, inline = true, value = { day.toString() })
+        field(name = ExpenseFeature.EMBED_FIELD_KEY_LOCAL_DATE, inline = true, value = { localDate.toString() })
         memo?.let { field(name = ExpenseFeature.EMBED_FIELD_KEY_MEMO, inline = true, value = { it }) }
     }
 
@@ -338,9 +334,9 @@ data class CreateExpenseRequest(
             amount = amount,
             payer = payer!!,
             category = category!!,
-            year = year,
-            month = month,
-            day = day,
+            year = localDate.year,
+            month = localDate.month.number,
+            day = localDate.day,
             memo = memo!!,
         )
 }
@@ -349,9 +345,7 @@ data class CreateExpenseResponse(
     val amount: Int,
     val payer: String,
     val category: String,
-    val year: Int,
-    val month: Int,
-    val day: Int,
+    val localDate: LocalDate,
     val memo: String,
 ) {
     companion object {
@@ -360,9 +354,11 @@ data class CreateExpenseResponse(
                 amount = createExpenseDto.amount,
                 payer = createExpenseDto.payer,
                 category = createExpenseDto.category,
-                year = createExpenseDto.year,
-                month = createExpenseDto.month,
-                day = createExpenseDto.day,
+                localDate = LocalDate(
+                    year = createExpenseDto.year,
+                    month = createExpenseDto.month,
+                    day = createExpenseDto.day,
+                ),
                 memo = createExpenseDto.memo,
             )
     }
@@ -375,9 +371,7 @@ data class CreateExpenseResponse(
             field(name = ExpenseFeature.EMBED_FIELD_KEY_AMOUNT, inline = true, value = { amount.formatAmount() })
             field(name = ExpenseFeature.EMBED_FIELD_KEY_PAYER, inline = true, value = { payer })
             field(name = ExpenseFeature.EMBED_FIELD_KEY_CATEGORY, inline = true, value = { category })
-            field(name = ExpenseFeature.EMBED_FIELD_KEY_YEAR, inline = true, value = { year.toString() })
-            field(name = ExpenseFeature.EMBED_FIELD_KEY_MONTH, inline = true, value = { month.toString() })
-            field(name = ExpenseFeature.EMBED_FIELD_KEY_DAY, inline = true, value = { day.toString() })
+            field(name = ExpenseFeature.EMBED_FIELD_KEY_LOCAL_DATE, inline = true, value = { localDate.toString() })
             field(name = ExpenseFeature.EMBED_FIELD_KEY_MEMO, inline = true, value = { memo })
         }
         actionRow {
