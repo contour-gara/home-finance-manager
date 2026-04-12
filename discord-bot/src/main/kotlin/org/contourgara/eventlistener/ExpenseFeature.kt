@@ -75,13 +75,20 @@ object ExpenseFeature : KoinComponent {
     suspend fun GuildChatInputCommandInteractionCreateEvent.sendSelectParamMessage() =
         when (interaction.channelId) {
             Snowflake(value = discordBotConfig.channelId) ->
-                interaction
-                    .command
-                    .let { CreateExpenseRequest.from(interactionCommand = it) }
-                    .also {
+                runCatching {
+                    CreateExpenseRequest.from(interactionCommand = interaction.command)
+                }
+                    .onSuccess {
                         interaction
                             .deferPublicResponse()
                             .respond(builder = it.toInteractionResponseModifyBuilder())
+                    }
+                    .onFailure {
+                        interaction
+                            .deferPublicResponse()
+                            .respond {
+                                content = it.message
+                            }
                     }
             else ->
                 interaction
