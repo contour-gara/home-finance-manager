@@ -9,6 +9,7 @@ import dev.kord.core.behavior.interaction.modal
 import dev.kord.core.behavior.interaction.response.edit
 import dev.kord.core.behavior.interaction.response.respond
 import dev.kord.core.cache.data.EmbedData
+import dev.kord.core.entity.interaction.InteractionCommand
 import dev.kord.core.event.interaction.ButtonInteractionCreateEvent
 import dev.kord.core.event.interaction.GuildChatInputCommandInteractionCreateEvent
 import dev.kord.core.event.interaction.ModalSubmitInteractionCreateEvent
@@ -24,6 +25,10 @@ import org.contourgara.application.CreateExpenseDto
 import org.contourgara.application.CreateExpenseParam
 import org.contourgara.application.CreateExpenseUseCase
 import org.contourgara.application.DeleteExpenseUseCase
+import org.contourgara.eventlistener.ExpenseFeature.CREATE_COMMAND_ARGUMENT_NAME_AMOUNT
+import org.contourgara.eventlistener.ExpenseFeature.CREATE_COMMAND_ARGUMENT_NAME_DAY
+import org.contourgara.eventlistener.ExpenseFeature.CREATE_COMMAND_ARGUMENT_NAME_MONTH
+import org.contourgara.eventlistener.ExpenseFeature.CREATE_COMMAND_ARGUMENT_NAME_YEAR
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -72,18 +77,7 @@ object ExpenseFeature : KoinComponent {
             Snowflake(value = discordBotConfig.channelId) ->
                 interaction
                     .command
-                    .integers
-                    .let {
-                        CreateExpenseRequest(
-                            amount = it[CREATE_COMMAND_ARGUMENT_NAME_AMOUNT]!!.toInt(),
-                            payer = null,
-                            category = null,
-                            year = it[CREATE_COMMAND_ARGUMENT_NAME_YEAR]!!.toInt(),
-                            month = it[CREATE_COMMAND_ARGUMENT_NAME_MONTH]!!.toInt(),
-                            day = it[CREATE_COMMAND_ARGUMENT_NAME_DAY]!!.toInt(),
-                            memo = null,
-                        )
-                    }
+                    .let { CreateExpenseRequest.from(interactionCommand = it) }
                     .also {
                         interaction
                             .deferPublicResponse()
@@ -234,6 +228,17 @@ data class CreateExpenseRequest(
     val memo: String?,
 ) {
     companion object {
+        fun from(interactionCommand: InteractionCommand): CreateExpenseRequest =
+            CreateExpenseRequest(
+                amount = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_AMOUNT]!!.toInt(),
+                payer = null,
+                category = null,
+                year = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_YEAR]!!.toInt(),
+                month = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_MONTH]!!.toInt(),
+                day = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_DAY]!!.toInt(),
+                memo = null,
+            )
+
         fun fromEmbedData(embedData: EmbedData): CreateExpenseRequest =
             embedData
                 .fields
