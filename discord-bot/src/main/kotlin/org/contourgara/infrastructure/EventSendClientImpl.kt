@@ -17,6 +17,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.datetime.number
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -242,8 +243,8 @@ class EventSendClientImpl(
                         amount = expense.amount,
                         category = expense.category,
                         payer = expense.payer,
-                        year = expense.year,
-                        month = expense.month,
+                        year = expense.localDate.year,
+                        month = expense.localDate.month.number,
                         memo = expense.memo,
                     )
             }

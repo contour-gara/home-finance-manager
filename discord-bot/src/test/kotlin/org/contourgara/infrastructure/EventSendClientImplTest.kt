@@ -15,6 +15,7 @@ import io.kotest.koin.KoinExtension
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockkClass
+import kotlinx.datetime.LocalDate
 import org.contourgara.DiscordBotConfig
 import org.contourgara.domain.Bill
 import org.contourgara.domain.BillId
@@ -335,8 +336,7 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
                     amount = 100,
                     payer = "DIRECT_DEBIT",
                     category = "RENT",
-                    year = 2026,
-                    month = 1,
+                    localDate = LocalDate(year = 2026, month = 1, day = 1),
                     memo = "test",
                 )
 
@@ -372,8 +372,7 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
                     amount = 100,
                     payer = "DIRECT_DEBIT",
                     category = "RENT",
-                    year = 2026,
-                    month = 1,
+                    localDate = LocalDate(year = 2000, month = 1, day = 1),
                     memo = "test",
                 )
 
@@ -410,8 +409,7 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
                     amount = 100,
                     payer = "DIRECT_DEBIT",
                     category = "RENT",
-                    year = 2026,
-                    month = 1,
+                    localDate = LocalDate(year = 2000, month = 1, day = 1),
                     memo = "test",
                 )
 

@@ -6,6 +6,7 @@ import io.kotest.koin.KoinExtension
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockkClass
+import kotlinx.datetime.LocalDate
 import org.contourgara.domain.EventSendClient
 import org.contourgara.domain.Expense
 import org.contourgara.domain.UlidGenerator
@@ -24,7 +25,7 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
             }
         )
 
-        test(name = "ULID を生成し、支出を登録できる") {
+        test(name = "支出を登録できる") {
             // setup
             declareMock<UlidGenerator> {
                 coEvery { nextUlid() } returns ULID.parseULID(ulidString = "01K5EZVS4SQ695EMPX61GM7KHW")
@@ -34,9 +35,11 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
                 amount = 1000,
                 category = "FOOD",
                 payer = "gara",
-                year = 2026,
-                month = 1,
-                memo = "test",
+                localDate = LocalDate(year = 2026, month = 1, day = 1),
+                memo = """
+                    1/1
+                    test
+                """.trimIndent(),
             )
             val messageId = Snowflake(value = 0)
             declareMock<EventSendClient> {
@@ -48,9 +51,7 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
                 amount = 1000,
                 category = "FOOD",
                 payer = "gara",
-                year = 2026,
-                month = 1,
-                day = 1,
+                localDate = LocalDate(year = 2026, month = 1, day = 1),
                 memo = "test",
             )
 
@@ -64,10 +65,11 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
                 amount = 1000,
                 category = "FOOD",
                 payer = "gara",
-                year = 2026,
-                month = 1,
-                day = 1,
-                memo = "test",
+                localDate = LocalDate(year = 2026, month = 1, day = 1),
+                memo = """
+                    1/1
+                    test
+                """.trimIndent(),
             )
             actual shouldBe expected
         }

@@ -21,7 +21,6 @@ import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.embed
 import dev.kord.rest.builder.message.modify.InteractionResponseModifyBuilder
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.number
 import org.contourgara.DiscordBotConfig
 import org.contourgara.application.CreateExpenseDto
 import org.contourgara.application.CreateExpenseParam
@@ -262,13 +261,7 @@ data class CreateExpenseRequest(
                 }
     }
 
-    fun copyMemo(memo: String): CreateExpenseRequest =
-        copy(
-            memo = """
-                ${localDate.month.number}/${localDate.day}
-                $memo
-            """.trimIndent(),
-        )
+    fun copyMemo(memo: String): CreateExpenseRequest = copy(memo = memo)
 
     fun toInteractionResponseModifyBuilder(): InteractionResponseModifyBuilder.() -> Unit = {
         content = "支出の情報を入力してっピ"
@@ -341,9 +334,7 @@ data class CreateExpenseRequest(
             amount = amount,
             payer = payer!!,
             category = category!!,
-            year = localDate.year,
-            month = localDate.month.number,
-            day = localDate.day,
+            localDate = localDate,
             memo = memo!!,
         )
 }
@@ -361,11 +352,7 @@ data class CreateExpenseResponse(
                 amount = createExpenseDto.amount,
                 payer = createExpenseDto.payer,
                 category = createExpenseDto.category,
-                localDate = LocalDate(
-                    year = createExpenseDto.year,
-                    month = createExpenseDto.month,
-                    day = createExpenseDto.day,
-                ),
+                localDate = createExpenseDto.localDate,
                 memo = createExpenseDto.memo,
             )
     }

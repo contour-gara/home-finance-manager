@@ -1,6 +1,8 @@
 package org.contourgara.application
 
 import dev.kord.common.entity.Snowflake
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 import org.contourgara.domain.EventSendClient
 import org.contourgara.domain.Expense
 import org.koin.core.annotation.Single
@@ -15,7 +17,7 @@ class CreateExpenseUseCase(
                 eventSendClient.createExpense(messageId = messageId, expense = expense)
             }
             .let { (_, expense) ->
-                CreateExpenseDto.from(expense = expense, day = createExpenseParam.day)
+                CreateExpenseDto.from(expense = expense)
             }
 }
 
@@ -24,9 +26,7 @@ data class CreateExpenseParam(
     val amount: Int,
     val category: String,
     val payer: String,
-    val year: Int,
-    val month: Int,
-    val day: Int,
+    val localDate: LocalDate,
     val memo: String,
 ) {
     fun toModel(): Pair<Snowflake, Expense> =
@@ -36,9 +36,11 @@ data class CreateExpenseParam(
                 amount = amount,
                 category = category,
                 payer = payer,
-                year = year,
-                month = month,
-                memo = memo,
+                localDate = localDate,
+                memo = """
+                    ${localDate.month.number}/${localDate.day}
+                    $memo
+                """.trimIndent(),
             )
         )
 }
@@ -47,20 +49,16 @@ data class CreateExpenseDto(
     val amount: Int,
     val category: String,
     val payer: String,
-    val year: Int,
-    val month: Int,
-    val day: Int,
+    val localDate: LocalDate,
     val memo: String,
 ) {
     companion object {
-        fun from(expense: Expense, day: Int): CreateExpenseDto =
+        fun from(expense: Expense): CreateExpenseDto =
             CreateExpenseDto(
                 amount = expense.amount,
                 category = expense.category,
                 payer = expense.payer,
-                year = expense.year,
-                month = expense.month,
-                day = day,
+                localDate = expense.localDate,
                 memo = expense.memo,
             )
     }

@@ -1,5 +1,6 @@
 package org.contourgara.domain
 
+import kotlinx.datetime.LocalDate
 import ulid.ULID
 
 @JvmInline
@@ -12,7 +13,6 @@ data class Expense(
     val amount: Int,
     val category: String,
     val payer: String,
-    val year: Int,
-    val month: Int,
+    val localDate: LocalDate,
     val memo: String,
 )
