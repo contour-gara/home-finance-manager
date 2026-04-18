@@ -115,7 +115,7 @@ object DiscordEventListener : KoinComponent {
                 name = ExpenseFeature.CREATE_COMMAND_ARGUMENT_NAME_YEAR,
                 description = ExpenseFeature.CREATE_COMMAND_ARGUMENT_DESCRIPTION_YEAR,
             ) {
-                required = true
+                required = false
                 minValue = 2026
                 maxValue = 2026
             }
@@ -123,7 +123,7 @@ object DiscordEventListener : KoinComponent {
                 name = ExpenseFeature.CREATE_COMMAND_ARGUMENT_NAME_MONTH,
                 description = ExpenseFeature.CREATE_COMMAND_ARGUMENT_DESCRIPTION_MONTH,
             ) {
-                required = true
+                required = false
                 minValue = 1
                 maxValue = 12
             }
@@ -131,7 +131,7 @@ object DiscordEventListener : KoinComponent {
                 name = ExpenseFeature.CREATE_COMMAND_ARGUMENT_NAME_DAY,
                 description = ExpenseFeature.CREATE_COMMAND_ARGUMENT_DESCRIPTION_DAY,
             ) {
-                required = true
+                required = false
                 minValue = 1
                 maxValue = 31
             }

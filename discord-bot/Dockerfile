@@ -14,6 +14,7 @@ WORKDIR /deployments
 COPY --from=build --chown=nonroot:nonroot /jlink/jre-min /opt/jre-min
 ENV JAVA_HOME=/opt/jre-min
 ENV PATH=$JAVA_HOME/bin:$PATH
+ENV TZ=Asia/Tokyo
 ARG JAR_FILE=build/libs/*.jar
 COPY ${JAR_FILE} app.jar
 

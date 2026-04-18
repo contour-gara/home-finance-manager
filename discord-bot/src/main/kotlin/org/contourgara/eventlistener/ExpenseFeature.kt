@@ -228,22 +228,36 @@ data class CreateExpenseRequest(
     val amount: Int,
     val payer: String?,
     val category: String?,
-    val localDate: LocalDate,
+    val localDate: LocalDate?,
     val memo: String?,
 ) {
     companion object {
         fun from(interactionCommand: InteractionCommand): CreateExpenseRequest =
-            CreateExpenseRequest(
-                amount = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_AMOUNT]!!.toInt(),
-                payer = null,
-                category = null,
-                localDate = LocalDate(
-                    year = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_YEAR]!!.toInt(),
-                    month = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_MONTH]!!.toInt(),
-                    day = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_DAY]!!.toInt(),
-                ),
-                memo = null,
+            listOf(
+                interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_YEAR],
+                interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_MONTH],
+                interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_DAY],
             )
+                .also { values ->
+                    require(values.all { it == null } || values.all { it != null }) { "日付を指定する場合は全て入力する必要がある。" }
+                }
+                .let {
+                    CreateExpenseRequest(
+                        amount = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_AMOUNT]!!.toInt(),
+                        payer = null,
+                        category = null,
+                        localDate = it
+                            .first()
+                            ?.let {
+                                LocalDate(
+                                    year = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_YEAR]!!.toInt(),
+                                    month = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_MONTH]!!.toInt(),
+                                    day = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_DAY]!!.toInt(),
+                                )
+                            },
+                        memo = null,
+                    )
+                }
 
         fun fromEmbedData(embedData: EmbedData): CreateExpenseRequest =
             embedData
@@ -255,7 +269,7 @@ data class CreateExpenseRequest(
                         amount = it[ExpenseFeature.EMBED_FIELD_KEY_AMOUNT]!!.parseAmount().toInt(),
                         payer = it[ExpenseFeature.EMBED_FIELD_KEY_PAYER],
                         category = it[ExpenseFeature.EMBED_FIELD_KEY_CATEGORY],
-                        localDate = LocalDate.parse(input = it[ExpenseFeature.EMBED_FIELD_KEY_LOCAL_DATE]!!),
+                        localDate = it[ExpenseFeature.EMBED_FIELD_KEY_LOCAL_DATE]?.let { LocalDate.parse(input = it) },
                         memo = it[ExpenseFeature.EMBED_FIELD_KEY_MEMO],
                     )
                 }
@@ -278,7 +292,7 @@ data class CreateExpenseRequest(
         field(name = ExpenseFeature.EMBED_FIELD_KEY_AMOUNT, inline = true, value = { amount.formatAmount() })
         payer?.let { field(name = ExpenseFeature.EMBED_FIELD_KEY_PAYER, inline = true, value = { it }) }
         category?.let { field(name = ExpenseFeature.EMBED_FIELD_KEY_CATEGORY, inline = true, value = { it }) }
-        field(name = ExpenseFeature.EMBED_FIELD_KEY_LOCAL_DATE, inline = true, value = { localDate.toString() })
+        localDate?.let { field(name = ExpenseFeature.EMBED_FIELD_KEY_LOCAL_DATE, inline = true, value = { it.toString() }) }
         memo?.let { field(name = ExpenseFeature.EMBED_FIELD_KEY_MEMO, inline = true, value = { it }) }
     }
 
