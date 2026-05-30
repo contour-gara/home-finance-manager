@@ -36,10 +36,6 @@ dependencies {
     testImplementation(libs.mockk)
 }
 
-kotlin {
-    jvmToolchain(21)
-}
-
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")
 }
