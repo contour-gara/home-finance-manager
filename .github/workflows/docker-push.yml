@@ -4,27 +4,27 @@ on:
   workflow_dispatch:
     inputs:
       discord-bot:
-        description: 'discord-bot を push する場合は選択'
+        description: "discord-bot を push する場合は選択"
         type: boolean
         required: true
         default: false
       expenses-api-messaging-bridge:
-        description: 'expenses-api-messaging-bridge を push する場合は選択'
+        description: "expenses-api-messaging-bridge を push する場合は選択"
         type: boolean
         required: true
         default: false
       finance-core:
-        description: 'finance-core を push する場合は選択'
+        description: "finance-core を push する場合は選択"
         type: boolean
         required: true
         default: false
       ulid-sequencer:
-        description: 'ulid-sequencer を push する場合は選択'
+        description: "ulid-sequencer を push する場合は選択"
         type: boolean
         required: true
         default: false
       expenses-api:
-        description: 'expenses-api を push する場合は選択'
+        description: "expenses-api を push する場合は選択"
         type: boolean
         required: true
         default: false
@@ -112,18 +112,22 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: ${{ matrix.module }}-jar-and-Dockerfile
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v4
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v4
       - name: Login to GitHub container registry
         uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build docker image
-        run: |
-          docker build \
-          --tag ghcr.io/$GITHUB_ACTOR/home-finance-manager-${{ matrix.module }}:latest \
-          --tag ghcr.io/$GITHUB_ACTOR/home-finance-manager-${{ matrix.module }}:${{ needs.create-git-tag.outputs.tag-name }} .
-      - name: Push docker image
-        run: |
-          docker push ghcr.io/$GITHUB_ACTOR/home-finance-manager-${{ matrix.module }}:latest
-          docker push ghcr.io/$GITHUB_ACTOR/home-finance-manager-${{ matrix.module }}:${{ needs.create-git-tag.outputs.tag-name }}
+      - name: Build and Push
+        uses: docker/build-push-action@v7
+        with:
+          context: ./
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/home-finance-manager-${{ matrix.module }}:latest
+            ghcr.io/${{ github.repository_owner }}/home-finance-manager-${{ matrix.module }}:${{ needs.create-git-tag.outputs.tag-name }}
