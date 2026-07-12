@@ -12,7 +12,10 @@ fun main() {
                 println(it.count())
             }
             .forEach {
-                println(it)
+//                println(it)
+                if (it.haveSlashes()) {
+                    println(it)
+                }
             }
     }
 }
