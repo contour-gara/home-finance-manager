@@ -8,10 +8,10 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import io.ktor.util.logging.error
-import org.contourgara.application.nextUlid
+import org.contourgara.application.nextUlidByStateful
 import ulid.ULID
 
-fun Application.configureRouting(findLatestUlid: () -> ULID, generateNextUlid: (ULID) -> ULID, saveUlid: (ULID) -> Unit) {
+fun Application.configureRouting(generateNextUlid: () -> ULID) {
     routing {
         get("/health") {
             call.respondText("Hello World!")
@@ -19,10 +19,8 @@ fun Application.configureRouting(findLatestUlid: () -> ULID, generateNextUlid: (
 
         get("/next-ulid") {
             call.respondText(
-                nextUlid(
-                    findLatestUlid = findLatestUlid,
+                nextUlidByStateful(
                     generateNextUlid = generateNextUlid,
-                    saveUlid = saveUlid,
                 ).toString()
             )
         }
