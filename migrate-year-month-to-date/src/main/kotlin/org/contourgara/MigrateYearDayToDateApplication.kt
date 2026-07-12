@@ -12,15 +12,20 @@ fun main() {
                 println(it.count())
             }
             .forEach {
-//                println(it)
                 if (it.haveyyyyMMdd()) {
-                    println(it)
+//                    println(it)
                     return@forEach
                 }
-//                if (it.haveSlashes()) {
+                if (it.haveSlashes()) {
 //                    println(it)
-//                    return@forEach
-//                }
+                    return@forEach
+                }
+                if (it.haveSlash()) {
+//                    println(it)
+                    return@forEach
+                }
+                // 日付なし
+                println(it)
             }
     }
 }

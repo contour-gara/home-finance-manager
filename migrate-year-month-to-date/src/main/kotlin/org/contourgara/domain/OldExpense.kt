@@ -7,12 +7,17 @@ data class OldExpense(
     val memo: String,
 ) {
     // 採用
-    fun haveyyyyMMdd(): Boolean {
-        return memo.contains(regex = Regex(pattern = "(?<!\\d)\\d{8}(?!\\d)"))
-    }
+    fun haveyyyyMMdd(): Boolean =
+        memo.contains(regex = Regex(pattern = "(?<!\\d)\\d{8}(?!\\d)"))
 
     // 最初の日付を採用する
-    fun haveSlashes(): Boolean {
-        return memo.indexOfFirst { it == '/'} != memo.indexOfLast { it == '/'}
-    }
+    fun haveSlashes(): Boolean =
+        memo.indexOfFirst { it == '/'} != memo.indexOfLast { it == '/'}
+
+    // 採用
+    fun haveSlash(): Boolean = memo.contains(char = '/')
 }
+
+// 日付無しは 1 日扱い OK
+// 1/5,6,7,9のお昼ご飯代(社食)
+// TODO: Month と Day を抽出したら month と差があるか確認
