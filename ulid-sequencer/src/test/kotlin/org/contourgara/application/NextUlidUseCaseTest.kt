@@ -23,46 +23,77 @@ class NextUlidUseCaseTest : FunSpec({
         )
     }
 
-    test("渡された関数を使い、ULID を生成し返す") {
-        // setup
-        val initialUlid = ULID.parseULID(ulidString = "01K4MXEKC0PMTJ8FA055N4SH79")
-        val nextUlid = ULID.parseULID(ulidString = "01K4MXEKC0PMTJ8FA055N4SH7A")
+    context("ULID 生成テスト") {
+        test("渡された関数を使い、ULID を生成し返す") {
+            // setup
+            val initialUlid = ULID.parseULID(ulidString = "01K4MXEKC0PMTJ8FA055N4SH79")
+            val nextUlid = ULID.parseULID(ulidString = "01K4MXEKC0PMTJ8FA055N4SH7A")
 
-        val ulidSequenceRepository = mockk<UlidSequenceRepository>()
-        every { ulidSequenceRepository.findLatestUlid() } returns initialUlid
-        every { ulidSequenceRepository.insert(ulid = nextUlid) } returns Unit
+            val ulidSequenceRepository = mockk<UlidSequenceRepository>()
+            every { ulidSequenceRepository.findLatestUlid() } returns initialUlid
+            every { ulidSequenceRepository.insert(ulid = nextUlid) } returns Unit
 
-        // execute
-        val actual = nextUlid(
-            findLatestUlid = { ulidSequenceRepository.findLatestUlid() },
-            generateNextUlid = { nextUlid },
-            saveUlid = { ulid -> ulidSequenceRepository.insert(ulid) },
-        )
+            // execute
+            val actual = nextUlid(
+                findLatestUlid = { ulidSequenceRepository.findLatestUlid() },
+                generateNextUlid = { nextUlid },
+                saveUlid = { ulid -> ulidSequenceRepository.insert(ulid) },
+            )
 
-        // assert
-        assertSoftly {
-            actual shouldBeGreaterThan initialUlid
-            verify(exactly = 1) { ulidSequenceRepository.insert(ulid = nextUlid) }
+            // assert
+            assertSoftly {
+                actual shouldBeGreaterThan initialUlid
+                verify(exactly = 1) { ulidSequenceRepository.insert(ulid = nextUlid) }
+            }
+        }
+
+        test("ULID 生成でオーバーフローが発生した場合、ApplicationException を投げる") {
+            // setup
+            val initialUlid = ULID.parseULID(ulidString = "01K4MXEKC0PMTJ8FA055N4SH79")
+            val nextUlid = ULID.parseULID(ulidString = "01K4MXEKC0PMTJ8FA055N4SH7A")
+
+            val ulidSequenceRepository = mockk<UlidSequenceRepository>()
+            every { ulidSequenceRepository.findLatestUlid() } returns initialUlid
+            every { ulidSequenceRepository.insert(ulid = nextUlid) } returns Unit
+
+            // execute & assert
+            shouldThrow<ApplicationException> {
+                nextUlid(
+                    findLatestUlid = { ulidSequenceRepository.findLatestUlid() },
+                    generateNextUlid = { throw UlidOverflowException() },
+                    saveUlid = { ulid -> ulidSequenceRepository.insert(ulid) },
+                )
+            }
+                .cause shouldBe UlidOverflowException()
         }
     }
 
-    test("ULID 生成でオーバーフローが発生した場合、ApplicationException を投げる") {
-        // setup
-        val initialUlid = ULID.parseULID(ulidString = "01K4MXEKC0PMTJ8FA055N4SH79")
-        val nextUlid = ULID.parseULID(ulidString = "01K4MXEKC0PMTJ8FA055N4SH7A")
+    context("Stateful な ULID 生成テスト") {
+        test("渡された関数を使い、ULID を生成し返す") {
+            // setup
+            val nextUlid = ULID.parseULID(ulidString = "01K4MXEKC0PMTJ8FA055N4SH7A")
 
-        val ulidSequenceRepository = mockk<UlidSequenceRepository>()
-        every { ulidSequenceRepository.findLatestUlid() } returns initialUlid
-        every { ulidSequenceRepository.insert(ulid = nextUlid) } returns Unit
-
-        // execute & assert
-        shouldThrow<ApplicationException> {
-            nextUlid(
-                findLatestUlid = { ulidSequenceRepository.findLatestUlid() },
-                generateNextUlid = { throw UlidOverflowException() },
-                saveUlid = { ulid -> ulidSequenceRepository.insert(ulid) },
+            // execute
+            val actual = nextUlidByStateful(
+                generateNextUlid = { nextUlid },
             )
+
+            // assert
+            val expected = nextUlid
+            actual shouldBe expected
         }
-            .cause shouldBe UlidOverflowException()
+
+        test("ULID 生成でオーバーフローが発生した場合、ApplicationException を投げる") {
+            // setup
+            val nextUlid = ULID.parseULID(ulidString = "01K4MXEKC0PMTJ8FA055N4SH7A")
+
+            // execute & assert
+            shouldThrow<ApplicationException> {
+                nextUlidByStateful (
+                    generateNextUlid = { throw UlidOverflowException() },
+                )
+            }
+                .cause shouldBe UlidOverflowException()
+        }
     }
 })

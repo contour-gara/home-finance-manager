@@ -19,4 +19,13 @@ suspend fun nextUlid(findLatestUlid: () -> ULID, generateNextUlid: (ULID) -> ULI
         }
     }
 
+fun nextUlidByStateful(generateNextUlid: () -> ULID): ULID =
+    runCatching {
+        generateNextUlid()
+    }
+        .fold(
+            onSuccess = { it },
+            onFailure = { throw ApplicationException(message = it.message, cause = it) },
+        )
+
 class ApplicationException(override val message: String?, override val cause: Throwable?) : RuntimeException(message, cause)
