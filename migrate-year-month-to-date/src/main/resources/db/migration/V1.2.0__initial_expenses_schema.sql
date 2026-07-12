@@ -1,0 +1,1 @@
+../../../../../../expenses-api/src/main/resources/db/migration/V1.2.0__initial_expenses_schema.sql

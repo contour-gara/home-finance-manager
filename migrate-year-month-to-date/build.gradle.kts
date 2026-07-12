@@ -15,6 +15,7 @@ repositories {
 }
 
 dependencies {
+    implementation(libs.logback.classic)
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
     implementation(libs.flyway.mysql)

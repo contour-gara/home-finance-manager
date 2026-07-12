@@ -8,6 +8,7 @@ BOT_TOKEN = ""
 ULID_SEQUENCER_DATASOURCE_URL = ""
 DATASOURCE_USERNAME = ""
 DATASOURCE_PASSWORD = ""
+EXPENSES_API_DATASOURCE_URL = "jdbc:mysql://gateway01.ap-northeast-1.prod.aws.tidbcloud.com:4000/home_finance_manager_expenses_api_db?sslMode=VERIFY_IDENTITY"
 
 [tasks.jdeps]
 description = "Show module dependencies of jar"
