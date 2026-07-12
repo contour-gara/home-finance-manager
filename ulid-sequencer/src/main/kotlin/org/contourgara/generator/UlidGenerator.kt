@@ -8,4 +8,14 @@ fun generateNextUlid(previous: ULID): ULID =
         .nextULIDStrict(previous = previous)
         ?: throw UlidOverflowException()
 
+fun generateNextUlidByStateful(): ULID =
+    UlidProvider
+        .factory
+        .nextULIDStrict()
+        ?: throw UlidOverflowException()
+
+object UlidProvider {
+    val factory = ULID.StatefulMonotonic()
+}
+
 class UlidOverflowException(override val message: String? = "The random part of ULID overflows.") : RuntimeException(message)
