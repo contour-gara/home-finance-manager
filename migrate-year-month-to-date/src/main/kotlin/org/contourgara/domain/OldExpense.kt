@@ -8,7 +8,7 @@ data class OldExpense(
 ) {
     // 採用
     fun haveyyyyMMdd(): Boolean =
-        memo.contains(regex = Regex(pattern = "(?<!\\d)\\d{8}(?!\\d)"))
+        memo.contains(regex = Regex(pattern = """(?<!\d)(\d{4})(\d{2})(\d{2})(?!\d)"""))
 
     // 最初の日付を採用する
     fun haveSlashes(): Boolean =

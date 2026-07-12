@@ -13,7 +13,7 @@ fun main() {
             }
             .forEach {
                 if (it.haveyyyyMMdd()) {
-//                    println(it)
+                    println(it)
                     return@forEach
                 }
                 if (it.haveSlashes()) {
@@ -25,7 +25,7 @@ fun main() {
                     return@forEach
                 }
                 // 日付なし
-                println(it)
+//                println(it)
             }
     }
 }
