@@ -13,9 +13,14 @@ fun main() {
             }
             .forEach {
 //                println(it)
-                if (it.haveSlashes()) {
+                if (it.haveyyyyMMdd()) {
                     println(it)
+                    return@forEach
                 }
+//                if (it.haveSlashes()) {
+//                    println(it)
+//                    return@forEach
+//                }
             }
     }
 }
