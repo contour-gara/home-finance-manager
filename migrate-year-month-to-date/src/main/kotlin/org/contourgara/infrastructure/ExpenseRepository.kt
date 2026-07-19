@@ -2,10 +2,13 @@ package org.contourgara.infrastructure
 
 import org.contourgara.domain.NewExpense
 import org.contourgara.domain.OldExpense
+import org.contourgara.infrastructure.ExpenseDateTable.date
+import org.contourgara.infrastructure.ExpenseDateTable.expenseId
 import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.core.innerJoin
 import org.jetbrains.exposed.v1.datetime.date
+import org.jetbrains.exposed.v1.jdbc.batchInsert
 import org.jetbrains.exposed.v1.jdbc.select
 
 fun selectOldExpenses(): List<OldExpense> =
@@ -29,7 +32,13 @@ fun selectOldExpenses(): List<OldExpense> =
             )
         }
 
-fun saveNewExpenses(newExpenses: List<NewExpense>) {}
+fun saveNewExpenses(newExpenses: List<NewExpense>): Unit =
+    ExpenseDateTable
+        .batchInsert(data = newExpenses, shouldReturnGeneratedValues = false) {
+            this[expenseId] = it.id
+            this[date] = it.date
+        }
+        .let { Unit }
 
 object ExpenseIdTable : Table("expense_id") {
     val expenseId = varchar("expense_id", 26)
