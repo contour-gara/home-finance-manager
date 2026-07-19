@@ -15,6 +15,7 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.testing.testApplication
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.datetime.LocalDate
 import org.contourgara.application.CreateExpenseDto
 import org.contourgara.application.CreateExpenseParam
 import org.contourgara.application.CreateExpenseUseCase
@@ -65,6 +66,61 @@ class ExpenseRoutingTest : FunSpec({
                       "year":"2026",
                       "month":"1",
                       "memo":"test"
+                    }
+                """.trimIndent())
+            }
+
+            // assert
+            actual shouldHaveStatus 201
+            actual.bodyAsText() shouldBe  "{\"expenseId\":\"01K4MXEKC0PMTJ8FA055N4SH79\",\"expenseEventId\":\"01KD27JEZQQY88RG18034YZHBV\"}"
+        }
+    }
+
+    test("日付を渡せる") {
+        testApplication {
+            // setup
+            val deleteExpenseUseCase = mockk<DeleteExpenseUseCase>()
+            val createExpenseUseCase = mockk<CreateExpenseUseCase>()
+            every {
+                createExpenseUseCase
+                    .execute(
+                        param = CreateExpenseParam(
+                            amount = 1000,
+                            payer = "DIRECT_DEBIT",
+                            category = "RENT",
+                            year = 2026,
+                            month = 1,
+                            date = LocalDate(year = 2027, month = 7, day = 19),
+                            memo = "test",
+                        ),
+                    )
+            } returns CreateExpenseDto(
+                expenseId = ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"),
+                expenseEventId = ULID.parseULID("01KD27JEZQQY88RG18034YZHBV"),
+            )
+
+            application {
+                install(plugin = ContentNegotiation) {
+                    json()
+                }
+                configureExpenseRouting(
+                    createExpenseUseCase = createExpenseUseCase,
+                    deleteExpenseUseCase = deleteExpenseUseCase,
+                )
+            }
+
+            // execute
+            val actual = client.post("/expense") {
+                contentType(ContentType.Application.Json)
+                setBody("""
+                    {
+                      "amount": 1000,
+                      "payer":"DIRECT_DEBIT",
+                      "category":"RENT",
+                      "year":"2026",
+                      "month":"1",
+                      "memo":"test",
+                      "date":"2027-07-19"
                     }
                 """.trimIndent())
             }

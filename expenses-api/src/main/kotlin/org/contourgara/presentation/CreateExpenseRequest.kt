@@ -1,5 +1,6 @@
 package org.contourgara.presentation
 
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import org.contourgara.application.CreateExpenseParam
 
@@ -10,6 +11,7 @@ data class CreateExpenseRequest(
     private val category: String,
     private val year: Int,
     private val month: Int,
+    private val date: LocalDate? = null,
     private val memo: String,
 ) {
     fun toParam(): CreateExpenseParam =
@@ -19,6 +21,7 @@ data class CreateExpenseRequest(
             category = category,
             year = year,
             month = month,
+            date = date,
             memo = memo,
     )
 }

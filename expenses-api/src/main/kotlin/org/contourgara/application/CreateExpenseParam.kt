@@ -1,6 +1,7 @@
 package org.contourgara.application
 
 import arrow.core.EitherNel
+import kotlinx.datetime.LocalDate
 import org.contourgara.domain.Error
 import org.contourgara.domain.Expense
 
@@ -10,6 +11,7 @@ data class CreateExpenseParam(
     private val category: String,
     private val year: Int,
     private val month: Int,
+    private val date: LocalDate? = null,
     private val memo: String,
 ) {
     fun toModel(expenseId: String): EitherNel<Error, Expense> =
