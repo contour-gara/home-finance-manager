@@ -1,12 +1,14 @@
 package org.contourgara.infrastructure
 
+import org.contourgara.domain.NewExpense
 import org.contourgara.domain.OldExpense
 import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.core.innerJoin
+import org.jetbrains.exposed.v1.datetime.date
 import org.jetbrains.exposed.v1.jdbc.select
 
-fun selectOldExpense(): List<OldExpense> =
+fun selectOldExpenses(): List<OldExpense> =
     ExpenseIdTable
         .innerJoin(otherTable = ExpenseYearTable, onColumn = { ExpenseIdTable.expenseId }, otherColumn = { ExpenseYearTable.expenseId })
         .innerJoin(otherTable = ExpenseMonthTable, onColumn = { ExpenseIdTable.expenseId }, otherColumn = { ExpenseMonthTable.expenseId })
@@ -27,6 +29,8 @@ fun selectOldExpense(): List<OldExpense> =
             )
         }
 
+fun saveNewExpenses(newExpenses: List<NewExpense>) {}
+
 object ExpenseIdTable : Table("expense_id") {
     val expenseId = varchar("expense_id", 26)
 }
@@ -44,4 +48,9 @@ object ExpenseMonthTable : Table("expense_month") {
 object ExpenseMemoTable : Table("expense_memo") {
     val expenseId = varchar("expense_id", 26)
     val memo = varchar("memo", 100)
+}
+
+object ExpenseDateTable : Table("expense_date") {
+    val expenseId = varchar("expense_id", 26)
+    val date = date("date")
 }

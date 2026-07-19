@@ -18,6 +18,7 @@ dependencies {
     implementation(libs.logback.classic)
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
+    implementation(libs.exposed.kotlin.datetime)
     implementation(libs.flyway.mysql)
     runtimeOnly(libs.mysql.connector.j)
     testImplementation(libs.kotest.runner.junit5)

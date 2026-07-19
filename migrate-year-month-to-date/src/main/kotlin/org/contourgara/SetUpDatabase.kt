@@ -7,7 +7,7 @@ fun setUpDatabase() {
     Flyway
         .configure()
         .dataSource(
-            System.getenv("EXPENSES_API_DATASOURCE_URL"),
+            System.getenv("EXPENSES_API_MIGRATER_DATASOURCE_URL"),
             System.getenv("DATASOURCE_USERNAME"),
             System.getenv("DATASOURCE_PASSWORD"),
         )
@@ -16,7 +16,7 @@ fun setUpDatabase() {
         .migrate()
 
     Database.connect(
-        url = System.getenv("EXPENSES_API_DATASOURCE_URL"),
+        url = "${System.getenv("EXPENSES_API_MIGRATER_DATASOURCE_URL")}",
         driver = "com.mysql.cj.jdbc.Driver",
         user = System.getenv("DATASOURCE_USERNAME"),
         password = System.getenv("DATASOURCE_PASSWORD"),

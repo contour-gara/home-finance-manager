@@ -1,13 +1,13 @@
 package org.contourgara
 
-import org.contourgara.infrastructure.selectOldExpense
+import org.contourgara.infrastructure.selectOldExpenses
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 fun main() {
     setUpDatabase()
 
     transaction {
-        selectOldExpense()
+        selectOldExpenses()
             .also {
                 println(it.count())
             }

@@ -51,6 +51,7 @@ axon-spring-boot-starter = { module = "org.axonframework:axon-spring-boot-starte
 kafka-clients = { module = "org.apache.kafka:kafka-clients", version.ref = "apache-kafka" }
 exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
 exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+exposed-kotlin-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposed" }
 mysql-connector-j = { module = "com.mysql:mysql-connector-j", version.ref = "mysql" }
 flyway-mysql-spring = { module = "org.flywaydb:flyway-mysql" }
 flyway-mysql = { module = "org.flywaydb:flyway-mysql", version.ref = "flyway" }
