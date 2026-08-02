@@ -11,8 +11,7 @@ curl -v -X POST http://localhost:28080/expense \
     "amount":"100",
     "payer":"DIRECT_DEBIT",
     "category":"RENT",
-    "year":"2026",
-    "month":"1",
+    "date":"2026-01-01",
     "memo":"test"
   }'
 ```
@@ -39,15 +38,13 @@ SELECT
     a.amount,
     ep.payer,
     ec.category,
-    ey.year,
-    em.month,
+    ed.date,
     memo.memo
 FROM expense_id e
 INNER JOIN expense_amount a ON e.expense_id = a.expense_id
 INNER JOIN expense_payer ep ON e.expense_id = ep.expense_id
 INNER JOIN expense_category ec ON e.expense_id = ec.expense_id
-INNER JOIN expense_year ey ON e.expense_id = ey.expense_id
-INNER JOIN expense_month em ON e.expense_id = em.expense_id
+INNER JOIN expense_date ed ON e.expense_id = ed.expense_id
 INNER JOIN expense_memo memo ON e.expense_id = memo.expense_id;
 ```
 

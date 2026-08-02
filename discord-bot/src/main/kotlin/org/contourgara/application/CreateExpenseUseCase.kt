@@ -32,22 +32,16 @@ data class CreateExpenseParam(
     val memo: String,
 ) {
     fun toModel(currentLocalDate: () -> LocalDate): Pair<Snowflake, Expense> =
-        let { localDate ?: currentLocalDate() }
-            .let {
-                Pair(
-                    first = messageId,
-                    second = Expense(
-                        amount = amount,
-                        category = category,
-                        payer = payer,
-                        localDate = it,
-                        memo = """
-                    ${it.month.number}/${it.day}
-                    $memo
-                """.trimIndent(),
-                    )
-                )
-            }
+        Pair(
+            first = messageId,
+            second = Expense(
+                amount = amount,
+                category = category,
+                payer = payer,
+                localDate = localDate ?: currentLocalDate(),
+                memo = memo,
+            )
+        )
 }
 
 data class CreateExpenseDto(

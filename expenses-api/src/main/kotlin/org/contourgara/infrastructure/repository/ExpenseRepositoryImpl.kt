@@ -5,14 +5,14 @@ import org.contourgara.domain.Category
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseId
 import org.contourgara.domain.Memo
-import org.contourgara.domain.Month
 import org.contourgara.domain.Payer
-import org.contourgara.domain.Year
+import org.contourgara.domain.ValidatedDate
 import org.contourgara.domain.infrastructure.ExpenseRepository
 import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.innerJoin
+import org.jetbrains.exposed.v1.datetime.date
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.select
 
@@ -39,15 +39,10 @@ object ExpenseRepositoryImpl : ExpenseRepository {
                         it[expenseId] = expense.expenseId.value.toString()
                         it[category] = expense.category.name
                     }
-                ExpenseYearTable
+                ExpenseDateTable
                     .insert {
                         it[expenseId] = expense.expenseId.value.toString()
-                        it[year] = expense.year.value
-                    }
-                ExpenseMonthTable
-                    .insert {
-                        it[expenseId] = expense.expenseId.value.toString()
-                        it[month] = expense.month.value
+                        it[date] = expense.date.value
                     }
                 ExpenseMemoTable
                     .insert {
@@ -61,16 +56,14 @@ object ExpenseRepositoryImpl : ExpenseRepository {
             .innerJoin(otherTable = ExpenseAmountTable, onColumn = { ExpenseIdTable.expenseId }, otherColumn = { ExpenseAmountTable.expenseId })
             .innerJoin(otherTable = ExpensePayerTable, onColumn = { ExpenseIdTable.expenseId }, otherColumn = { ExpensePayerTable.expenseId })
             .innerJoin(otherTable = ExpenseCategoryTable, onColumn = { ExpenseIdTable.expenseId }, otherColumn = { ExpenseCategoryTable.expenseId })
-            .innerJoin(otherTable = ExpenseYearTable, onColumn = { ExpenseIdTable.expenseId }, otherColumn = { ExpenseYearTable.expenseId })
-            .innerJoin(otherTable = ExpenseMonthTable, onColumn = { ExpenseIdTable.expenseId }, otherColumn = { ExpenseMonthTable.expenseId })
+            .innerJoin(otherTable = ExpenseDateTable, onColumn = { ExpenseIdTable.expenseId }, otherColumn = { ExpenseDateTable.expenseId })
             .innerJoin(otherTable = ExpenseMemoTable, onColumn = { ExpenseIdTable.expenseId }, otherColumn = { ExpenseMemoTable.expenseId })
             .select(
                 ExpenseIdTable.expenseId,
                 ExpenseAmountTable.amount,
                 ExpensePayerTable.payer,
                 ExpenseCategoryTable.category,
-                ExpenseYearTable.year,
-                ExpenseMonthTable.month,
+                ExpenseDateTable.date,
                 ExpenseMemoTable.memo,
             )
             .where { ExpenseIdTable.expenseId eq expenseId.value.toString() }
@@ -83,8 +76,7 @@ object ExpenseRepositoryImpl : ExpenseRepository {
                     amount = Amount(value = it[ExpenseAmountTable.amount]),
                     payer = Payer.valueOf(value = it[ExpensePayerTable.payer]),
                     category = Category.valueOf(value = it[ExpenseCategoryTable.category]),
-                    year = Year.of(value = it[ExpenseYearTable.year]),
-                    month = Month.of(value = it[ExpenseMonthTable.month]),
+                    date = ValidatedDate(value = it[ExpenseDateTable.date]),
                     memo = Memo(value = it[ExpenseMemoTable.memo]),
                 )
             }
@@ -105,14 +97,9 @@ private object ExpenseCategoryTable : Table("expense_category") {
     val category = varchar("category", 100)
 }
 
-private object ExpenseYearTable : Table("expense_year") {
+private object ExpenseDateTable : Table("expense_date") {
     val expenseId = varchar("expense_id", 26)
-    val year = integer("year")
-}
-
-private object ExpenseMonthTable : Table("expense_month") {
-    val expenseId = varchar("expense_id", 26)
-    val month = integer("month")
+    val date = date("date")
 }
 
 private object ExpenseMemoTable : Table("expense_memo") {

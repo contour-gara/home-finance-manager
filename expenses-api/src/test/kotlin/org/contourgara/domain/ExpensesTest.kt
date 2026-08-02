@@ -3,6 +3,7 @@ package org.contourgara.domain
 import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import kotlinx.datetime.LocalDate
 import ulid.ULID
 
 class ExpensesTest : FunSpec({
@@ -22,8 +23,7 @@ class ExpensesTest : FunSpec({
             amount = Amount(value = 500),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            year = Year._2026,
-            month = Month.JANUARY,
+            date = ValidatedDate(value = LocalDate(year = 2026, month = 1, day = 1)),
             memo = Memo(value = "test1"),
         )
 
@@ -60,8 +60,7 @@ class ExpensesTest : FunSpec({
             amount = Amount(value = 500),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            year = Year._2026,
-            month = Month.JANUARY,
+            date = ValidatedDate(value = LocalDate(year = 2026, month = 1, day = 1)),
             memo = Memo(value = "test1"),
         )
 
@@ -91,8 +90,7 @@ class ExpensesTest : FunSpec({
             amount = Amount(value = 500),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            year = Year._2026,
-            month = Month.JANUARY,
+            date = ValidatedDate(value = LocalDate(year = 2026, month = 1, day = 1)),
             memo = Memo(value = "test1"),
         )
 
@@ -129,8 +127,7 @@ class ExpensesTest : FunSpec({
             amount = Amount(value = 500),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            year = Year._2026,
-            month = Month.JANUARY,
+            date = ValidatedDate(value = LocalDate(year = 2026, month = 1, day = 1)),
             memo = Memo(value = "test1"),
         )
 
@@ -158,8 +155,7 @@ class ExpensesTest : FunSpec({
             amount = Amount(value = 500),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            year = Year._2026,
-            month = Month.JANUARY,
+            date = ValidatedDate(value = LocalDate(year = 2026, month = 1, day = 1)),
             memo = Memo(value = "test1"),
         )
 
@@ -187,8 +183,7 @@ class ExpensesTest : FunSpec({
             amount = Amount(value = 500),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            year = Year._2026,
-            month = Month.JANUARY,
+            date = ValidatedDate(value = LocalDate(year = 2026, month = 1, day = 1)),
             memo = Memo(value = "test1"),
         )
 
@@ -216,8 +211,7 @@ class ExpensesTest : FunSpec({
             amount = Amount(value = 500),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            year = Year._2026,
-            month = Month.JANUARY,
+            date = ValidatedDate(value = LocalDate(year = 2026, month = 1, day = 1)),
             memo = Memo(value = "test1"),
         )
 
@@ -245,8 +239,7 @@ class ExpensesTest : FunSpec({
             amount = Amount(value = 500),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            year = Year._2026,
-            month = Month.JANUARY,
+            date = ValidatedDate(value = LocalDate(year = 2026, month = 1, day = 1)),
             memo = Memo(value = "test1"),
         )
 

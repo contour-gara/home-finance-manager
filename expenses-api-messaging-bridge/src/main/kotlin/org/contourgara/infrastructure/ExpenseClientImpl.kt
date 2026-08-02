@@ -18,6 +18,7 @@ import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import org.contourgara.ExpensesApiMessagingBridgeConfig
 import org.contourgara.domain.Expense
@@ -88,8 +89,7 @@ data class CreateExpenseRequest(
     val amount: Int,
     val category: String,
     val payer: String,
-    val year: Int,
-    val month: Int,
+    val date: LocalDate,
     val memo: String,
 ) {
     companion object {
@@ -98,8 +98,7 @@ data class CreateExpenseRequest(
                 amount = expense.amount,
                 category = expense.category,
                 payer = expense.payer,
-                year = expense.year,
-                month = expense.month,
+                date = expense.date,
                 memo = expense.memo,
             )
     }

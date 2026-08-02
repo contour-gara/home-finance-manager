@@ -11,6 +11,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.wiremock.ListenerMode
 import io.kotest.extensions.wiremock.WireMockListener
 import io.kotest.matchers.shouldBe
+import kotlinx.datetime.LocalDate
 import org.contourgara.ExpensesApiMessagingBridgeConfig
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseEventId
@@ -38,7 +39,7 @@ class ExpenseClientImplTest : FunSpec({
         wireMockServer.stubFor(
             post(urlPathEqualTo("/expense"))
                 .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
-                .withRequestBody(equalTo("{\"amount\":1000,\"category\":\"FOOD\",\"payer\":\"YUKI\",\"year\":2026,\"month\":1,\"memo\":\"memo\"}"))
+                .withRequestBody(equalTo("{\"amount\":1000,\"category\":\"FOOD\",\"payer\":\"YUKI\",\"date\":\"2026-01-01\",\"memo\":\"memo\"}"))
                 .willReturn(
                     aResponse()
                         .withStatus(201)
@@ -51,8 +52,7 @@ class ExpenseClientImplTest : FunSpec({
             amount = 1000,
             category = "FOOD",
             payer = "YUKI",
-            year = 2026,
-            month = 1,
+            date = LocalDate(year = 2026, month = 1, day = 1),
             memo = "memo",
         )
 

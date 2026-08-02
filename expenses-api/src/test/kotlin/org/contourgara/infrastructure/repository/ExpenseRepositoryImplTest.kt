@@ -7,6 +7,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.testcontainers.TestContainerSpecExtension
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
+import kotlinx.datetime.LocalDate
 import org.assertj.db.api.Assertions.assertThat
 import org.assertj.db.type.AssertDbConnection
 import org.assertj.db.type.AssertDbConnectionFactory
@@ -15,9 +16,8 @@ import org.contourgara.domain.Category
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseId
 import org.contourgara.domain.Memo
-import org.contourgara.domain.Month
 import org.contourgara.domain.Payer
-import org.contourgara.domain.Year
+import org.contourgara.domain.ValidatedDate
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.testcontainers.mysql.MySQLContainer
 import ulid.ULID
@@ -45,8 +45,7 @@ class ExpenseRepositoryImplTest : FunSpec({
         val expenseAmountTable = assertDbConnection.table("expense_amount").build()
         val expensePayerTable = assertDbConnection.table("expense_payer").build()
         val expenseCategoryTable = assertDbConnection.table("expense_category").build()
-        val expenseYearTable = assertDbConnection.table("expense_year").build()
-        val expenseMonthTable = assertDbConnection.table("expense_month").build()
+        val expenseDateTable = assertDbConnection.table("expense_date").build()
         val expenseMemoTable = assertDbConnection.table("expense_memo").build()
 
         val expenses = Expense(
@@ -54,8 +53,7 @@ class ExpenseRepositoryImplTest : FunSpec({
             amount = Amount(value = 1000),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            year = Year._2026,
-            month = Month.JANUARY,
+            date = ValidatedDate(value = LocalDate(year = 2026, month = 1, day = 1)),
             memo = Memo(value = "test"),
         )
 
@@ -85,16 +83,11 @@ class ExpenseRepositoryImplTest : FunSpec({
             .row(0)
             .value("expense_id").isEqualTo("01K4MXEKC0PMTJ8FA055N4SH79")
             .value("category").isEqualTo("RENT")
-        assertThat(expenseYearTable)
+        assertThat(expenseDateTable)
             .hasNumberOfRows(1)
             .row(0)
             .value("expense_id").isEqualTo("01K4MXEKC0PMTJ8FA055N4SH79")
-            .value("year").isEqualTo(2026)
-        assertThat(expenseMonthTable)
-            .hasNumberOfRows(1)
-            .row(0)
-            .value("expense_id").isEqualTo("01K4MXEKC0PMTJ8FA055N4SH79")
-            .value("month").isEqualTo(1)
+            .value("date").isEqualTo("2026-01-01")
         assertThat(expenseMemoTable)
             .hasNumberOfRows(1)
             .row(0)
@@ -108,8 +101,7 @@ class ExpenseRepositoryImplTest : FunSpec({
         val expenseAmountTable = assertDbConnection.table("expense_amount").build()
         val expensePayerTable = assertDbConnection.table("expense_payer").build()
         val expenseCategoryTable = assertDbConnection.table("expense_category").build()
-        val expenseYearTable = assertDbConnection.table("expense_year").build()
-        val expenseMonthTable = assertDbConnection.table("expense_month").build()
+        val expenseDateTable = assertDbConnection.table("expense_date").build()
         val expenseMemoTable = assertDbConnection.table("expense_memo").build()
 
         val expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"))
@@ -124,8 +116,7 @@ class ExpenseRepositoryImplTest : FunSpec({
         assertThat(expenseAmountTable).hasNumberOfRows(0)
         assertThat(expensePayerTable).hasNumberOfRows(0)
         assertThat(expenseCategoryTable).hasNumberOfRows(0)
-        assertThat(expenseYearTable).hasNumberOfRows(0)
-        assertThat(expenseMonthTable).hasNumberOfRows(0)
+        assertThat(expenseDateTable).hasNumberOfRows(0)
         assertThat(expenseMemoTable).hasNumberOfRows(0)
     }
 
@@ -150,13 +141,9 @@ class ExpenseRepositoryImplTest : FunSpec({
                 columns("expense_id", "category")
                 values("01K4MXEKC0PMTJ8FA055N4SH79", "RENT")
             }
-            insertInto("expense_year") {
-                columns("expense_id", "year")
-                values("01K4MXEKC0PMTJ8FA055N4SH79", 2026)
-            }
-            insertInto("expense_month") {
-                columns("expense_id", "month")
-                values("01K4MXEKC0PMTJ8FA055N4SH79", 1)
+            insertInto("expense_date") {
+                columns("expense_id", "date")
+                values("01K4MXEKC0PMTJ8FA055N4SH79", "2026-01-01")
             }
             insertInto("expense_memo") {
                 columns("expense_id", "memo")
@@ -169,8 +156,7 @@ class ExpenseRepositoryImplTest : FunSpec({
         val expenseAmountTable = assertDbConnection.table("expense_amount").build()
         val expensePayerTable = assertDbConnection.table("expense_payer").build()
         val expenseCategoryTable = assertDbConnection.table("expense_category").build()
-        val expenseYearTable = assertDbConnection.table("expense_year").build()
-        val expenseMonthTable = assertDbConnection.table("expense_month").build()
+        val expenseDateTable = assertDbConnection.table("expense_date").build()
         val expenseMemoTable = assertDbConnection.table("expense_memo").build()
 
         val expenseId = ExpenseId(ULID.parseULID("01K4MXEKC0PMTJ8FA055N4SH79"))
@@ -184,8 +170,7 @@ class ExpenseRepositoryImplTest : FunSpec({
             amount = Amount(value = 1000),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            year = Year._2026,
-            month = Month.JANUARY,
+            date = ValidatedDate(value = LocalDate(year = 2026, month = 1, day = 1)),
             memo = Memo(value = "test"),
         )
         actual shouldBe expected
@@ -194,8 +179,7 @@ class ExpenseRepositoryImplTest : FunSpec({
         assertThat(expenseAmountTable).hasNumberOfRows(1)
         assertThat(expensePayerTable).hasNumberOfRows(1)
         assertThat(expenseCategoryTable).hasNumberOfRows(1)
-        assertThat(expenseYearTable).hasNumberOfRows(1)
-        assertThat(expenseMonthTable).hasNumberOfRows(1)
+        assertThat(expenseDateTable).hasNumberOfRows(1)
         assertThat(expenseMemoTable).hasNumberOfRows(1)
     }
 })

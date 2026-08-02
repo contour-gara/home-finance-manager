@@ -1,6 +1,7 @@
 package org.contourgara.application
 
 import dev.kord.common.entity.Snowflake
+import kotlinx.datetime.LocalDate
 import org.contourgara.domain.Expense
 import org.contourgara.domain.ExpenseClient
 import org.contourgara.domain.ExpenseIdRepository
@@ -46,8 +47,7 @@ data class CreateExpenseParam(
     private val amount: Int,
     private val payer: String,
     private val category: String,
-    private val year: Int,
-    private val month: Int,
+    private val date: LocalDate,
     private val memo: String,
 ) {
     fun toModel(): Pair<MessageId, Expense> =
@@ -57,8 +57,7 @@ data class CreateExpenseParam(
                 amount = amount,
                 payer = payer,
                 category = category,
-                year = year,
-                month = month,
+                date = date,
                 memo = memo,
             )
         )

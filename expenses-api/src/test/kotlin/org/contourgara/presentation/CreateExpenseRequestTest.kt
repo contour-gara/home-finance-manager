@@ -17,8 +17,7 @@ class CreateExpenseRequestTest : FunSpec({
             {
                 "amount": 1000,
                 "payer":"DIRECT_DEBIT",
-                "category":"RENT",
-                "year":"2026"
+                "category":"RENT"
             }
         """.trimIndent()
 
@@ -26,8 +25,8 @@ class CreateExpenseRequestTest : FunSpec({
         val e = shouldThrowExactly<MissingFieldException> {
             Json.decodeFromString<CreateExpenseRequest>(string = json)
         }
-        e.message shouldBe "Fields [month, memo] are required for type with serial name 'org.contourgara.presentation.CreateExpenseRequest', but they were missing at path: \$"
-        e.missingFields shouldBe listOf("month", "memo")
+        e.message shouldBe "Fields [date, memo] are required for type with serial name 'org.contourgara.presentation.CreateExpenseRequest', but they were missing at path: \$"
+        e.missingFields shouldBe listOf("date", "memo")
     }
 
     test("Int のフィールドに文字列が入っている場合、SerializationException が発生すること") {
@@ -37,8 +36,7 @@ class CreateExpenseRequestTest : FunSpec({
                 "amount": "a",
                 "payer":"DIRECT_DEBIT",
                 "category":"RENT",
-                "year":"2026",
-                "month": "5 月",
+                "date":"2026-01-01",
                 "memo": "test"
             }
         """.trimIndent()
@@ -53,8 +51,7 @@ class CreateExpenseRequestTest : FunSpec({
                 "amount": "a",
                 "payer":"DIRECT_DEBIT",
                 "category":"RENT",
-                "year":"2026",
-                "month": "5 月",
+                "date":"2026-01-01",
                 "memo": "test"
             }
         """.trimIndent()
@@ -67,8 +64,7 @@ class CreateExpenseRequestTest : FunSpec({
                 "amount": 1000,
                 "payer":"DIRECT_DEBIT",
                 "category":"RENT",
-                "year":"2026",
-                "month": "5",
+                "date":"2026-01-01",
                 "memo":"test",
                 "test":"test"
             }
@@ -79,14 +75,13 @@ class CreateExpenseRequestTest : FunSpec({
             Json.decodeFromString<CreateExpenseRequest>(string = json)
         }
         e.message shouldBe """
-            Encountered an unknown key 'test' at offset 134 at path: $
+            Encountered an unknown key 'test' at offset 122 at path: $
             Use 'ignoreUnknownKeys = true' in 'Json {}' builder or '@JsonIgnoreUnknownKeys' annotation to ignore unknown keys.
             JSON input: {
                 "amount": 1000,
                 "payer":"DIRECT_DEBIT",
                 "category":"RENT",
-                "year":"2026",
-                "month": "5",
+                "date":"2026-01-01",
                 "memo":"test",
                 "test":"test"
             }

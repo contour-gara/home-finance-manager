@@ -42,8 +42,8 @@ class DeleteExpenseUseCase(
                         .findById(expenseId = expenseId)
                         ?. let { expense ->
                             expensesRepository.findLatestExpenses(
-                                year = expense.year,
-                                month = expense.month,
+                                year = expense.date.year,
+                                month = expense.date.month,
                                 payer = expense.payer,
                                 category = expense.category,
                             )

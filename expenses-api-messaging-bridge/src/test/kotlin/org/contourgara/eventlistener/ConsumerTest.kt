@@ -7,6 +7,7 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.datetime.LocalDate
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -84,8 +85,7 @@ class ConsumerTest : FunSpec({
                         "amount": 1000,
                         "payer":"DIRECT_DEBIT",
                         "category":"RENT",
-                        "year":"2026",
-                        "month":"1",
+                        "date":"2026-01-01",
                         "memo":"test"
                     }
                 """.trimIndent(),
@@ -105,8 +105,7 @@ class ConsumerTest : FunSpec({
                             amount = 1000,
                             payer = "DIRECT_DEBIT",
                             category = "RENT",
-                            year = 2026,
-                            month = 1,
+                            date = LocalDate(year = 2026, month = 1, day = 1),
                             memo = "test",
                         )
                     )

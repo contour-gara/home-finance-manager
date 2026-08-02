@@ -32,6 +32,7 @@ dependencies {
     implementation(libs.ktor.client.logging)
     implementation(libs.arrow.core)
     implementation(libs.exposed.core)
+    implementation(libs.exposed.kotlin.datetime)
     implementation(libs.exposed.jdbc)
     implementation(libs.flyway.mysql)
     runtimeOnly(libs.mysql.connector.j)

@@ -99,8 +99,7 @@ class ExpensesApiApplicationTest : FunSpec({
                       "amount": 1000,
                       "payer":"DIRECT_DEBIT",
                       "category":"RENT",
-                      "year":"2026",
-                      "month":"1",
+                      "date":"2026-01-01",
                       "memo":"test"
                     }
                 """.trimIndent())

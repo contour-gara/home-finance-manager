@@ -13,8 +13,8 @@ data class Expenses(
             expenses
                 ?.also {
                     require(expenses.lastEventId < expenseEventId) { "expenseEventId must be greater than lastEventId: expenseEventId = ${expenseEventId.value}, lastEventId = ${expenses.lastEventId.value}" }
-                    require(expenses.year == expense.year) { "year must be same: expenses.year = ${expenses.year.value}, expense.year = ${expense.year.value}" }
-                    require(expenses.month == expense.month) { "month must be same: expenses.month = ${expenses.month.value}, expense.month = ${expense.month.value}" }
+                    require(expenses.year == expense.date.year) { "year must be same: expenses.year = ${expenses.year.value}, expense.year = ${expense.date.year.value}" }
+                    require(expenses.month == expense.date.month) { "month must be same: expenses.month = ${expenses.month.value}, expense.month = ${expense.date.month.value}" }
                     require(expenses.payer == expense.payer) { "payer must be same: expenses.payer = ${expenses.payer.name}, expense.payer = ${expense.payer.name}" }
                     require(expenses.category == expense.category) { "category must be same: expenses.category = ${expenses.category.name}, expense.category = ${expense.category.name}" }
                 } ?.let {
@@ -25,8 +25,8 @@ data class Expenses(
                 } ?:
                 Expenses(
                     lastEventId = expenseEventId,
-                    year = expense.year,
-                    month = expense.month,
+                    year = expense.date.year,
+                    month = expense.date.month,
                     payer = expense.payer,
                     category = expense.category,
                     amount = expense.amount,

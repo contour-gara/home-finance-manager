@@ -43,8 +43,7 @@ class GlobalExceptionHandlerTest : FunSpec({
                     {
                       "amount": 1000,
                       "payer":"DIRECT_DEBIT",
-                      "category":"RENT",
-                      "year":"2026"
+                      "category":"RENT"
                     }
                 """.trimIndent())
             }
@@ -52,7 +51,7 @@ class GlobalExceptionHandlerTest : FunSpec({
             // assert
             actual shouldHaveStatus 400
             actual.bodyAsText() shouldBe
-                    """{"type":"kotlinx.serialization.MissingFieldException","title":"Missing Field Error","errors":[{"detail":"Missing required field: month"},{"detail":"Missing required field: memo"}]}"""
+                    """{"type":"kotlinx.serialization.MissingFieldException","title":"Missing Field Error","errors":[{"detail":"Missing required field: date"},{"detail":"Missing required field: memo"}]}"""
         }
     }
 
@@ -78,8 +77,7 @@ class GlobalExceptionHandlerTest : FunSpec({
                       "amount": 1000,
                       "payer":"DIRECT_DEBIT",
                       "category":"RENT",
-                      "year":"2026",
-                      "month": "5",
+                      "date":"2026-01-01",
                       "memo":"test",
                       "test":"test
                     }
@@ -89,7 +87,7 @@ class GlobalExceptionHandlerTest : FunSpec({
             // assert
             actual shouldHaveStatus 400
             actual.bodyAsText() shouldBe
-                    """{"type":"kotlinx.serialization.json.internal.JsonDecodingException","title":"Serialization Error","errors":[{"detail":"Encountered an unknown key 'test' at offset 120 at path: $\nUse 'ignoreUnknownKeys = true' in 'Json {}' builder or '@JsonIgnoreUnknownKeys' annotation to ignore unknown keys.\nJSON input: {\n  \"amount\": 1000,\n  \"payer\":\"DIRECT_DEBIT\",\n  \"category\":\"RENT\",\n  \"year\":\"2026\",\n  \"month\": \"5\",\n  \"memo\":\"test\",\n  \"test\":\"test\n}"}]}"""
+                    """{"type":"kotlinx.serialization.json.internal.JsonDecodingException","title":"Serialization Error","errors":[{"detail":"Encountered an unknown key 'test' at offset 110 at path: $\nUse 'ignoreUnknownKeys = true' in 'Json {}' builder or '@JsonIgnoreUnknownKeys' annotation to ignore unknown keys.\nJSON input: {\n  \"amount\": 1000,\n  \"payer\":\"DIRECT_DEBIT\",\n  \"category\":\"RENT\",\n  \"date\":\"2026-01-01\",\n  \"memo\":\"test\",\n  \"test\":\"test\n}"}]}"""
         }
     }
 
@@ -120,8 +118,7 @@ class GlobalExceptionHandlerTest : FunSpec({
                       "amount": 1000,
                       "payer":"DIRECT_DEBIT",
                       "category":"RENT",
-                      "year":"2026",
-                      "month": "5",
+                      "date":"2026-01-01",
                       "memo":"test"
                     }
                 """.trimIndent())
@@ -207,8 +204,7 @@ class GlobalExceptionHandlerTest : FunSpec({
                       "amount": 1000,
                       "payer":"DIRECT_DEBIT",
                       "category":"RENT",
-                      "year":"2026",
-                      "month": "5",
+                      "date":"2026-01-01",
                       "memo":"test"
                     }
                 """.trimIndent())

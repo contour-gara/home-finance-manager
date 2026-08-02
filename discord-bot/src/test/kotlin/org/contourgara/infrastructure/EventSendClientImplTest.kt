@@ -322,7 +322,7 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
                 wireMockServer.stubFor(
                     post(urlPathEqualTo("/v3/clusters/home-finance-manager-kafka/topics/expenses-api-messaging-bridge/records"))
                         .withHeader(HttpHeaders.CONTENT_TYPE, equalTo("application/json"))
-                        .withRequestBody(equalTo("{\"headers\":[{\"name\":\"event-type\",\"value\":[99,114,101,97,116,101]}],\"value\":{\"type\":\"JSON\",\"data\":{\"messageId\":\"1478034413110427842\",\"amount\":100,\"category\":\"RENT\",\"payer\":\"DIRECT_DEBIT\",\"year\":2026,\"month\":1,\"memo\":\"test\"}}}"))
+                        .withRequestBody(equalTo("{\"headers\":[{\"name\":\"event-type\",\"value\":[99,114,101,97,116,101]}],\"value\":{\"type\":\"JSON\",\"data\":{\"messageId\":\"1478034413110427842\",\"amount\":100,\"category\":\"RENT\",\"payer\":\"DIRECT_DEBIT\",\"date\":\"2026-01-01\",\"memo\":\"test\"}}}"))
                         .willReturn(
                             aResponse()
                                 .withStatus(200)

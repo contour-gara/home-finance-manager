@@ -6,6 +6,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.datetime.LocalDate
 import org.contourgara.domain.Amount
 import org.contourgara.domain.Category
 import org.contourgara.domain.EventCategory
@@ -20,6 +21,7 @@ import org.contourgara.domain.Expenses
 import org.contourgara.domain.Memo
 import org.contourgara.domain.Month
 import org.contourgara.domain.Payer
+import org.contourgara.domain.ValidatedDate
 import org.contourgara.domain.Year
 import org.contourgara.domain.infrastructure.IdClient
 import org.contourgara.domain.infrastructure.ExpenseEventRepository
@@ -69,8 +71,7 @@ class DeleteExpenseUseCaseTest : FunSpec({
             amount = Amount(value = 1000),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            year = Year._2026,
-            month = Month.JANUARY,
+            date = ValidatedDate(value = LocalDate(year = 2026, month = 1, day = 1)),
             memo = Memo(value = "test")
         )
         val beforeExpenses = Expenses(
@@ -93,7 +94,7 @@ class DeleteExpenseUseCaseTest : FunSpec({
         every { idClient.nextExpensesEventId() } returns deleteEventId
         every { expenseEventRepository.save(expenseEvent = deleteExpenseEvent) } returns deleteExpenseEvent
         every { expenseRepository.findById(expenseId = expenseId) } returns expense
-        every { expensesRepository.findLatestExpenses(year = expense.year, month = expense.month, payer = expense.payer, category = expense.category) } returns beforeExpenses
+        every { expensesRepository.findLatestExpenses(year = expense.date.year, month = expense.date.month, payer = expense.payer, category = expense.category) } returns beforeExpenses
         every { expensesRepository.save(expenses = afterExpenses) } returns afterExpenses
 
         // execute

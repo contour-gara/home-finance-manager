@@ -32,10 +32,7 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
                 category = "FOOD",
                 payer = "gara",
                 localDate = LocalDate(year = 2026, month = 1, day = 1),
-                memo = """
-                    1/1
-                    test
-                """.trimIndent(),
+                memo = "test",
             )
             val messageId = Snowflake(value = 0)
             declareMock<EventSendClient> {
@@ -62,10 +59,7 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
                 category = "FOOD",
                 payer = "gara",
                 localDate = LocalDate(year = 2026, month = 1, day = 1),
-                memo = """
-                    1/1
-                    test
-                """.trimIndent(),
+                memo = "test",
             )
             actual shouldBe expected
         }
@@ -81,10 +75,7 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
                 category = "FOOD",
                 payer = "gara",
                 localDate = LocalDate(year = 2026, month = 4, day = 18),
-                memo = """
-                    4/18
-                    test
-                """.trimIndent(),
+                memo = "test",
             )
             val messageId = Snowflake(value = 0)
             declareMock<EventSendClient> {
@@ -111,10 +102,7 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
                 category = "FOOD",
                 payer = "gara",
                 localDate = LocalDate(year = 2026, month = 4, day = 18),
-                memo = """
-                    4/18
-                    test
-                """.trimIndent(),
+                memo = "test",
             )
             actual shouldBe expected
         }

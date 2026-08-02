@@ -3,14 +3,14 @@ package org.contourgara.domain
 import arrow.core.EitherNel
 import arrow.core.raise.either
 import arrow.core.raise.zipOrAccumulate
+import kotlinx.datetime.LocalDate
 
 data class Expense(
     val expenseId: ExpenseId,
     val amount: Amount,
     val payer: Payer,
     val category: Category,
-    val year: Year,
-    val month: Month,
+    val date: ValidatedDate,
     val memo: Memo,
 ) {
     companion object {
@@ -19,8 +19,7 @@ data class Expense(
             amount: Int,
             payer: String,
             category: String,
-            year: Int,
-            month: Int,
+            date: LocalDate,
             memo: String,
         ): EitherNel<Error, Expense> =
             either {
@@ -29,17 +28,15 @@ data class Expense(
                     action2 = { Amount.of(value = amount).bindNel() },
                     action3 = { Payer.of(value = payer).bindNel() },
                     action4 = { Category.of(value = category).bindNel() },
-                    action5 = { Year.ofValidate(value = year).bindNel() },
-                    action6 = { Month.ofValidate(value = month).bindNel() },
-                    action7 = { Memo.of(value = memo).bindNel() },
-                ) { expenseId, amount, payer, category, year, month, memo ->
+                    action5 = { ValidatedDate.of(value = date).bindNel() },
+                    action6 = { Memo.of(value = memo).bindNel() },
+                ) { expenseId, amount, payer, category, date, memo ->
                     Expense(
                         expenseId = expenseId,
                         amount = amount,
                         payer = payer,
                         category = category,
-                        year = year,
-                        month = month,
+                        date = date,
                         memo = memo,
                     )
                 }

@@ -49,8 +49,8 @@ class CreateExpenseUseCase(
 
     private fun findAndUpdateExpenses(expense: Expense, expenseEvent: ExpenseEvent): Expenses =
         expensesRepository.findLatestExpenses(
-            year = expense.year,
-            month = expense.month,
+            year = expense.date.year,
+            month = expense.date.month,
             payer = expense.payer,
             category = expense.category,
         ).let {

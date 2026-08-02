@@ -5,6 +5,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.datetime.LocalDate
 import org.contourgara.domain.Amount
 import org.contourgara.domain.Category
 import org.contourgara.domain.EventCategory
@@ -16,6 +17,7 @@ import org.contourgara.domain.Expenses
 import org.contourgara.domain.Memo
 import org.contourgara.domain.Month
 import org.contourgara.domain.Payer
+import org.contourgara.domain.ValidatedDate
 import org.contourgara.domain.Year
 import org.contourgara.domain.infrastructure.ExpenseEventRepository
 import org.contourgara.domain.infrastructure.ExpenseRepository
@@ -40,8 +42,7 @@ class CreateExpenseUseCaseTest : FunSpec({
             amount = 1000,
             payer = "DIRECT_DEBIT",
             category = "RENT",
-            year = 2026,
-            month = 1,
+            date = LocalDate(year = 2026, month = 1, day = 1),
             memo = "test",
         )
 
@@ -53,8 +54,7 @@ class CreateExpenseUseCaseTest : FunSpec({
             amount = Amount(value = 1000),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            year = Year._2026,
-            month = Month.JANUARY,
+            date = ValidatedDate(value = LocalDate(year = 2026, month = 1, day = 1)),
             memo = Memo(value = "test"),
         )
 
@@ -84,7 +84,7 @@ class CreateExpenseUseCaseTest : FunSpec({
         every { expenseEventRepository.save(expenseEvent) } returns expenseEvent
 
         val expensesRepository = mockk<ExpensesRepository>()
-        every { expensesRepository.findLatestExpenses(expense.year, expense.month, expense.payer, expense.category) } returns null
+        every { expensesRepository.findLatestExpenses(expense.date.year, expense.date.month, expense.payer, expense.category) } returns null
         every { expensesRepository.save(expenses) } returns expenses
 
         val sut = CreateExpenseUseCase(
@@ -114,8 +114,7 @@ class CreateExpenseUseCaseTest : FunSpec({
             amount = 1000,
             payer = "DIRECT_DEBIT",
             category = "RENT",
-            year = 2026,
-            month = 1,
+            date = LocalDate(year = 2026, month = 1, day = 1),
             memo = "test",
         )
 
@@ -127,8 +126,7 @@ class CreateExpenseUseCaseTest : FunSpec({
             amount = Amount(value = 1000),
             payer = Payer.DIRECT_DEBIT,
             category = Category.RENT,
-            year = Year._2026,
-            month = Month.JANUARY,
+            date = ValidatedDate(value = LocalDate(year = 2026, month = 1, day = 1)),
             memo = Memo(value = "test"),
         )
 
@@ -167,7 +165,7 @@ class CreateExpenseUseCaseTest : FunSpec({
         every { expenseEventRepository.save(expenseEvent) } returns expenseEvent
 
         val expensesRepository = mockk<ExpensesRepository>()
-        every { expensesRepository.findLatestExpenses(expense.year, expense.month, expense.payer, expense.category) } returns oldExpenses
+        every { expensesRepository.findLatestExpenses(expense.date.year, expense.date.month, expense.payer, expense.category) } returns oldExpenses
         every { expensesRepository.save(newExpenses) } returns newExpenses
 
         val sut = CreateExpenseUseCase(
