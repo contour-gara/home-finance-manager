@@ -84,7 +84,9 @@ jobs:
             ${{ matrix.module }}/build/libs/${{ matrix.module }}.jar
 
   create-git-tag:
-    needs: upload-jar-file
+    needs:
+      - setup
+      - upload-jar-file
     runs-on: ubuntu-latest
     outputs:
       tag-name: ${{ steps.create-tag.outputs.tag-name }}
@@ -95,8 +97,10 @@ jobs:
         id: create-tag
         run: |
           TAG_NAME=$(date +%Y.%m.%d-%H%M%S)
-          git tag $TAG_NAME
-          git push origin $TAG_NAME
+          for MODULE in $(echo '${{ needs.setup.outputs.modules }}' | jq -r '.[]'); do
+            git tag "$MODULE-$TAG_NAME"
+            git push origin "$MODULE-$TAG_NAME"
+          done
           echo "tag-name=$TAG_NAME" >> $GITHUB_OUTPUT
 
   build_and_push_docker_image:
