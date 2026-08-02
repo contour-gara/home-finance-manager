@@ -46,7 +46,7 @@ class CreateExpenseRequestTest : FunSpec({
             Json.decodeFromString<CreateExpenseRequest>(string = json)
         }
         e.message shouldBe """
-            Unexpected JSON token at offset 16: Unexpected symbol 'a' in numeric literal at path: $.amount
+            Unexpected JSON token at offset 17: Unexpected symbol 'a' in numeric literal at path: $.amount
             JSON input: {
                 "amount": "a",
                 "payer":"DIRECT_DEBIT",
@@ -75,7 +75,7 @@ class CreateExpenseRequestTest : FunSpec({
             Json.decodeFromString<CreateExpenseRequest>(string = json)
         }
         e.message shouldBe """
-            Encountered an unknown key 'test' at offset 122 at path: $
+            Unexpected JSON token at offset 122: Encountered an unknown key 'test' at path: $
             Use 'ignoreUnknownKeys = true' in 'Json {}' builder or '@JsonIgnoreUnknownKeys' annotation to ignore unknown keys.
             JSON input: {
                 "amount": 1000,

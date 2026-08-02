@@ -87,7 +87,7 @@ class GlobalExceptionHandlerTest : FunSpec({
             // assert
             actual shouldHaveStatus 400
             actual.bodyAsText() shouldBe
-                    """{"type":"kotlinx.serialization.json.internal.JsonDecodingException","title":"Serialization Error","errors":[{"detail":"Encountered an unknown key 'test' at offset 110 at path: $\nUse 'ignoreUnknownKeys = true' in 'Json {}' builder or '@JsonIgnoreUnknownKeys' annotation to ignore unknown keys.\nJSON input: {\n  \"amount\": 1000,\n  \"payer\":\"DIRECT_DEBIT\",\n  \"category\":\"RENT\",\n  \"date\":\"2026-01-01\",\n  \"memo\":\"test\",\n  \"test\":\"test\n}"}]}"""
+                    """{"type":"kotlinx.serialization.json.JsonDecodingException","title":"Serialization Error","errors":[{"detail":"Unexpected JSON token at offset 110: Encountered an unknown key 'test' at path: $\nUse 'ignoreUnknownKeys = true' in 'Json {}' builder or '@JsonIgnoreUnknownKeys' annotation to ignore unknown keys.\nJSON input: {\n  \"amount\": 1000,\n  \"payer\":\"DIRECT_DEBIT\",\n  \"category\":\"RENT\",\n  \"date\":\"2026-01-01\",\n  \"memo\":\"test\",\n  \"test\":\"test\n}"}]}"""
         }
     }
 
