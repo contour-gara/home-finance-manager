@@ -1,6 +1,7 @@
 package org.contourgara
 
 import org.contourgara.domain.NewExpense
+import org.contourgara.infrastructure.saveNewExpenses
 import org.contourgara.infrastructure.selectOldExpenses
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
@@ -18,5 +19,8 @@ fun main() {
             .map {
                 NewExpense.from(oldExpense = it)
             }
+//            .also {
+//                saveNewExpenses(newExpenses = it)
+//            }
     }
 }
