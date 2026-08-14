@@ -24,3 +24,6 @@ out/
 
 # mise
 mise.local.toml
+
+# actrun
+_build/actrun/

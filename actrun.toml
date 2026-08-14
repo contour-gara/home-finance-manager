@@ -1,0 +1,8 @@
+# actrun (ローカル GHA シミュレーション) 用設定
+#
+# jdx/mise-action は actrun 上ではアクション自身のチェックアウトディレクトリを
+# カレントディレクトリとして実行されるため、mise-action リポジトリに同梱された
+# 開発用 mise.lock を誤検出して `mise install --locked` が走り、必ず失敗する。
+# ローカルでは素の `mise install` に置き換える(本物の GHA には影響しない)。
+[override."jdx/mise-action"]
+run = "mise install"
