@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.ok
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.datatest.withData
 import io.kotest.engine.names.WithDataTestName
@@ -22,7 +23,7 @@ import ulid.ULID
 
 class UlidGeneratorImplTest : KoinTest, FunSpec() {
     init {
-        val wireMockServer = WireMockServer(28080)
+        val wireMockServer = WireMockServer(options().dynamicPort())
 
         extensions(
             KoinExtension(org_contourgara_DiscordBotModule) { mockk<DiscordBotConfig>() },
@@ -41,7 +42,7 @@ class UlidGeneratorImplTest : KoinTest, FunSpec() {
                 test("同じ ULID を返す") {
                     // setup
                     declareMock<DiscordBotConfig> {
-                        every { ulidSequencerBaseUrl } returns "http://localhost:28080"
+                        every { ulidSequencerBaseUrl } returns wireMockServer.baseUrl()
                     }
 
                     val sut: UlidGeneratorImpl by inject()

@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.ok
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import com.github.tomakehurst.wiremock.stubbing.Scenario
 import io.kotest.assertions.ktor.client.shouldHaveStatus
 import io.kotest.core.extensions.install
@@ -26,7 +27,7 @@ class ExpensesApiApplicationTest : FunSpec({
     val mysql = install(ext = TestContainerSpecExtension(container = MySQLContainer("mysql:8.0.43-oraclelinux9")))
         .apply { startupAttempts = 1 }
 
-    val wireMockServer = WireMockServer(28080)
+    val wireMockServer = WireMockServer(options().dynamicPort())
 
     extensions(
         WireMockListener(wireMockServer, ListenerMode.PER_SPEC),
@@ -62,7 +63,7 @@ class ExpensesApiApplicationTest : FunSpec({
                     "application.datasource.url" to mysql.jdbcUrl,
                     "application.datasource.username" to mysql.username,
                     "application.datasource.password" to mysql.password,
-                    "application.ulid-sequencer.base-url" to "http://localhost:28080",
+                    "application.ulid-sequencer.base-url" to wireMockServer.baseUrl(),
                 )
             }
 
@@ -87,7 +88,7 @@ class ExpensesApiApplicationTest : FunSpec({
                     "application.datasource.url" to mysql.jdbcUrl,
                     "application.datasource.username" to mysql.username,
                     "application.datasource.password" to mysql.password,
-                    "application.ulid-sequencer.base-url" to "http://localhost:28080",
+                    "application.ulid-sequencer.base-url" to wireMockServer.baseUrl(),
                 )
             }
 

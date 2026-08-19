@@ -6,6 +6,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.created
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.wiremock.ListenerMode
@@ -22,7 +23,7 @@ import wiremock.com.google.common.net.HttpHeaders
 
 class KafkaInitTest : KoinTest, FunSpec() {
     init {
-        val wireMockServer = WireMockServer(28080)
+        val wireMockServer = WireMockServer(options().dynamicPort())
 
         extensions(
             KoinExtension(org_contourgara_DiscordBotModule) { mockkClass(it) },
@@ -32,7 +33,7 @@ class KafkaInitTest : KoinTest, FunSpec() {
         test("トピックが存在しない場合、トピックを作成する") {
             // setup
             declareMock<DiscordBotConfig> {
-                every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                every { kafkaRestProxyBaseUrl } returns wireMockServer.baseUrl()
                 every { kafkaClusterId } returns "home-finance-manager-kafka"
                 every { registerBillTopicName } returns "register-bill"
                 every { deleteBillTopicName } returns "delete-bill"
@@ -91,7 +92,7 @@ class KafkaInitTest : KoinTest, FunSpec() {
         test("トピックが存在する場合、400 が返るが例外を投げない") {
             // setup
             declareMock<DiscordBotConfig> {
-                every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                every { kafkaRestProxyBaseUrl } returns wireMockServer.baseUrl()
                 every { kafkaClusterId } returns "home-finance-manager-kafka"
                 every { registerBillTopicName } returns "register-bill"
                 every { deleteBillTopicName } returns "delete-bill"

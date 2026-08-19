@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import dev.kord.common.entity.Snowflake
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.assertions.throwables.shouldThrowExactly
@@ -30,7 +31,7 @@ import wiremock.com.google.common.net.HttpHeaders
 
 class EventSendClientImplTest : KoinTest, FunSpec() {
     init {
-        val wireMockServer = WireMockServer(28080)
+        val wireMockServer = WireMockServer(options().dynamicPort())
 
         extensions(
             KoinExtension(org_contourgara_DiscordBotModule) { mockkClass(it) },
@@ -40,7 +41,7 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
         test("登録トピックにメッセージを送信できる") {
             // setup
             declareMock<DiscordBotConfig> {
-                every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                every { kafkaRestProxyBaseUrl } returns wireMockServer.baseUrl()
                 every { kafkaClusterId } returns "home-finance-manager-kafka"
                 every { registerBillTopicName } returns "register-bill"
             }
@@ -72,7 +73,7 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
         test("登録トピックにメッセージを送信でリクエストに失敗した場合、例外を投げる") {
             // setup
             declareMock<DiscordBotConfig> {
-                every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                every { kafkaRestProxyBaseUrl } returns wireMockServer.baseUrl()
                 every { kafkaClusterId } returns "home-finance-manager-kafka"
                 every { registerBillTopicName } returns "register-bill"
             }
@@ -103,7 +104,7 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
         test("登録トピックにメッセージを送信でリクエストに成功したが、200 以外の error_code が返却された場合、例外を投げる") {
             // setup
             declareMock<DiscordBotConfig> {
-                every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                every { kafkaRestProxyBaseUrl } returns wireMockServer.baseUrl()
                 every { kafkaClusterId } returns "home-finance-manager-kafka"
                 every { registerBillTopicName } returns "register-bill"
             }
@@ -135,7 +136,7 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
         test("削除トピックにメッセージを送信できる") {
             // setup
             declareMock<DiscordBotConfig> {
-                every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                every { kafkaRestProxyBaseUrl } returns wireMockServer.baseUrl()
                 every { kafkaClusterId } returns "home-finance-manager-kafka"
                 every { deleteBillTopicName } returns "delete-bill"
             }
@@ -167,7 +168,7 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
         test("削除トピックにメッセージを送信でリクエストに失敗した場合、例外を投げる") {
             // setup
             declareMock<DiscordBotConfig> {
-                every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                every { kafkaRestProxyBaseUrl } returns wireMockServer.baseUrl()
                 every { kafkaClusterId } returns "home-finance-manager-kafka"
                 every { deleteBillTopicName } returns "delete-bill"
             }
@@ -198,7 +199,7 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
         test("削除トピックにメッセージを送信でリクエストに成功したが、200 以外の error_code が返却された場合、例外を投げる") {
             // setup
             declareMock<DiscordBotConfig> {
-                every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                every { kafkaRestProxyBaseUrl } returns wireMockServer.baseUrl()
                 every { kafkaClusterId } returns "home-finance-manager-kafka"
                 every { deleteBillTopicName } returns "delete-bill"
             }
@@ -230,7 +231,7 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
         test("残高参照トピックにメッセージを送信できる") {
             // setup
             declareMock<DiscordBotConfig> {
-                every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                every { kafkaRestProxyBaseUrl } returns wireMockServer.baseUrl()
                 every { kafkaClusterId } returns "home-finance-manager-kafka"
                 every { showBalanceTopicName } returns "show-balance"
             }
@@ -258,7 +259,7 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
         test("残高参照トピックにメッセージを送信でリクエストに失敗した場合、例外を投げる") {
             // setup
             declareMock<DiscordBotConfig> {
-                every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                every { kafkaRestProxyBaseUrl } returns wireMockServer.baseUrl()
                 every { kafkaClusterId } returns "home-finance-manager-kafka"
                 every { showBalanceTopicName } returns "show-balance"
             }
@@ -285,7 +286,7 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
         test("残高参照トピックにメッセージを送信でリクエストに成功したが、200 以外の error_code が返却された場合、例外を投げる") {
             // setup
             declareMock<DiscordBotConfig> {
-                every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                every { kafkaRestProxyBaseUrl } returns wireMockServer.baseUrl()
                 every { kafkaClusterId } returns "home-finance-manager-kafka"
                 every { showBalanceTopicName } returns "show-balance"
             }
@@ -314,7 +315,7 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
             test("200 が返った場合、例外を投げない") {
                 // setup
                 declareMock<DiscordBotConfig> {
-                    every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                    every { kafkaRestProxyBaseUrl } returns wireMockServer.baseUrl()
                     every { kafkaClusterId } returns "home-finance-manager-kafka"
                     every { expensesApiMessagingBridgeTopicName } returns "expenses-api-messaging-bridge"
                 }
@@ -351,7 +352,7 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
             test("200 以外が返った場合、例外を投げる") {
                 // setup
                 declareMock<DiscordBotConfig> {
-                    every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                    every { kafkaRestProxyBaseUrl } returns wireMockServer.baseUrl()
                     every { kafkaClusterId } returns "home-finance-manager-kafka"
                     every { expensesApiMessagingBridgeTopicName } returns "expenses-api-messaging-bridge"
                 }
@@ -387,7 +388,7 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
             test("200 が返ったが 200 以外の error_code が返却された場合、例外を投げる") {
                 // setup
                 declareMock<DiscordBotConfig> {
-                    every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                    every { kafkaRestProxyBaseUrl } returns wireMockServer.baseUrl()
                     every { kafkaClusterId } returns "home-finance-manager-kafka"
                     every { expensesApiMessagingBridgeTopicName } returns "expenses-api-messaging-bridge"
                 }
@@ -425,7 +426,7 @@ class EventSendClientImplTest : KoinTest, FunSpec() {
         test("支出トピックへの削除イベント送信で 200 が返った場合、例外を投げない") {
             // setup
             declareMock<DiscordBotConfig> {
-                every { kafkaRestProxyBaseUrl } returns "http://localhost:28080"
+                every { kafkaRestProxyBaseUrl } returns wireMockServer.baseUrl()
                 every { kafkaClusterId } returns "home-finance-manager-kafka"
                 every { expensesApiMessagingBridgeTopicName } returns "expenses-api-messaging-bridge"
             }

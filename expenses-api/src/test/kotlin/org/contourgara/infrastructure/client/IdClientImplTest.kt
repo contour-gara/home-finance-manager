@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.ok
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.datatest.withData
 import io.kotest.engine.names.WithDataTestName
@@ -18,7 +19,7 @@ import org.contourgara.domain.ExpenseId
 import ulid.ULID
 
 class IdClientImplTest : FunSpec({
-    val wireMockServer = WireMockServer(28080)
+    val wireMockServer = WireMockServer(options().dynamicPort())
 
     extensions(
         WireMockListener(wireMockServer, ListenerMode.PER_SPEC),
@@ -36,7 +37,7 @@ class IdClientImplTest : FunSpec({
             test("同じ ULID を返す") {
                 // setup
                 val appConfig = mockk<AppConfig>()
-                every { appConfig.ulidSequencerBaseUrl } returns "http://localhost:28080"
+                every { appConfig.ulidSequencerBaseUrl } returns wireMockServer.baseUrl()
 
                 val sut = IdClientImpl(appConfig = appConfig)
 
@@ -67,7 +68,7 @@ class IdClientImplTest : FunSpec({
             test("同じ ULID を返す") {
                 // setup
                 val appConfig = mockk<AppConfig>()
-                every { appConfig.ulidSequencerBaseUrl } returns "http://localhost:28080"
+                every { appConfig.ulidSequencerBaseUrl } returns wireMockServer.baseUrl()
 
                 val sut = IdClientImpl(appConfig = appConfig)
 

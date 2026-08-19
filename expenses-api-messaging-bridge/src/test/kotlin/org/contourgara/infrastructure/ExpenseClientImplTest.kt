@@ -6,6 +6,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.delete
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.wiremock.ListenerMode
@@ -20,7 +21,7 @@ import ulid.ULID
 import wiremock.com.google.common.net.HttpHeaders
 
 class ExpenseClientImplTest : FunSpec({
-    val wireMockServer = WireMockServer(28080)
+    val wireMockServer = WireMockServer(options().dynamicPort())
     extensions(WireMockListener(wireMockServer, ListenerMode.PER_SPEC))
 
     test("支出作成エンドポイントにリクエストを行い、201 が返る場合、支出と支出イベント ID を返す") {
