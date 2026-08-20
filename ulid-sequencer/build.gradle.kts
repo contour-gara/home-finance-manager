@@ -55,6 +55,8 @@ tasks.test {
     finalizedBy(tasks.jacocoTestReport)
     jvmArgs("--add-opens=java.base/java.util=ALL-UNNAMED")
 
+    maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
+
     testLogging {
         events = setOf(
             TestLogEvent.FAILED,

@@ -54,6 +54,7 @@ application {
 
 tasks.test {
     useJUnitPlatform()
+    maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
     testLogging {
         events = setOf(
             TestLogEvent.FAILED,

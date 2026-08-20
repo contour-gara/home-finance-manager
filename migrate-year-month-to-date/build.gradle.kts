@@ -37,6 +37,8 @@ tasks.test {
     enableAssertions = false
     finalizedBy(tasks.koverHtmlReport)
 
+    maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
+
     testLogging {
         events = setOf(
             TestLogEvent.FAILED,
