@@ -2,7 +2,6 @@ package org.contourgara.application
 
 import dev.kord.common.entity.Snowflake
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.number
 import org.contourgara.domain.EventSendClient
 import org.contourgara.domain.Expense
 import org.contourgara.domain.SystemClock
