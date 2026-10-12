@@ -193,19 +193,28 @@ object ExpenseFeature : KoinComponent {
             }
 
     suspend fun ButtonInteractionCreateEvent.submitCreateExpense() =
-        interaction
-            .message
-            .embeds
-            .first()
-            .data
-            .let { CreateExpenseRequest.fromEmbedData(embedData = it) }
-            .toParam(messageId = interaction.message.id)
-            .let { createExpenseUseCase.execute(createExpenseParam = it) }
-            .let { CreateExpenseResponse.fromDto(createExpenseDto = it) }
-            .let {
+        runCatching {
+            interaction
+                .message
+                .embeds
+                .first()
+                .data
+                .let { CreateExpenseRequest.fromEmbedData(embedData = it) }
+                .toParam(messageId = interaction.message.id)
+                .let { createExpenseUseCase.execute(createExpenseParam = it) }
+                .let { CreateExpenseResponse.fromDto(createExpenseDto = it) }
+        }
+            .onSuccess {
                 interaction
                     .deferPublicMessageUpdate()
                     .edit(builder = it.toInteractionResponseModifyBuilder())
+            }
+            .onFailure {
+                interaction
+                    .deferPublicMessageUpdate()
+                    .edit {
+                        content = it.message
+                    }
             }
 
     suspend fun ButtonInteractionCreateEvent.submitDeleteExpense() =
@@ -228,33 +237,28 @@ data class CreateExpenseRequest(
     val amount: Int,
     val payer: String?,
     val category: String?,
-    val localDate: LocalDate?,
+    val year: Int?,
+    val month: Int?,
+    val day: Int?,
     val memo: String?,
 ) {
     companion object {
+        private val DATE_FIELD_REGEX = Regex(pattern = """^(?:(\d+) 年 )?(?:(\d+) 月 )?(\d+) 日$""")
+
         fun from(interactionCommand: InteractionCommand): CreateExpenseRequest =
-            listOf(
-                interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_YEAR],
-                interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_MONTH],
-                interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_DAY],
-            )
-                .also { values ->
-                    require(values.all { it == null } || values.all { it != null }) { "日付を指定する場合は全て入力する必要がある。" }
+            listOf(CREATE_COMMAND_ARGUMENT_NAME_YEAR, CREATE_COMMAND_ARGUMENT_NAME_MONTH, CREATE_COMMAND_ARGUMENT_NAME_DAY)
+                .map { interactionCommand.integers[it]?.toInt() }
+                .also { (year, month, day) ->
+                    require((year == null || month != null) && (month == null || day != null)) { "日付は日のみ、月日、年月日のいずれかで入力する必要がある。" }
                 }
-                .let {
+                .let { (year, month, day) ->
                     CreateExpenseRequest(
                         amount = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_AMOUNT]!!.toInt(),
                         payer = null,
                         category = null,
-                        localDate = it
-                            .first()
-                            ?.let {
-                                LocalDate(
-                                    year = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_YEAR]!!.toInt(),
-                                    month = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_MONTH]!!.toInt(),
-                                    day = interactionCommand.integers[CREATE_COMMAND_ARGUMENT_NAME_DAY]!!.toInt(),
-                                )
-                            },
+                        year = year,
+                        month = month,
+                        day = day,
                         memo = null,
                     )
                 }
@@ -264,15 +268,26 @@ data class CreateExpenseRequest(
                 .fields
                 .orEmpty()
                 .associate { it.name to it.value }
-                .let {
-                    CreateExpenseRequest(
-                        amount = it[ExpenseFeature.EMBED_FIELD_KEY_AMOUNT]!!.parseAmount().toInt(),
-                        payer = it[ExpenseFeature.EMBED_FIELD_KEY_PAYER],
-                        category = it[ExpenseFeature.EMBED_FIELD_KEY_CATEGORY],
-                        localDate = it[ExpenseFeature.EMBED_FIELD_KEY_LOCAL_DATE]?.let { LocalDate.parse(input = it) },
-                        memo = it[ExpenseFeature.EMBED_FIELD_KEY_MEMO],
-                    )
+                .let { fields ->
+                    parseDate(dateField = fields[ExpenseFeature.EMBED_FIELD_KEY_LOCAL_DATE])
+                        .let { (year, month, day) ->
+                            CreateExpenseRequest(
+                                amount = fields[ExpenseFeature.EMBED_FIELD_KEY_AMOUNT]!!.parseAmount().toInt(),
+                                payer = fields[ExpenseFeature.EMBED_FIELD_KEY_PAYER],
+                                category = fields[ExpenseFeature.EMBED_FIELD_KEY_CATEGORY],
+                                year = year,
+                                month = month,
+                                day = day,
+                                memo = fields[ExpenseFeature.EMBED_FIELD_KEY_MEMO],
+                            )
+                        }
                 }
+
+        private fun parseDate(dateField: String?): Triple<Int?, Int?, Int?> =
+            dateField
+                ?.let { requireNotNull(DATE_FIELD_REGEX.matchEntire(input = it)) { "日付の形式が不正: $it" }.destructured }
+                ?.let { (year, month, day) -> Triple(first = year.toIntOrNull(), second = month.toIntOrNull(), third = day.toIntOrNull()) }
+                ?: Triple(first = null, second = null, third = null)
     }
 
     fun copyMemo(memo: String): CreateExpenseRequest = copy(memo = memo)
@@ -286,15 +301,25 @@ data class CreateExpenseRequest(
         actionRow(builder = toSubmitActionRowBuilder())
     }
 
-    private fun toEmbedBuilder(): EmbedBuilder.() -> Unit = {
+    fun toEmbedBuilder(): EmbedBuilder.() -> Unit = {
         title = "入力情報だっピ"
         color = Color(red = 255, green = 255, blue = 50)
         field(name = ExpenseFeature.EMBED_FIELD_KEY_AMOUNT, inline = true, value = { amount.formatAmount() })
         payer?.let { field(name = ExpenseFeature.EMBED_FIELD_KEY_PAYER, inline = true, value = { it }) }
         category?.let { field(name = ExpenseFeature.EMBED_FIELD_KEY_CATEGORY, inline = true, value = { it }) }
-        localDate?.let { field(name = ExpenseFeature.EMBED_FIELD_KEY_LOCAL_DATE, inline = true, value = { it.toString() }) }
+        formatDate()?.let { field(name = ExpenseFeature.EMBED_FIELD_KEY_LOCAL_DATE, inline = true, value = { it }) }
         memo?.let { field(name = ExpenseFeature.EMBED_FIELD_KEY_MEMO, inline = true, value = { it }) }
     }
+
+    private fun formatDate(): String? =
+        day?.let {
+            listOfNotNull(
+                year?.let { "$it 年" },
+                month?.let { "$it 月" },
+                "$day 日",
+            )
+                .joinToString(separator = " ")
+        }
 
     private fun toPayerActionRowBuilder(): ActionRowBuilder.() -> Unit = {
         stringSelect(customId = ExpenseFeature.SELECT_PAYER_ID) {
@@ -348,7 +373,9 @@ data class CreateExpenseRequest(
             amount = amount,
             payer = payer!!,
             category = category!!,
-            localDate = localDate,
+            year = year,
+            month = month,
+            day = day,
             memo = memo!!,
         )
 }

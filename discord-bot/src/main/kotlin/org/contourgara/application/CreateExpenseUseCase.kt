@@ -6,6 +6,7 @@ import kotlinx.datetime.number
 import org.contourgara.domain.EventSendClient
 import org.contourgara.domain.Expense
 import org.contourgara.domain.SystemClock
+import org.contourgara.domain.WrittenDate
 import org.koin.core.annotation.Single
 
 @Single
@@ -14,7 +15,7 @@ class CreateExpenseUseCase(
     private val systemClock: SystemClock,
 ) {
     suspend fun execute(createExpenseParam: CreateExpenseParam): CreateExpenseDto =
-        createExpenseParam.toModel(currentLocalDate = { systemClock.today() })
+        createExpenseParam.toModel(submittedOn = systemClock.today())
             .also { (messageId, expense) ->
                 eventSendClient.createExpense(messageId = messageId, expense = expense)
             }
@@ -28,17 +29,19 @@ data class CreateExpenseParam(
     val amount: Int,
     val category: String,
     val payer: String,
-    val localDate: LocalDate?,
+    val year: Int?,
+    val month: Int?,
+    val day: Int?,
     val memo: String,
 ) {
-    fun toModel(currentLocalDate: () -> LocalDate): Pair<Snowflake, Expense> =
+    fun toModel(submittedOn: LocalDate): Pair<Snowflake, Expense> =
         Pair(
             first = messageId,
             second = Expense(
                 amount = amount,
                 category = category,
                 payer = payer,
-                localDate = localDate ?: currentLocalDate(),
+                localDate = WrittenDate.of(year = year, month = month, day = day).complete(submittedOn = submittedOn),
                 memo = memo,
             )
         )

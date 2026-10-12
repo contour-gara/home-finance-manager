@@ -5,6 +5,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.koin.KoinExtension
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockkClass
 import kotlinx.datetime.LocalDate
@@ -27,6 +28,10 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
 
         test("支出を登録できる") {
             // setup
+            declareMock<SystemClock> {
+                every { today() } returns LocalDate(year = 2026, month = 4, day = 18)
+            }
+
             val expense = Expense(
                 amount = 1000,
                 category = "FOOD",
@@ -35,7 +40,7 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
                 memo = "test",
             )
             val messageId = Snowflake(value = 0)
-            declareMock<EventSendClient> {
+            val eventSendClient = declareMock<EventSendClient> {
                 coEvery { createExpense(messageId = messageId, expense = expense) } returns Unit
             }
 
@@ -44,7 +49,9 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
                 amount = 1000,
                 category = "FOOD",
                 payer = "gara",
-                localDate = LocalDate(year = 2026, month = 1, day = 1),
+                year = 2026,
+                month = 1,
+                day = 1,
                 memo = "test",
             )
 
@@ -62,9 +69,10 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
                 memo = "test",
             )
             actual shouldBe expected
+            coVerify(exactly = 1) { eventSendClient.createExpense(messageId = messageId, expense = expense) }
         }
 
-        test("日付が指定されていない場合、現在の日時で登録する") {
+        test("日付が未入力の場合、提出日で登録する") {
             // setup
             declareMock<SystemClock> {
                 every { today() } returns LocalDate(year = 2026, month = 4, day = 18)
@@ -78,7 +86,7 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
                 memo = "test",
             )
             val messageId = Snowflake(value = 0)
-            declareMock<EventSendClient> {
+            val eventSendClient = declareMock<EventSendClient> {
                 coEvery { createExpense(messageId = messageId, expense = expense) } returns Unit
             }
 
@@ -87,7 +95,9 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
                 amount = 1000,
                 category = "FOOD",
                 payer = "gara",
-                localDate = null,
+                year = null,
+                month = null,
+                day = null,
                 memo = "test",
             )
 
@@ -105,6 +115,99 @@ class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
                 memo = "test",
             )
             actual shouldBe expected
+            coVerify(exactly = 1) { eventSendClient.createExpense(messageId = messageId, expense = expense) }
+        }
+
+        test("日のみ入力の場合、提出日の年月と入力した日で登録する") {
+            // setup
+            declareMock<SystemClock> {
+                every { today() } returns LocalDate(year = 2026, month = 4, day = 18)
+            }
+
+            val expense = Expense(
+                amount = 1000,
+                category = "FOOD",
+                payer = "gara",
+                localDate = LocalDate(year = 2026, month = 4, day = 11),
+                memo = "test",
+            )
+            val messageId = Snowflake(value = 0)
+            val eventSendClient = declareMock<EventSendClient> {
+                coEvery { createExpense(messageId = messageId, expense = expense) } returns Unit
+            }
+
+            val createExpenseParam = CreateExpenseParam(
+                messageId = Snowflake(value = 0),
+                amount = 1000,
+                category = "FOOD",
+                payer = "gara",
+                year = null,
+                month = null,
+                day = 11,
+                memo = "test",
+            )
+
+            val sut: CreateExpenseUseCase by inject()
+
+            // execute
+            val actual = sut.execute(createExpenseParam)
+
+            // assert
+            val expected = CreateExpenseDto(
+                amount = 1000,
+                category = "FOOD",
+                payer = "gara",
+                localDate = LocalDate(year = 2026, month = 4, day = 11),
+                memo = "test",
+            )
+            actual shouldBe expected
+            coVerify(exactly = 1) { eventSendClient.createExpense(messageId = messageId, expense = expense) }
+        }
+
+        test("月日のみ入力の場合、提出日の年と入力した月日で登録する") {
+            // setup
+            declareMock<SystemClock> {
+                every { today() } returns LocalDate(year = 2026, month = 4, day = 18)
+            }
+
+            val expense = Expense(
+                amount = 1000,
+                category = "FOOD",
+                payer = "gara",
+                localDate = LocalDate(year = 2026, month = 8, day = 3),
+                memo = "test",
+            )
+            val messageId = Snowflake(value = 0)
+            val eventSendClient = declareMock<EventSendClient> {
+                coEvery { createExpense(messageId = messageId, expense = expense) } returns Unit
+            }
+
+            val createExpenseParam = CreateExpenseParam(
+                messageId = Snowflake(value = 0),
+                amount = 1000,
+                category = "FOOD",
+                payer = "gara",
+                year = null,
+                month = 8,
+                day = 3,
+                memo = "test",
+            )
+
+            val sut: CreateExpenseUseCase by inject()
+
+            // execute
+            val actual = sut.execute(createExpenseParam)
+
+            // assert
+            val expected = CreateExpenseDto(
+                amount = 1000,
+                category = "FOOD",
+                payer = "gara",
+                localDate = LocalDate(year = 2026, month = 8, day = 3),
+                memo = "test",
+            )
+            actual shouldBe expected
+            coVerify(exactly = 1) { eventSendClient.createExpense(messageId = messageId, expense = expense) }
         }
     }
 }
