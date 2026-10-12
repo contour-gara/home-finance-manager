@@ -307,19 +307,9 @@ data class CreateExpenseRequest(
         field(name = ExpenseFeature.EMBED_FIELD_KEY_AMOUNT, inline = true, value = { amount.formatAmount() })
         payer?.let { field(name = ExpenseFeature.EMBED_FIELD_KEY_PAYER, inline = true, value = { it }) }
         category?.let { field(name = ExpenseFeature.EMBED_FIELD_KEY_CATEGORY, inline = true, value = { it }) }
-        formatDate()?.let { field(name = ExpenseFeature.EMBED_FIELD_KEY_LOCAL_DATE, inline = true, value = { it }) }
+        day?.let { field(name = ExpenseFeature.EMBED_FIELD_KEY_LOCAL_DATE, inline = true, value = { formatDate(year = year, month = month, day = it) }) }
         memo?.let { field(name = ExpenseFeature.EMBED_FIELD_KEY_MEMO, inline = true, value = { it }) }
     }
-
-    private fun formatDate(): String? =
-        day?.let {
-            listOfNotNull(
-                year?.let { "$it 年" },
-                month?.let { "$it 月" },
-                "$day 日",
-            )
-                .joinToString(separator = " ")
-        }
 
     private fun toPayerActionRowBuilder(): ActionRowBuilder.() -> Unit = {
         stringSelect(customId = ExpenseFeature.SELECT_PAYER_ID) {
@@ -400,15 +390,7 @@ data class CreateExpenseResponse(
 
     fun toInteractionResponseModifyBuilder(): InteractionResponseModifyBuilder.() -> Unit = {
         content = "支出が作成されたっピ"
-        embed {
-            title = "入力情報だっピ"
-            color = Color(red = 0, green = 255, blue = 0)
-            field(name = ExpenseFeature.EMBED_FIELD_KEY_AMOUNT, inline = true, value = { amount.formatAmount() })
-            field(name = ExpenseFeature.EMBED_FIELD_KEY_PAYER, inline = true, value = { payer })
-            field(name = ExpenseFeature.EMBED_FIELD_KEY_CATEGORY, inline = true, value = { category })
-            field(name = ExpenseFeature.EMBED_FIELD_KEY_LOCAL_DATE, inline = true, value = { localDate.toString() })
-            field(name = ExpenseFeature.EMBED_FIELD_KEY_MEMO, inline = true, value = { memo })
-        }
+        embed(builder = toEmbedBuilder())
         actionRow {
             stringSelect(customId = ExpenseFeature.SELECT_PAYER_ID) {
                 placeholder = ExpenseFeature.SELECT_PAYER_PLACEHOLDER
@@ -451,6 +433,16 @@ data class CreateExpenseResponse(
                 disabled = true
             }
         }
+    }
+
+    fun toEmbedBuilder(): EmbedBuilder.() -> Unit = {
+        title = "入力情報だっピ"
+        color = Color(red = 0, green = 255, blue = 0)
+        field(name = ExpenseFeature.EMBED_FIELD_KEY_AMOUNT, inline = true, value = { amount.formatAmount() })
+        field(name = ExpenseFeature.EMBED_FIELD_KEY_PAYER, inline = true, value = { payer })
+        field(name = ExpenseFeature.EMBED_FIELD_KEY_CATEGORY, inline = true, value = { category })
+        field(name = ExpenseFeature.EMBED_FIELD_KEY_LOCAL_DATE, inline = true, value = { localDate.formatDate() })
+        field(name = ExpenseFeature.EMBED_FIELD_KEY_MEMO, inline = true, value = { memo })
     }
 }
 
