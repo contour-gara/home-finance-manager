@@ -43,7 +43,7 @@ object ExpenseFeature : KoinComponent {
     const val CREATE_COMMAND_ARGUMENT_NAME_MONTH = "month"
     const val CREATE_COMMAND_ARGUMENT_DESCRIPTION_MONTH = "月を入力してっピ"
     const val CREATE_COMMAND_ARGUMENT_NAME_DAY = "day"
-    const val CREATE_COMMAND_ARGUMENT_DESCRIPTION_DAY = "月を入力してっピ"
+    const val CREATE_COMMAND_ARGUMENT_DESCRIPTION_DAY = "日を入力してっピ"
     const val DELETE_COMMAND_NAME = "delete-expense"
     const val DELETE_COMMAND_DESCRIPTION = "支出を削除するっピ"
     const val DELETE_COMMAND_ARGUMENT_NAME_MESSAGE_ID = "message-id"
