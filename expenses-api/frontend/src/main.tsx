@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { BrowserRouter, Navigate, Routes, Route } from 'react-router'
-import { NuqsAdapter } from 'nuqs/adapters/react-router/v7'
+import { NuqsAdapter } from 'nuqs/adapters/react-router/v8'
 import { MonthlyExpensePage } from './page/MonthlyExpensePage'
 import { MonthlyExpenseChartPage } from './page/MonthlyExpenseChartPage'
 

@@ -1,7 +1,7 @@
 import ky from "ky";
 
 const query = ky.create({
-  prefixUrl: '/expenses',
+  baseUrl: '/expenses/',
   timeout: 10000,
 });
 
