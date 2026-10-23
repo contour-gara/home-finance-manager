@@ -53,10 +53,36 @@ application {
     mainClass = "io.ktor.server.netty.EngineMain"
 }
 
-tasks.register("buildFrontend", Exec::class.java) {
-    workingDir = File("frontend")
-    executable = "sh"
-    args("-c", "npm install && npm run build")
+val frontendDir = layout.projectDirectory.dir("frontend")
+
+val installFrontend = tasks.register<Exec>("installFrontend") {
+    description = "frontend の依存ライブラリを npm ci でインストールする"
+    workingDir = frontendDir.asFile
+    commandLine("npm", "ci")
+    inputs.files(
+        frontendDir.file("package.json"),
+        frontendDir.file("package-lock.json"),
+        frontendDir.file(".npmrc"),
+    )
+    outputs.file(frontendDir.file("node_modules/.package-lock.json"))
+}
+
+tasks.register<Exec>("buildFrontend") {
+    description = "frontend をビルドして src/main/resources/frontend に出力する"
+    workingDir = frontendDir.asFile
+    commandLine("npm", "run", "build")
+    inputs.files(installFrontend)
+    inputs.dir(frontendDir.dir("src"))
+    inputs.dir(frontendDir.dir("public"))
+    inputs.files(
+        frontendDir.file("index.html"),
+        frontendDir.file("package.json"),
+        frontendDir.file("tsconfig.json"),
+        frontendDir.file("tsconfig.app.json"),
+        frontendDir.file("tsconfig.node.json"),
+        frontendDir.file("vite.config.ts"),
+    )
+    outputs.dir(layout.projectDirectory.dir("src/main/resources/frontend"))
 }
 
 tasks.processResources {
