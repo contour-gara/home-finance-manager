@@ -1,4 +1,4 @@
-FROM amazoncorretto:21.0.10-al2023 AS build
+FROM amazoncorretto:25.0.4-al2023 AS build
 WORKDIR /jlink
 RUN jlink \
     --verbose \
@@ -6,7 +6,7 @@ RUN jlink \
     --strip-java-debug-attributes \
     --no-header-files \
     --no-man-pages \
-    --add-modules java.base,java.compiler,java.desktop,java.instrument,java.naming,java.net.http,java.prefs,java.rmi,java.scripting,java.security.jgss,java.security.sasl,java.sql,jdk.jfr,jdk.management,jdk.unsupported,jdk.crypto.ec \
+    --add-modules java.base,java.compiler,java.desktop,java.instrument,java.naming,java.net.http,java.prefs,java.rmi,java.scripting,java.security.jgss,java.security.sasl,java.sql,jdk.jfr,jdk.management,jdk.unsupported \
     --output jre-min
 
 FROM gcr.io/distroless/java-base-debian13:nonroot
