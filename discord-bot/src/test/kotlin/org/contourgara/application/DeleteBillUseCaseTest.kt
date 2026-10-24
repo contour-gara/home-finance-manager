@@ -5,9 +5,10 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.koin.KoinExtension
 import io.mockk.coVerify
 import io.mockk.mockkClass
+import org.contourgara.DiscordBotModule
 import org.contourgara.domain.BillId
 import org.contourgara.domain.EventSendClient
-import org.koin.ksp.generated.org_contourgara_DiscordBotModule
+import org.contourgara.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.koin.test.mock.declareMock
@@ -17,7 +18,7 @@ import kotlin.getValue
 class DeleteBillUseCaseTest :  KoinTest, FunSpec() {
     init {
         extensions(
-            KoinExtension(org_contourgara_DiscordBotModule) {
+            KoinExtension(DiscordBotModule().module()) {
                 mockkClass(it, relaxed = true)
             }
         )

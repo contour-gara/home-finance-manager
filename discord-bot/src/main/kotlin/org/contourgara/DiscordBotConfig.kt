@@ -26,21 +26,20 @@ data class DiscordBotConfig(
     val showBalanceTopicName: String,
     @Property("EXPENSES_API_MESSAGING_BRIDGE_TOPIC_NAME")
     val expensesApiMessagingBridgeTopicName: String,
-) {
-    companion object {
-        @PropertyValue("CHANNEL_ID")
-        const val CHANNEL_ID = "1402331708459581591"
-        @PropertyValue("KAFKA_CLUSTER_ID")
-        const val KAFKA_CLUSTER_ID = "home-finance-manager-kafka"
-        @PropertyValue("KAFKA_TOPIC_NAME")
-        const val KAFKA_TOPIC_NAME = "home-finance-manager-topic"
-        @PropertyValue("REGISTER_BILL_TOPIC_NAME")
-        const val REGISTER_BILL_TOPIC_NAME = "register-bill"
-        @PropertyValue("DELETE_BILL_TOPIC_NAME")
-        const val DELETE_BILL_TOPIC_NAME = "delete-bill"
-        @PropertyValue("SHOW_BALANCE_TOPIC_NAME")
-        const val SHOW_BALANCE_TOPIC_NAME = "show-balance"
-        @PropertyValue("EXPENSES_API_MESSAGING_BRIDGE_TOPIC_NAME")
-        const val EXPENSES_API_MESSAGING_BRIDGE_TOPIC_NAME = "expenses-api-messaging-bridge"
-    }
-}
+)
+
+// TODO: https://github.com/InsertKoinIO/koin-compiler-plugin/issues/59 が修正されたらコンパニオンオブジェクトに戻す
+@PropertyValue("CHANNEL_ID")
+const val CHANNEL_ID = "1402331708459581591"
+@PropertyValue("KAFKA_CLUSTER_ID")
+const val KAFKA_CLUSTER_ID = "home-finance-manager-kafka"
+@PropertyValue("KAFKA_TOPIC_NAME")
+const val KAFKA_TOPIC_NAME = "home-finance-manager-topic"
+@PropertyValue("REGISTER_BILL_TOPIC_NAME")
+const val REGISTER_BILL_TOPIC_NAME = "register-bill"
+@PropertyValue("DELETE_BILL_TOPIC_NAME")
+const val DELETE_BILL_TOPIC_NAME = "delete-bill"
+@PropertyValue("SHOW_BALANCE_TOPIC_NAME")
+const val SHOW_BALANCE_TOPIC_NAME = "show-balance"
+@PropertyValue("EXPENSES_API_MESSAGING_BRIDGE_TOPIC_NAME")
+const val EXPENSES_API_MESSAGING_BRIDGE_TOPIC_NAME = "expenses-api-messaging-bridge"

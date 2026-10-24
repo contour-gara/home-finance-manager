@@ -16,7 +16,8 @@ import io.mockk.every
 import io.mockk.mockkClass
 import kotlinx.serialization.json.Json
 import org.contourgara.DiscordBotConfig
-import org.koin.ksp.generated.org_contourgara_DiscordBotModule
+import org.contourgara.DiscordBotModule
+import org.contourgara.module
 import org.koin.test.KoinTest
 import org.koin.test.mock.declareMock
 import wiremock.com.google.common.net.HttpHeaders
@@ -26,7 +27,7 @@ class KafkaInitTest : KoinTest, FunSpec() {
         val wireMockServer = WireMockServer(options().dynamicPort())
 
         extensions(
-            KoinExtension(org_contourgara_DiscordBotModule) { mockkClass(it) },
+            KoinExtension(DiscordBotModule().module()) { mockkClass(it) },
             WireMockListener(wireMockServer, ListenerMode.PER_SPEC),
         )
 

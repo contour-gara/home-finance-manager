@@ -15,7 +15,8 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import org.contourgara.DiscordBotConfig
-import org.koin.ksp.generated.org_contourgara_DiscordBotModule
+import org.contourgara.DiscordBotModule
+import org.contourgara.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.koin.test.mock.declareMock
@@ -26,7 +27,7 @@ class UlidGeneratorImplTest : KoinTest, FunSpec() {
         val wireMockServer = WireMockServer(options().dynamicPort())
 
         extensions(
-            KoinExtension(org_contourgara_DiscordBotModule) { mockk<DiscordBotConfig>() },
+            KoinExtension(DiscordBotModule().module()) { mockk<DiscordBotConfig>() },
             WireMockListener(wireMockServer, ListenerMode.PER_SPEC)
         )
 

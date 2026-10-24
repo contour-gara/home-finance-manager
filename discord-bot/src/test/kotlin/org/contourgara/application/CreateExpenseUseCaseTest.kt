@@ -9,10 +9,11 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockkClass
 import kotlinx.datetime.LocalDate
+import org.contourgara.DiscordBotModule
 import org.contourgara.domain.EventSendClient
 import org.contourgara.domain.Expense
 import org.contourgara.domain.SystemClock
-import org.koin.ksp.generated.org_contourgara_DiscordBotModule
+import org.contourgara.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.koin.test.mock.declareMock
@@ -21,7 +22,7 @@ import kotlin.getValue
 class CreateExpenseUseCaseTest : KoinTest, FunSpec() {
     init {
         extensions(
-            KoinExtension(org_contourgara_DiscordBotModule) {
+            KoinExtension(DiscordBotModule().module()) {
                 mockkClass(type = it)
             }
         )
