@@ -27,6 +27,15 @@ jobs:
         uses: actions/checkout@v6
       - name: mise install
         uses: jdx/mise-action@v4
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+      - name: Cache npm
+        if: matrix.module == 'expenses-api'
+        uses: actions/cache@v5
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('expenses-api/frontend/package-lock.json') }}
+          restore-keys: npm-${{ runner.os }}-
       - name: Run unit test
         run: gradle clean ${{ matrix.module }}:test
 
@@ -37,6 +46,12 @@ jobs:
         uses: actions/checkout@v6
       - name: mise install
         uses: jdx/mise-action@v4
+      - name: Cache npm
+        uses: actions/cache@v5
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('expenses-api/frontend/package-lock.json') }}
+          restore-keys: npm-${{ runner.os }}-
       - name: Run install dependencies
         working-directory: ./expenses-api/frontend
         run: npm ci
