@@ -1,5 +1,5 @@
 [tools]
-"github:mizchi/actrun" = "0.29.0"
+"github:mizchi/actrun" = "0.32.0"
 gradle = "9.8.2"
 java = "corretto-25.0.4.10.1"
 node = "26.12.1"

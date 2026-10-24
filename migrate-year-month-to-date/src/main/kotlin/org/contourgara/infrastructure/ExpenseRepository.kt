@@ -38,7 +38,7 @@ fun saveNewExpenses(newExpenses: List<NewExpense>): Unit =
             this[expenseId] = it.id
             this[date] = it.date
         }
-        .let { Unit }
+        .let { }
 
 object ExpenseIdTable : Table("expense_id") {
     val expenseId = varchar("expense_id", 26)
