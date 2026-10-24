@@ -19,6 +19,9 @@ repositories {
 dependencies {
     implementation(libs.logback.classic)
     implementation(libs.kafka.clients)
+    constraints {
+        implementation(libs.lz4.java)
+    }
     implementation(libs.kord.rest)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)
