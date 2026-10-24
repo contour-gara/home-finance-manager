@@ -26,7 +26,6 @@ dependencies {
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.logging)
-    implementation(libs.kotlin.logging)
     implementation(libs.slf4j.simple)
     implementation(libs.arrow.core)
     implementation(libs.ulid.kotlin)
